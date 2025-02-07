@@ -1,5 +1,9 @@
+import {Button} from "@/components/ui/button";
+
 const HomePage: React.FC = () => {
-    return <h1>Hello World</h1>;
+    return <>
+        <Button />
+    </>;
 }
 
 export default HomePage;

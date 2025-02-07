@@ -1,14 +1,15 @@
 import React from "react";
 // import { appWithTranslation } from "next-i18next";
-import { AppProps} from "next/app";
+import {AppProps} from "next/app";
 // import i18n from "../../i18n";
 import "@/styles/globals.css";
+import Header from "@/components/layouts/header";
 // import { Provider } from 'react-redux';
 // import { store, persistor} from "@/utils/redux/store";
 // import {PersistGate} from "redux-persist/integration/react";
 
 
-function App({ Component, pageProps }: AppProps) {
+function App({Component, pageProps}: AppProps) {
     // useEffect(() => {
     //     const browserLanguage = navigator.language || "en";
     //     if (i18n.language !== browserLanguage) {
@@ -22,13 +23,17 @@ function App({ Component, pageProps }: AppProps) {
         //             <HeaderComp />
         //             <Navbar />
         //             <Content>
-                        <Component {...pageProps} />
-        //             </Content>
+
+        <>
+            <Header/>
+            <Component {...pageProps} />
+        </>
         //             <FooterComp />
         //         </Layout>
         //     </PersistGate>
         // </Provider>
-    );
+    )
+        ;
 }
 
 // App.getInitialProps = async (appContext: AppContext) => {
