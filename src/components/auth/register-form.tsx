@@ -9,11 +9,16 @@ export function RegisterComponent({
                                    className,
                                    ...props
                                }: React.ComponentProps<"div">) {
-    const [email, ] = useState<string>("");
+    const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const [email, setEmail] = useState<string>("");
+    const [phone, setPhone] = useState<string>("");
+    const [firstName, setFirstName] = useState<string>("");
+    const [lastName, setLastName] = useState<string>("");
+    const [dateOfBirth, setDateOfBirth] = useState<Date>(new Date());
     const [loading, setLoading] = useState<boolean>(false);
 
-    const handleLogin = async (e: React.FormEvent<HTMLButtonElement>) => {
+    const handleRegister = async (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
         setLoading(true);
         try {
@@ -42,10 +47,59 @@ export function RegisterComponent({
                     <form className="p-6 md:p-8">
                         <div className="flex flex-col gap-6">
                             <div className="flex flex-col items-center text-center">
-                                <h1 className="text-2xl font-bold">Welcome back</h1>
+                                <h1 className="text-2xl font-bold">Create New Account</h1>
                                 <p className="text-balance text-muted-foreground">
-                                    Login to your Acme Inc account
+                                    Create an account to discover wonderful pizza
                                 </p>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="username">Username</Label>
+                                <Input
+                                    id="username"
+                                    type="text"
+                                    placeholder="m"
+                                    required
+                                    onChange={(e) => setUsername(e.target.value)}
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="phone">Phone</Label>
+                                <Input
+                                    id="phone"
+                                    type="tel"
+                                    placeholder="1234567890"
+                                    required
+                                    onChange={(e) => setPhone(e.target.value)}
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="first-name">First Name</Label>
+                                <Input
+                                    id="first-name"
+                                    type="text"
+                                    placeholder="John"
+                                    required
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="last-name">Last Name</Label>
+                                <Input
+                                    id="last-name"
+                                    type="text"
+                                    placeholder="Doe"
+                                    required
+                                    onChange={(e) => setLastName(e.target.value)}
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="date-of-birth">Date of Birth</Label>
+                                <Input
+                                    id="date-of-birth"
+                                    type="date"
+                                    required
+                                    onChange={(e) => setDateOfBirth(new Date(e.target.value))}
+                                />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email</Label>
@@ -57,20 +111,7 @@ export function RegisterComponent({
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                             </div>
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
-                                    <a
-                                        href="#"
-                                        className="ml-auto text-sm underline-offset-2 hover:underline"
-                                    >
-                                        Forgot your password?
-                                    </a>
-                                </div>
-                                <Input id="password" type="password" required
-                                       onChange={p => setPassword(p.target.value)}/>
-                            </div>
-                            <Button type="submit" className="w-full" onClick={handleLogin} disabled={loading}>
+                            <Button type="submit" className="w-full" onClick={handleRegister} disabled={loading}>
                                 {loading ? "Loading..." : "Login"}
                             </Button>
                             <div

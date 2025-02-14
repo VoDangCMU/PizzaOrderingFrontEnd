@@ -9,7 +9,7 @@ export function LoginComponent({
                                    className,
                                    ...props
                                }: React.ComponentProps<"div">) {
-    const [email, setEmail] = useState<string>("");
+    const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -17,12 +17,12 @@ export function LoginComponent({
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await fetch("http://localhost:8000/auth/login", {
+            const res = await fetch("auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({email, password})
+                body: JSON.stringify({username, password})
             });
             if (res.ok) {
                 alert("Login successful")
@@ -54,7 +54,7 @@ export function LoginComponent({
                                     type="email"
                                     placeholder="m@example.com"
                                     required
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={(e) => setUsername(e.target.value)}
                                 />
                             </div>
                             <div className="grid gap-2">
