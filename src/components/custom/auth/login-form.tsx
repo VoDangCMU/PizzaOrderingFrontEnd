@@ -78,7 +78,7 @@ export function LoginComponent({
                             </div>
                             <div className="text-center text-sm">
                                 Don&apos;t have an account?{" "}
-                                <a href="#" className="underline underline-offset-4">
+                                <a href="/register" className="underline underline-offset-4">
                                     Sign up
                                 </a>
                             </div>
@@ -86,7 +86,7 @@ export function LoginComponent({
                     </form>
                     <div className="relative hidden bg-muted md:block">
                         <img
-                            src="/placeholder.svg"
+                            src="https://m.media-amazon.com/images/M/MV5BMTA2NTM4OTc2MTZeQTJeQWpwZ15BbWU4MDg3ODYzMzEx._V1_.jpg"
                             alt="Image"
                             className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
                         />

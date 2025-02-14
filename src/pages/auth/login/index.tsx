@@ -1,4 +1,5 @@
-import {LoginComponent} from "@/components/auth/login-form";
+import {LoginComponent} from "@/components/custom/auth/login-form";
+import {GetServerSideProps} from "next";
 
 
 const LoginPage: React.FC = () => {
@@ -10,5 +11,12 @@ const LoginPage: React.FC = () => {
         </div>
     );
 }
+
+export const getServerSideProps: GetServerSideProps = async ({}) => {
+    return {
+        props: {
+        },
+    };
+};
 
 export default LoginPage;

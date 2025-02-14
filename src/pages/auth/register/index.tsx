@@ -1,4 +1,5 @@
-import {RegisterComponent} from "@/components/auth/register-form";
+import {RegisterComponent} from "@/components/custom/auth/register-form";
+import {GetServerSideProps} from "next";
 
 const Register: React.FC = () => {
     return (
@@ -10,4 +11,10 @@ const Register: React.FC = () => {
     );
 }
 
+export const getServerSideProps: GetServerSideProps = async () => {
+    return {
+        props: {
+        },
+    };
+};
 export default Register;
