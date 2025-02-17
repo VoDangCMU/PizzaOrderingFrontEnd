@@ -73,12 +73,11 @@ export function LoginComponent({
                             <Button type="submit" className="w-full" onClick={handleLogin} disabled={loading}>
                                 {loading ? "Loading..." : "Login"}
                             </Button>
-
                             <div className="grid grid-cols-3 gap-4">
                             </div>
                             <div className="text-center text-sm">
                                 Don&apos;t have an account?{" "}
-                                <a href="/register" className="underline underline-offset-4">
+                                <a href="../auth/register" className="underline underline-offset-4">
                                     Sign up
                                 </a>
                             </div>
