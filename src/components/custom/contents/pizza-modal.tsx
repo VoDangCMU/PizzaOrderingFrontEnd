@@ -2,31 +2,35 @@
 import { useState } from "react";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, X } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import {OrderCardComponent} from "@/components/custom/contents/orderCard";
+import Image from "next/image";
+import PizzaCardComponent from "@/components/custom/contents/pizza-card";
+import {PizzaCardProps} from "@/utils/types";
+import * as React from "react";
 
-export default function PizzaModal() {
+export default function PizzaModalComponent(pizzaModalProps: PizzaCardProps) {
     const [quantity, setQuantity] = useState(1);
+    const { name, price, image } = pizzaModalProps;
 
     return (
-
         <Dialog>
             <DialogTrigger >
-                <OrderCardComponent></OrderCardComponent>
+                <PizzaCardComponent image={image} name={name} price={price} ></PizzaCardComponent>
             </DialogTrigger>
 
             <DialogContent className="max-w-2xl p-0 bg-white text-black border shadow-sm">
                 <div className="grid grid-cols-2">
-                    <img
-                        src="/pizza-image.jpg"
-                        alt="Pizza"
-                        className="w-full h-full object-cover"
+                    <Image className="flex-1"
+                           src={image}
+                           alt="pizza"
+                           width={350}
+                           height={350}
                     />
                     <div className="p-6">
                         <h1 className="text-xl font-bold">
-                            Pizza Siêu Topping Bò Gơ Bò Mỹ Xốt Phô Mai Ngập Vị
+                            {name}
                         </h1>
                         <h3 className="text-sm text-gray-600 mt-2">
                             Tăng 50% lượng topping protein: Thịt bò, phô mai...
@@ -95,7 +99,7 @@ export default function PizzaModal() {
                         </div>
 
                         <Button className="mt-6 w-full bg-red-600 text-white">
-                            Thêm Vào Giỏ Hàng {quantity * 235000}đ
+                            Thêm Vào Giỏ Hàng {quantity * price} $
                         </Button>
                     </div>
                 </div>
