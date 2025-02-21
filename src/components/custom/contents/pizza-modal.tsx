@@ -32,50 +32,34 @@ export default function PizzaModalComponent(pizzaModalProps: PizzaCardProps) {
                         <h1 className="text-xl font-bold">
                             {name}
                         </h1>
-                        <h3 className="text-sm text-gray-600 mt-2">
-                            Tăng 50% lượng topping protein: Thịt bò, phô mai...
-                        </h3>
                         <div className="mt-4">
-                            <h3 className="text-md font-semibold mt-4">Chọn Đế Bánh</h3>
+                            <h3 className="text-md font-semibold mt-4">Crust</h3>
                             <div className="space-y-2 mt-2">
                                 <RadioGroup defaultValue="option-one">
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="option-one" id="option-one"/>
-                                        <Label htmlFor="option-one">Đế Dày Bột Tươi</Label>
+                                        <Label htmlFor="option-one">Fresh Hand-tossed Crust</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="option-two" id="option-two"/>
-                                        <Label htmlFor="option-two">Đế Vừa Bột Tươi</Label>
+                                        <Label htmlFor="option-two">Fresh New York Crust</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="option-three" id="option-three"/>
-                                        <Label htmlFor="option-two">Đế Mỏng Giòn</Label>
+                                        <Label htmlFor="option-two">Super Thin Crust</Label>
                                     </div>
                                 </RadioGroup>
                             </div>
-                            <h3 className="text-md font-semibold mt-4">Chọn Cỡ Bánh</h3>
+                            <h3 className="text-md font-semibold mt-4">Size</h3>
                             <div className="space-y-2 mt-2">
                                 <RadioGroup defaultValue="option-two">
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="option-one" id="option-one"/>
-                                        <Label htmlFor="option-one">Cỡ 9 inch</Label>
+                                        <Label htmlFor="option-one">Size 9 inch</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="option-two" id="option-two"/>
                                         <Label htmlFor="option-two">Cỡ 12 inch</Label>
-                                    </div>
-                                </RadioGroup>
-                            </div>
-                            <h3 className="text-md font-semibold mt-4">Chọn Đế Bánh</h3>
-                            <div className="space-y-2 mt-2">
-                                <RadioGroup defaultValue="option-three">
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="option-one" id="option-one"/>
-                                        <Label htmlFor="option-one">De day bot tuoi</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="option-two" id="option-two"/>
-                                        <Label htmlFor="option-two">Option Two</Label>
                                     </div>
                                 </RadioGroup>
                             </div>
