@@ -1,3 +1,4 @@
+//scr/components/custom/auth/register-form.tsx
 export interface RegisterRequest {
     username: string;
     password: string;
@@ -6,4 +7,17 @@ export interface RegisterRequest {
     firstName: string;
     lastName: string;
     dateOfBirth: Date;
+}
+
+//scr/components/custom/content/pizza-card.tsx
+export interface PizzaCardProps {
+    name: string;
+    price: number;
+    image: string;
+}
+
+
+//scr/components/custom/content/pizza-list.tsx
+export interface PizzaListProps {
+    pizzas: PizzaCardProps[];
 }
