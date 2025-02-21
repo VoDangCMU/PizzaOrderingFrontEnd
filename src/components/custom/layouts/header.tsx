@@ -1,9 +1,14 @@
+import SearchBar from "@/components/custom/layouts/search-bar";
+
 const Header : React.FC = () => {
     return (
-        <div className={"p-2 md:p-4 w-full border-y-2 border-white"}>
+        <div className={"p-2 md:p-4 w-full border-y-2 border-white bg-[url(https://i.imgur.com/IDP9MBR.png)] min-h-fit"}>
             <div className={"flex justify-center items-center"}>
-                <div className={"flex-1"}>
-                    <h1 className={"text-2xl text-center"}>Header</h1>
+                <div className={"w-1/2"}>
+
+                    <SearchBar />
+
+                    
                 </div>
             </div>
         </div>
