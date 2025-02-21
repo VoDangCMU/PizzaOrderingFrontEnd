@@ -1,9 +1,13 @@
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import PizzaModal from "@/components/custom/contents/pizzaModal";
+
 
 const HomePage: React.FC = () => {
     return <>
-        <Button />
-    </>;
+        <PizzaModal>
+
+        </PizzaModal>
+    </>
 }
 
 export default HomePage;

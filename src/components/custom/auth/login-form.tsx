@@ -60,15 +60,15 @@ export function LoginComponent({
                             <div className="grid gap-2">
                                 <div className="flex items-center">
                                     <Label htmlFor="password">Password</Label>
-                                    <a
-                                        href="#"
-                                        className="ml-auto text-sm underline-offset-2 hover:underline"
-                                    >
-                                        Forgot your password?
-                                    </a>
                                 </div>
                                 <Input id="password" type="password" required
                                        onChange={p => setPassword(p.target.value)}/>
+                                <a
+                                    href="../auth/recoverPassword"
+                                    className="ml-auto text-sm underline-offset-2 hover:underline"
+                                >
+                                    Forgot your password?
+                                </a>
                             </div>
                             <Button type="submit" className="w-full" onClick={handleLogin} disabled={loading}>
                                 {loading ? "Loading..." : "Login"}
