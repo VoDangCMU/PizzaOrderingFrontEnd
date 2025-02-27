@@ -8,7 +8,7 @@ const Header: React.FC = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            setIsAtTop(window.scrollY === 0);
+            setIsAtTop(window.scrollY <= 100);
         };
 
         window.addEventListener("scroll", handleScroll);

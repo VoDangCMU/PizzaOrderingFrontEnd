@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import {useRouter} from "next/router";
+import { useRouter } from "next/router";
 
 const registerSchema = z.object({
     username: z.string().min(1, "Username is required"),
@@ -28,7 +28,6 @@ export function RegisterComponent({ className, ...props }: React.ComponentProps<
         register,
         handleSubmit,
         formState: { errors },
-        // setError,
     } = useForm<RegisterFormData>({
         resolver: zodResolver(registerSchema),
     });
@@ -42,11 +41,7 @@ export function RegisterComponent({ className, ...props }: React.ComponentProps<
                 body: JSON.stringify(data),
             });
 
-            if (!res.ok) {
-
-                return;
-            }
-
+            if (!res.ok) return;
             await router.push("/auth/login");
         } catch (e) {
             console.error(e);
@@ -56,73 +51,51 @@ export function RegisterComponent({ className, ...props }: React.ComponentProps<
     };
 
     return (
-        <div className={cn("flex flex-col gap-6 items-center", className)} {...props}>
-            <Card className="w-[70%] md:w-[80%] max-w-4xl">
-                <CardContent className="grid p-0 md:grid-cols-2">
-                    <div className="relative hidden bg-muted md:block">
+        <div className={cn("flex flex-col gap-6 items-center ", className)} {...props}>
+            <Card className="w-full max-w-5xl rounded-lg shadow-lg overflow-hidden bg-white border-4 border-yellow-400">
+                <CardContent className="grid md:grid-cols-2 p-0">
+                    <div className="hidden md:block bg-muted relative">
                         <img
                             src="https://m.media-amazon.com/images/M/MV5BMTA2NTM4OTc2MTZeQTJeQWpwZ15BbWU4MDg3ODYzMzEx._V1_.jpg"
-                            alt="Image"
-                            className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+                            alt="Pizza Image"
+                            className="absolute inset-0 w-full h-full object-cover rounded-l-lg"
                         />
                     </div>
-                    <form className="p-6 md:p-8 w-full" onSubmit={handleSubmit(onSubmit)}>
+                    <form className="p-6 md:p-8 w-full bg-white" onSubmit={handleSubmit(onSubmit)}>
                         <div className="flex flex-col gap-6">
-                            <div className="flex flex-col items-center text-center">
-                                <h1 className="text-2xl font-bold">Create New Account</h1>
-                                <p className="text-balance text-muted-foreground">
-                                    Create an account to discover wonderful pizza
-                                </p>
+                            <div className="text-center">
+                                <h1 className="text-2xl font-bold text-gray-800">Join Pizza Lovers</h1>
+                                <p className="text-gray-600">Sign up to get the best pizza deals!</p>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {[
-                                    { id: "username", label: "Username", type: "text", placeholder: "m" },
-                                    { id: "password", label: "Password", type: "password", placeholder: "password" },
-                                    { id: "firstName", label: "First Name", type: "text", placeholder: "John" },
-                                    { id: "lastName", label: "Last Name", type: "text", placeholder: "Doe" },
-                                    { id: "email", label: "Email", type: "email", placeholder: "m@example.com" },
-                                    { id: "phone", label: "Phone", type: "tel", placeholder: "1234567890" },
-                                    { id: "dateOfBirth", label: "Date of Birth", type: "date", placeholder: "" },
-                                ].map(({ id, label, type, placeholder }) => (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                                {["username", "password", "firstName", "lastName", "email", "phone", "dateOfBirth"].map(id => (
                                     <div key={id} className="flex flex-col gap-1">
-                                        <Label htmlFor={id}>{label}</Label>
+                                        <Label htmlFor={id} className="text-gray-700">{id.charAt(0).toUpperCase() + id.slice(1)}</Label>
                                         <Input
                                             id={id}
-                                            type={type}
-                                            placeholder={placeholder}
+                                            type={id === "password" ? "password" : id === "dateOfBirth" ? "date" : "text"}
                                             {...register(id as keyof RegisterFormData)}
-                                            className={errors[id as keyof RegisterFormData] ? "border-red-500" : ""}
+                                            className={errors[id as keyof RegisterFormData] ? "border-red-500" : "border-gray-300"}
                                         />
                                         {errors[id as keyof RegisterFormData] && (
-                                            <p className="text-red-500 text-sm">
-                                                {errors[id as keyof RegisterFormData]?.message as string}
-                                            </p>
+                                            <p className="text-red-500 text-sm">{errors[id as keyof RegisterFormData]?.message as string}</p>
                                         )}
                                     </div>
                                 ))}
                             </div>
 
-                            <Button type="submit" className="w-full" disabled={loading}>
-                                {loading ? "Loading..." : "Register"}
+                            <Button type="submit" className="w-full bg-red-500 hover:bg-red-600 text-white font-bold" disabled={loading}>
+                                {loading ? "Loading..." : "Sign Up"}
                             </Button>
 
-                            <div className="text-center text-sm">
-                                Already have an account?{" "}
-                                <a href="../auth/login" className="underline underline-offset-4">
-                                    Sign in
-                                </a>
+                            <div className="text-center text-sm text-gray-600">
+                                Already have an account? <a href="../auth/login" className="text-red-500 hover:underline">Sign in</a>
                             </div>
                         </div>
                     </form>
                 </CardContent>
             </Card>
-
-            <div
-                className="text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
-                By clicking continue, you agree to our <a href="#">Terms of Service</a> and{" "}
-                <a href="#">Privacy Policy</a>.
-            </div>
         </div>
     );
 }
