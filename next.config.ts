@@ -3,6 +3,8 @@ const nextConfig = {
     images: {
         domains: [
             "legendsofwindemere.com",
+            "i.imgur.com",
+            "i.pinimg.com",
         ],
     },
 };

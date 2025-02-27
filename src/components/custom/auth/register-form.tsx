@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import {useRouter} from "next/router";
 
 const registerSchema = z.object({
     username: z.string().min(1, "Username is required"),
@@ -22,11 +23,12 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 export function RegisterComponent({ className, ...props }: React.ComponentProps<"div">) {
     const [loading, setLoading] = useState<boolean>(false);
+    const router = useRouter();
     const {
         register,
         handleSubmit,
         formState: { errors },
-        setError,
+        // setError,
     } = useForm<RegisterFormData>({
         resolver: zodResolver(registerSchema),
     });
@@ -40,22 +42,12 @@ export function RegisterComponent({ className, ...props }: React.ComponentProps<
                 body: JSON.stringify(data),
             });
 
-            const responseData = await res.json();
-
             if (!res.ok) {
-                if (responseData.errors) {
-                    Object.keys(responseData.errors).forEach((field) => {
-                        setError(field as keyof RegisterFormData, {
-                            type: "server",
-                            message: responseData.errors[field],
-                        });
-                    });
-                } else {
-                    alert("Registration failed");
-                }
-            } else {
-                alert("Registration successful");
+
+                return;
             }
+
+            await router.push("/auth/login");
         } catch (e) {
             console.error(e);
         } finally {
