@@ -1,14 +1,15 @@
 import SearchBar from "@/components/custom/layouts/search-bar";
-import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import {Button} from "@/components/ui/button";
+import {useEffect, useState} from "react";
 import Image from "next/image";
+import {useRouter} from "next/router";
 
 const Header: React.FC = () => {
     const [isAtTop, setIsAtTop] = useState(true);
-
+    const router = useRouter();
     useEffect(() => {
         const handleScroll = () => {
-            setIsAtTop(window.scrollY <= 100);
+            setIsAtTop(window.scrollY <= 50);
         };
 
         window.addEventListener("scroll", handleScroll);
@@ -33,14 +34,23 @@ const Header: React.FC = () => {
                 </div>
 
                 <div className="w-1/2 flex justify-center">
-                    <SearchBar />
+                    <SearchBar/>
                 </div>
 
                 <div className="flex space-x-4">
-                    <Button className="bg-red-600 text-white font-bold px-4 py-2 rounded-full shadow-md hover:bg-red-700">
+                    <Button
+                        className="bg-red-600 text-white font-bold px-4 py-2 rounded-full shadow-md hover:bg-red-700"
+                        onClick={() => {
+                            router.push("../auth/login")
+                        }}>
                         Login
                     </Button>
-                    <Button className="bg-yellow-500 text-white font-bold px-4 py-2 rounded-full shadow-md hover:bg-yellow-600">
+                    <Button
+                        className="bg-yellow-500 text-white font-bold px-4 py-2 rounded-full shadow-md hover:bg-yellow-600" onClick={
+                        () => {
+                            router.push("../auth/register")
+                        }
+                    }>
                         Register
                     </Button>
                 </div>

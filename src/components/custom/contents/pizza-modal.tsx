@@ -18,7 +18,7 @@ const PizzaModalComponent = ({ name, price, image }: PizzaCardProps) => {
                 <PizzaCard image={image} name={name} price={price} />
             </DialogTrigger>
 
-            <DialogContent className="max-w-lg sm:max-w-xl md:max-w-2xl p-4 sm:p-6 bg-white text-black border-4 border-gray-400 shadow-lg rounded-xl w-full max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-lg sm:max-w-xl md:max-w-2xl p-4 sm:p-6 bg-white text-black border-4 border-yellow-400 shadow-lg rounded-xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 sm:p-6">
                     <div className="relative w-full h-60 sm:h-72 flex items-center justify-center bg-gray-100 border border-gray-300 rounded-lg">
                         <Image

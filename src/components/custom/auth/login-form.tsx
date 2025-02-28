@@ -34,15 +34,15 @@ export function LoginComponent({ className, ...props }: React.ComponentProps<"di
     };
 
     return (
-        <div className={cn("flex flex-col gap-6", className)} {...props}>
-            <Card className="overflow-hidden border-4 border-yellow-400 shadow-lg rounded-xl">
-                <CardContent className="grid p-0 md:grid-cols-2">
+        <div className={cn("flex flex-col gap-6 w-full mb-2 ", className)} {...props}>
+            <Card className="w-full min-h-fit overflow-hidden shadow-lg  ">
+                <CardContent className="grid p-0 md:grid-cols-2 min-h-screen ">
                     <form className="p-6 md:p-8">
-                        <div className="flex flex-col gap-6">
-                            <div className="flex flex-col items-center text-center">
+                        <div className="flex flex-col gap-6 ">
+                            <div className="flex flex-col items-center text-center mt-16">
                                 <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
                                 <p className="text-balance text-gray-600">
-                                    Login to your Acme Inc account
+                                    Login to your Flies Pizza account
                                 </p>
                             </div>
                             <div className="grid gap-2">
@@ -82,11 +82,11 @@ export function LoginComponent({ className, ...props }: React.ComponentProps<"di
                         </div>
                     </form>
                     <div className="relative hidden bg-gray-100 border-l border-gray-300 md:block">
-                        <img
-                            src="https://m.media-amazon.com/images/M/MV5BMTA2NTM4OTc2MTZeQTJeQWpwZ15BbWU4MDg3ODYzMzEx._V1_.jpg"
-                            alt="Image"
-                            className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-                        />
+                        {/*<img*/}
+                        {/*    src="https://m.media-amazon.com/images/M/MV5BMTA2NTM4OTc2MTZeQTJeQWpwZ15BbWU4MDg3ODYzMzEx._V1_.jpg"*/}
+                        {/*    alt="Image"*/}
+                        {/*    className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"*/}
+                        {/*/>*/}
                     </div>
                 </CardContent>
             </Card>
