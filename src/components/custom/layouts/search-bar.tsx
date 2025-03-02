@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from "next/router";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 
 const SearchBar: React.FC = () => {
     const [inputValue, setInputValue] = useState("");
@@ -49,7 +47,7 @@ const SearchBar: React.FC = () => {
     };
 
     return (
-        <div className="w-full max-w-sm min-w-[200px] min-h-fit">
+        <div className="w-full max-w-xl min-w-[200px] min-h-fit">
             <div className="relative">
                 <input
                     className="w-full bg-transparent placeholder:text-slate-400 text-white text-sm border border-slate-200 rounded-md pl-3 pr-28 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow min-h-fit"

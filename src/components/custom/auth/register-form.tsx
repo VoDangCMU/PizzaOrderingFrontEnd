@@ -35,7 +35,7 @@ export function RegisterComponent({ className, ...props }: React.ComponentProps<
     const onSubmit = async (data: RegisterFormData) => {
         setLoading(true);
         try {
-            const res = await fetch("/auth/register", {
+            const res = await fetch("/api/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
@@ -51,17 +51,17 @@ export function RegisterComponent({ className, ...props }: React.ComponentProps<
     };
 
     return (
-        <div className={cn("flex flex-col gap-6 items-center ", className)} {...props}>
-            <Card className="w-full max-w-5xl rounded-lg shadow-lg overflow-hidden bg-white border-4 border-yellow-400">
-                <CardContent className="grid md:grid-cols-2 p-0">
+        <div className={cn("flex flex-col gap-6 w-full mb-2  ", className)} {...props}>
+            <Card className="w-full shadow-lg overflow-hidden bg-white">
+                <CardContent className="grid md:grid-cols-2 p-0 min-h-screen">
                     <div className="hidden md:block bg-muted relative">
-                        <img
-                            src="https://m.media-amazon.com/images/M/MV5BMTA2NTM4OTc2MTZeQTJeQWpwZ15BbWU4MDg3ODYzMzEx._V1_.jpg"
-                            alt="Pizza Image"
-                            className="absolute inset-0 w-full h-full object-cover rounded-l-lg"
-                        />
+                    {/*    <img*/}
+                    {/*        src="https://m.media-amazon.com/images/M/MV5BMTA2NTM4OTc2MTZeQTJeQWpwZ15BbWU4MDg3ODYzMzEx._V1_.jpg"*/}
+                    {/*        alt="Pizza Image"*/}
+                    {/*        className="absolute inset-0 w-full h-full object-cover rounded-l-lg"*/}
+                    {/*    />*/}
                     </div>
-                    <form className="p-6 md:p-8 w-full bg-white" onSubmit={handleSubmit(onSubmit)}>
+                    <form className="p-6 md:p-8 w-full bg-white flex min-h-fit mt-10" onSubmit={handleSubmit(onSubmit)}>
                         <div className="flex flex-col gap-6">
                             <div className="text-center">
                                 <h1 className="text-2xl font-bold text-gray-800">Join Pizza Lovers</h1>
