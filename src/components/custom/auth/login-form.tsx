@@ -4,17 +4,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import {useRouter} from "next/router";
 
 export function LoginComponent({ className, ...props }: React.ComponentProps<"div">) {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
-
+    const router = useRouter();
     const handleLogin = async (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await fetch("auth/login", {
+            const res = await fetch("/api/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -22,9 +23,10 @@ export function LoginComponent({ className, ...props }: React.ComponentProps<"di
                 body: JSON.stringify({ username, password })
             });
             if (res.ok) {
-                alert("Login successful");
+
+                await router.push("../");
             } else {
-                alert("Login failed");
+                await router.push("../auth/login");
             }
         } catch (e) {
             console.log(e);
