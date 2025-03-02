@@ -30,4 +30,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: iamqbao/pizza-ordering-fe:latest
+          tags: iamqbao/pizza-category-ordering-fe:latest

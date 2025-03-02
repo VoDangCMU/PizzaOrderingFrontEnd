@@ -1,5 +1,5 @@
 import {NextApiRequest, NextApiResponse} from "next";
-import {axiosAPIInstance} from "@/utils/axios.config";
+import {axiosAPIInstance} from "@/lib/axios.config";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "POST") {

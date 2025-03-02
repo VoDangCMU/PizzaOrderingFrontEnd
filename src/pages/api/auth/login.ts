@@ -1,5 +1,5 @@
 import {NextApiRequest, NextApiResponse} from "next";
-import {axiosAPIInstance} from "@/utils/axios.config";
+import {axiosAPIInstance} from "@/lib/axios.config";
 import {serialize} from 'cookie';
 
 

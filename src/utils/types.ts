@@ -9,7 +9,7 @@ export interface RegisterRequest {
     dateOfBirth: Date;
 }
 
-//scr/components/custom/content/pizza-card.tsx
+//scr/components/custom/content/pizza-category-card.tsx
 export interface PizzaCardProps {
     name: string;
     price: number;
@@ -17,7 +17,7 @@ export interface PizzaCardProps {
 }
 
 
-//scr/components/custom/content/pizza-list.tsx
+//scr/components/custom/content/pizza-category-list.tsx
 export interface PizzaListProps {
     pizzas: PizzaCardProps[];
 }
