@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<h1 style="text-align:center"> Pizza Order - Frontend
+ </h1>
 
-## Getting Started
+***
+## Cài đặt mã nguồn
+### Clone mã nguồn dự án:
+   ``` bash
+    git clone https://github.com/VoDangCMU/PizzaOrderingFrontEnd.git
+    cd PizzaOrderingFrontEnd
+   ```
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+***
+### Cài đặt các thư viện cần thiết:
+  ``` bash
+    yarn install
+  ``` 
+* hoặc
+  ``` bash
+    npm install
+   ```
+***
+### Cấu hình bến môi trường:
+* Tạo file .env như mẫu trong thư mục gốc của dự án:
+```dotenv
+ NEXT_PUBLIC_DATA_API=your-api-domain (mặc định là http://localhost:8088)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+***
+### Chạy ở chế độ dev mode:
+   ``` bash 
+    yarn dev
+   ```
+* hoặc
+   ``` bash 
+   npm run dev
+   ```
+ ***
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Chạy ở chế độ build :
+   ``` bash
+    yarn build
+   ```
+* hoặc
+   ``` bash
+  npm run build
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+***
 
-## Learn More
+### Chạy ở chế độ start :
+   ``` bash
+    yarn start
+   ```
+* hoặc
+   ``` bash
+    npm run start
+   ```
+  <li>Truy cập tại: <a href="http://localhost:3000" target="_blank">http://localhost:3000</a></li>
 
-To learn more about Next.js, take a look at the following resources:
+***
+## Nâng cao - Triển khai với Vercel và reverse proxy với nginx
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Vercel
+* Sau khi đã tạo repository để lưu code trên github, ta truy cập trang dashboard Vercel để tạo 1 dự án mới
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+ <img src="https://i.imgur.com/7iCt7r1.png">
 
-## Deploy on Vercel
+***
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+* Cấu hình các biến môi trường
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+  <img src="https://i.imgur.com/XgmBj4n.png">
+
+***
+
+* Sau khi cấu hình xong thì bấm Deploy
+  <img src="https://i.imgur.com/libtr1x.png">
+
+***
+
+### Vậy là đã xong bước deploy trên vercel, bây giờ chúng ta có thể tiến hành reverse proxy với tên miền cá nhân
+* Tạo 1 record cho subdomain trên các DNS như Cloudflare
+* Giả sử mình có subdomain `todolist.quocbao.com` và địa chỉ máy chủ là `12.234.123.123`
+  <img src="https://i.imgur.com/fzOc3JA.png">
+
+***
+
+### Thêm `custom.conf` vào nginx trong `/etc/nginx/conf.d/`như sau
+ ``` text
+   server {
+    server_name www.quocbao.com; //thay bằng tên miền gốc
+    return 301 https://quocbao.com$request_uri;
+    }
+
+    server {
+    listen 80;
+    server_name todolist.quocbao.com; // thay bằng tên miền phụ
+
+    location / {
+            proxy_pass https://example.vercel.app; // url của ứng dụng vừa tạo trên vercel
+            proxy_redirect off;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+    }
+ ```
+* Reload lại dịch vụ `nginx`
+ ``` shell
+  nginx -s reload
+ ```
+### Sau khi reload thành công, bạn có truy cập ứng dụng bằng tên miền phụ của bạn thay vì vercel !!!
+
+
+***
+
