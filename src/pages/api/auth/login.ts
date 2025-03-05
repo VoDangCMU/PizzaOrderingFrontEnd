@@ -1,26 +1,35 @@
 import {NextApiRequest, NextApiResponse} from "next";
-import {axiosAPIInstance} from "@/utils/axios.config";
+import {axiosAPIInstance} from "@/lib/axios.config";
+import {serialize} from 'cookie';
 
-export default async function handler(req : NextApiRequest, res: NextApiResponse) {
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "POST") {
         return res.status(405).json({message: "Method not allowed"});
     }
 
-    const username = req.body.username;
-    const password = req.body.password;
+    try {
+        const {username, password, keepLogin} = req.body;
+        const data = {username, password, keepLogin};
 
-    if (!username || !password) {
-        return res.status(400).json({message: "Username and password are required"});
+        if (!username || !password) {
+            return res.status(400).json({message: "Username and password are required"});
+        }
+        const response = await axiosAPIInstance.post("auth/login", data);
+
+        if (response.status === 200) {
+            const shouldKeepLogin = keepLogin === 'true';
+            const token = response.data.data;
+            res.setHeader('Set-Cookie', serialize('jwt', token, {
+                httpOnly: true,
+                maxAge: shouldKeepLogin ? 30 * 24 * 60 * 60 : undefined,
+                path: '/',
+            }));
+            res.status(response.status).json(response.data);
+        }
+    } catch
+        (error) {
+        res.status(401).json(error);
     }
 
-    const response = await axiosAPIInstance.post("auth/login", {
-        username,
-        password
-    });
-
-    if (response.status === 200) {
-        res.status(200).json(response.data);
-    }
-
-    res.status(response.status).json(response.data);
 }
