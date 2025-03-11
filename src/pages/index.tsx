@@ -1,8 +1,8 @@
-import {Button} from "@/components/ui/button";
+import HomeComponent from "@/components/custom/contents/homepage";
 
 const HomePage: React.FC = () => {
     return <>
-        <Button />
+        <HomeComponent />
     </>;
 }
 
