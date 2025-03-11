@@ -1,5 +1,5 @@
 import { PizzaCardProps, PizzaListProps } from "@/utils/types";
-import PizzaModalComponent from "@/components/custom/contents/pizza-modal";
+import PizzaModalComponent from "@/components/contents/pizza-modal";
 
 const PizzaListComponent: React.FC<PizzaListProps> = (props) => {
     return (

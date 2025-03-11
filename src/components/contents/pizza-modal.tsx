@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import PizzaCard from "@/components/custom/contents/pizza-card";
+import PizzaCard from "@/components/contents/pizza-card";
 import { PizzaCardProps } from "@/utils/types";
 
 const PizzaModalComponent = ({ name, price, image }: PizzaCardProps) => {

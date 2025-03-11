@@ -1,4 +1,4 @@
-import HomeComponent from "@/components/custom/contents/homepage";
+import HomeComponent from "@/components/contents/homepage";
 
 const HomePage: React.FC = () => {
     return <>

@@ -1,4 +1,4 @@
-import PizzaListComponent from "@/components/custom/contents/pizza-list";
+import PizzaListComponent from "@/components/contents/pizza-list";
 import {pizzaListMock} from "@/mock/pizza-list.mock";
 
 const MenuPage : React.FC = () => {
