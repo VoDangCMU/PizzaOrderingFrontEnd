@@ -58,7 +58,7 @@ export function UserActions() {
                 className="relative"
             >
                 <Button asChild variant="ghost" size="icon" className="relative">
-                    <Link href="/cart">
+                    <Link href="../cart">
                         <ShoppingCart className="h-5 w-5" />
                         {cartItems.length > 0 && (
                             <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-primary text-white">
@@ -80,15 +80,15 @@ export function UserActions() {
                 ) : (
                     <div className="flex items-center gap-2">
                         <Button asChild size="sm" variant="kungfu" className="bg-kungfu-red hover:bg-kungfu-darkRed text-white">
-                            <Link href="/login">Login</Link>
+                            <Link href="../auth/login">Login</Link>
                         </Button>
                         <Button
                             asChild
                             size="sm"
                             variant="kungfu"
-                            className="bg-kungfu-gold hover:bg-kungfu-darkGold text-kungfu-red"
+                            className="bg-kungfu-gold hover:bg-kungfu-darkGold text-white"
                         >
-                            <Link href="/register">Register</Link>
+                            <Link href="../auth/register">Register</Link>
                         </Button>
                     </div>
                 )}

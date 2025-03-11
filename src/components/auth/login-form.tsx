@@ -1,10 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,11 +10,13 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { PizzaWindow } from "@/components/contents/pizza-window"
-import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "next/navigation"
-import { toast } from "@/components/ui/use-toast"
 
-// Animation variants
+interface FormErrors {
+    username: string;
+    password: string;
+}
+
 const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -34,63 +34,106 @@ const itemVariants = {
 }
 
 export function LoginForm() {
-    const [passwordFocused, setPasswordFocused] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
+    const [passwordFocused, setPasswordFocused] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         username: "",
         password: "",
         keepLogin: false,
-    })
+    });
 
-    const { login } = useAuth()
-    const router = useRouter()
+    const [errors, setErrors] = useState({
+        username: "",
+        password: "",
+    });
+
+    const router = useRouter();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
+        const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
             [name]: value,
-        }))
-    }
+        }));
+    };
 
     const handleCheckboxChange = (checked: boolean) => {
         setFormData((prev) => ({
             ...prev,
             keepLogin: checked,
-        }))
-    }
+        }));
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        if (!value) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: `${name.charAt(0).toUpperCase() + name.slice(1)} is required`,
+            }));
+        } else {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [name]: "",
+            }));
+        }
+    };
+
+    const validateForm = () => {
+        let isValid = true;
+        const newErrors: FormErrors = { username: "", password: "" };
+
+        if (!formData.username) {
+            newErrors.username = "Username is required";
+            isValid = false;
+        }
+        if (!formData.password) {
+            newErrors.password = "Password is required";
+            isValid = false;
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setIsLoading(true)
+        e.preventDefault();
+
+        // Kiểm tra lỗi trong form trước khi gửi
+        if (!validateForm()) return;
+
+        setIsLoading(true);
 
         try {
-            const success = await login(formData.username, formData.password)
+            const response = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username: formData.username,
+                    password: formData.password,
+                    keepLogin: formData.keepLogin,
+                }),
+            });
 
-            if (success) {
-                toast({
-                    title: "Login successful",
-                    description: "Welcome back to Võ Đang Pizza!",
-                })
-                router.push("/")
-            } else {
-                toast({
-                    title: "Login failed",
-                    description: "Invalid username or password. Please try again.",
-                    variant: "destructive",
-                })
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Login failed");
             }
-        } catch (error ) {
-            console.error("Login failed:", error)
-            toast({
-                title: "Login failed",
-                description: "An error occurred. Please try again.",
-                variant: "destructive",
-            })
+
+            // Chuyển hướng sau khi đăng nhập thành công
+            router.push("../");
+        } catch (error) {
+            console.error("Login failed:", error);
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                password: "An error occurred while logging in. Please try again.",
+            }));
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
+    };
 
     return (
         <motion.div
@@ -103,7 +146,7 @@ export function LoginForm() {
                 <Card className="kungfu-card border-red-800/30 overflow-hidden">
                     <CardHeader className="space-y-1 text-center">
                         <motion.div variants={itemVariants}>
-                            <CardTitle className="text-3xl font-bold tracking-tight text-red-800">Master  Return</CardTitle>
+                            <CardTitle className="text-3xl font-bold tracking-tight text-red-800">Master Return</CardTitle>
                         </motion.div>
                         <motion.div variants={itemVariants}>
                             <CardDescription>Enter your credentials to access your account</CardDescription>
@@ -116,20 +159,24 @@ export function LoginForm() {
                         </motion.div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            <motion.div className="space-y-2" variants={itemVariants}>
+                            <div className="space-y-2">
                                 <Label htmlFor="username">Username</Label>
                                 <Input
                                     id="username"
                                     name="username"
                                     value={formData.username}
                                     onChange={handleInputChange}
+                                    onBlur={handleBlur}
                                     placeholder="kungfu_master"
-                                    className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
+                                    className={`${
+                                        errors.username ? "border-red-500" : "border-amber-800/30"
+                                    } bg-white/50 backdrop-blur-sm focus-visible:ring-red-800`}
                                     required
                                 />
-                            </motion.div>
+                                {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
+                            </div>
 
-                            <motion.div className="space-y-2" variants={itemVariants}>
+                            <div className="space-y-2">
                                 <Label htmlFor="password">Password</Label>
                                 <Input
                                     id="password"
@@ -137,14 +184,17 @@ export function LoginForm() {
                                     type="password"
                                     value={formData.password}
                                     onChange={handleInputChange}
+                                    onBlur={handleBlur}
                                     onFocus={() => setPasswordFocused(true)}
-                                    onBlur={() => setPasswordFocused(false)}
-                                    className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
+                                    className={`${
+                                        errors.password ? "border-red-500" : "border-amber-800/30"
+                                    } bg-white/50 backdrop-blur-sm focus-visible:ring-red-800`}
                                     required
                                 />
-                            </motion.div>
+                                {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+                            </div>
 
-                            <motion.div className="flex items-center space-x-2" variants={itemVariants}>
+                            <div className="flex items-center space-x-2">
                                 <Checkbox
                                     id="keepLogin"
                                     checked={formData.keepLogin}
@@ -157,9 +207,9 @@ export function LoginForm() {
                                 >
                                     Remember me
                                 </label>
-                            </motion.div>
+                            </div>
 
-                            <motion.div variants={itemVariants}>
+                            <div>
                                 <Button
                                     type="submit"
                                     className="w-full bg-red-800 hover:bg-red-700 text-white kungfu-button"
@@ -167,14 +217,15 @@ export function LoginForm() {
                                 >
                                     {isLoading ? (
                                         <>
-                                            <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                                            <span
+                                                className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                                             Signing in...
                                         </>
                                     ) : (
                                         "Sign In"
                                     )}
                                 </Button>
-                            </motion.div>
+                            </div>
                         </form>
                     </CardContent>
 
@@ -187,7 +238,7 @@ export function LoginForm() {
 
                         <motion.div className="text-sm text-center text-muted-foreground" variants={itemVariants}>
                             Don&apos;t have an account?{" "}
-                            <Link href="/register" className="underline underline-offset-4 hover:text-red-800">
+                            <Link href="../auth/register" className="underline underline-offset-4 hover:text-red-800">
                                 Sign up
                             </Link>
                         </motion.div>
@@ -197,4 +248,3 @@ export function LoginForm() {
         </motion.div>
     )
 }
-

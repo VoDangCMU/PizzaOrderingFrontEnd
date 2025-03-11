@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
 export function HeroContent() {
@@ -14,20 +13,6 @@ export function HeroContent() {
                 transition={{ duration: 0.8 }}
                 className="max-w-4xl mx-auto"
             >
-                <motion.div
-                    className="mb-6 flex justify-center"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8 }}
-                >
-                    <Image
-                        src="/kungfu-emblem-large.png"
-                        alt="Kungfu Pizza Emblem"
-                        width={150}
-                        height={150}
-                        className="object-contain"
-                    />
-                </motion.div>
 
                 <motion.h1
                     className="text-5xl md:text-7xl font-bold mb-6"

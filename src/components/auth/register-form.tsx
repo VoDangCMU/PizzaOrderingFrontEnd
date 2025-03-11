@@ -4,18 +4,15 @@ import type React from "react"
 
 import { useState } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { PizzaWindow } from "@/components/contents/pizza-window"
-import { useAuth } from "@/hooks/use-auth"
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/router"
 import { toast } from "@/components/ui/use-toast"
 
-// Animation variants
 const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -46,7 +43,6 @@ export function RegisterForm() {
         address: "",
     })
 
-    const { register } = useAuth()
     const router = useRouter()
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,14 +58,26 @@ export function RegisterForm() {
         setIsLoading(true)
 
         try {
-            const success = await register(formData)
+            const success = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            }).then((res) => {
+                if (res.ok) {
+                    return true
+                } else {
+                    throw new Error("Registration failed")
+                }
+            })
 
             if (success) {
                 toast({
                     title: "Registration successful",
                     description: "Welcome to Võ Đang Pizza!",
                 })
-                router.push("/")
+                router.push("../auth/login")
             } else {
                 toast({
                     title: "Registration failed",
@@ -78,6 +86,7 @@ export function RegisterForm() {
                 })
             }
         } catch (error) {
+            console.log("Registration failed:", error)
             toast({
                 title: "Registration failed",
                 description: "An error occurred. Please try again.",
@@ -243,7 +252,7 @@ export function RegisterForm() {
                     <CardFooter>
                         <motion.div className="text-sm text-center w-full text-muted-foreground" variants={itemVariants}>
                             Already have an account?{" "}
-                            <Link href="/login" className="underline underline-offset-4 hover:text-red-800">
+                            <Link href="../auth/login" className="underline underline-offset-4 hover:text-red-800">
                                 Sign in
                             </Link>
                         </motion.div>

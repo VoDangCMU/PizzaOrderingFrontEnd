@@ -4,10 +4,10 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 
 const navItems = [
-    { name: "Home", href: "/" },
-    { name: "Menu", href: "/menu" },
-    { name: "Blog", href: "/blog" },
-    { name: "Contact", href: "/contact" },
+    { name: "Home", href: "../" },
+    { name: "Menu", href: "../menu" },
+    { name: "Blog", href: "../blog" },
+    { name: "Contact", href: "../contact" },
 ]
 
 export function NavItems() {

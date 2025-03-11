@@ -26,7 +26,7 @@ export function MobileMenu() {
     return (
         <div className="md:hidden z-50 flex items-center gap-3">
             <Button asChild variant="ghost" size="icon" className="relative">
-                <Link href="/cart">
+                <Link href="../cart">
                     <ShoppingCart className="h-5 w-5" />
                     {cartItems.length > 0 && (
                         <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-primary text-white">
@@ -116,7 +116,7 @@ export function MobileMenu() {
                                         <Button
                                             asChild
                                             variant="kungfu"
-                                            className="w-full bg-kungfu-gold hover:bg-kungfu-darkGold text-kungfu-red"
+                                            className="w-full bg-kungfu-gold hover:bg-kungfu-darkGold text-white"
                                         >
                                             <Link href="../auth/register" onClick={() => setIsMobileMenuOpen(false)}>
                                                 Register

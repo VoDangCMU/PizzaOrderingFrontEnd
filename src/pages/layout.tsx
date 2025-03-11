@@ -1,7 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import "./globals.css"
 import { AuthProvider } from "@/hooks/use-auth"
 import { CartProvider } from "@/hooks/use-cart"
 import { Toaster } from "@/components/ui/toaster"
@@ -10,10 +8,10 @@ import Footer from "@/components/layouts/footer"
 
 const inter = Inter({ subsets: ["latin"] })
 
-export const metadata: Metadata = {
-    title: "Võ Đang Pizza - Modern Martial Arts Pizza",
-    description: "Experience the harmony of ancient martial arts and modern pizza crafting",
-}
+// export const metadata: Metadata = {
+//     title: "Võ Đang Pizza - Modern Martial Arts Pizza",
+//     description: "Experience the harmony of ancient martial arts and modern pizza crafting",
+// }
 
 export default function RootLayout({
                                        children,

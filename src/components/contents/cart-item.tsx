@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SVGProps } from "react";
+import Image from "next/image";
 
 interface CardItemProps {
     image: string;
@@ -27,7 +28,7 @@ export default function PizzaCardComponent({
         <Card className="w-full border-2 border-yellow-400">
             <div className="grid gap-2.5 p-4">
                 <div className="flex items-center gap-4">
-                    <img
+                    <Image
                         src={image}
                         alt={title}
                         width={100}
