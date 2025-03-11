@@ -1,62 +1,83 @@
-import SearchBar from "@/components/custom/layouts/search-bar";
-import {Button} from "@/components/ui/button";
-import {useEffect, useState} from "react";
-import Image from "next/image";
-import {useRouter} from "next/router";
+"use client"
 
-const Header: React.FC = () => {
-    const [isAtTop, setIsAtTop] = useState(true);
-    const router = useRouter();
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsAtTop(window.scrollY <= 50);
-        };
+import { useState } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Menu } from "lucide-react"
+import { motion } from "framer-motion"
+import { WudangLogo } from "@/components/custom/layouts/wudang-logo"
 
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+export default function Header() {
+    const [isOpen, setIsOpen] = useState(false)
+
+    const navItems = [
+        { name: "Home", href: "/" },
+        { name: "Menu", href: "/menu" },
+        { name: "Blog", href: "/blog" },
+        { name: "Contact", href: "/contact" },
+    ]
 
     return (
-        <div
-            className={`sticky top-0 z-50 w-full border-b-4 border-yellow-600 bg-[url(https://i.imgur.com/IDP9MBR.png)] bg-cover bg-center shadow-lg transition-transform duration-300 ${
-                isAtTop ? "translate-y-0" : "-translate-y-full"
-            } md:min-h-[120px] flex items-center`}
-        >
-            <div className="w-full mx-auto flex justify-around items-center px-4 md:px-6">
-                <div className="flex items-center space-x-4">
-                    <Image
-                        src="https://i.pinimg.com/736x/bd/b5/bb/bdb5bb315144711296f3c584b1c7561e.jpg"
-                        alt="Logo"
-                        width={80}
-                        height={80}
-                        className="rounded-full"
-                    />
-                </div>
+        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="container flex h-16 items-center justify-between">
+                <Link href="/" className="flex items-center gap-2">
+                    <motion.div whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 400, damping: 10 }}>
+                        <WudangLogo className="h-10 w-10" />
+                    </motion.div>
+                    <span className="text-xl font-bold tracking-tight">Võ Đang Pizza</span>
+                </Link>
 
-                <div className="w-1/2 flex justify-center">
-                    <SearchBar/>
-                </div>
+                <nav className="hidden md:flex items-center gap-6">
+                    {navItems.map((item) => (
+                        <Link key={item.name} href={item.href} className="text-sm font-medium transition-colors hover:text-primary">
+                            {item.name}
+                        </Link>
+                    ))}
+                    <Button asChild size="sm" variant="outline" className="border-primary text-primary hover:bg-primary/10">
+                        <Link href="../auth/login">Login</Link>
+                    </Button>
+                    <Button asChild size="sm" className="bg-primary hover:bg-primary/90">
+                        <Link href="../auth/register">Register</Link>
+                    </Button>
+                </nav>
 
-                <div className="flex space-x-4">
-                    <Button
-                        className="bg-red-600 text-white font-bold px-4 py-2 rounded-full shadow-md hover:bg-red-700"
-                        onClick={() => {
-                            router.push("../auth/login")
-                        }}>
-                        Login
-                    </Button>
-                    <Button
-                        className="bg-yellow-500 text-white font-bold px-4 py-2 rounded-full shadow-md hover:bg-yellow-600" onClick={
-                        () => {
-                            router.push("../auth/register")
-                        }
-                    }>
-                        Register
-                    </Button>
-                </div>
+                <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                    <SheetTrigger asChild className="md:hidden">
+                        <Button variant="outline" size="icon">
+                            <Menu className="h-5 w-5" />
+                            <span className="sr-only">Toggle menu</span>
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent side="right">
+                        <div className="flex flex-col gap-4 mt-8">
+                            {navItems.map((item) => (
+                                <Link
+                                    key={item.name}
+                                    href={item.href}
+                                    className="text-lg font-medium transition-colors hover:text-primary"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    {item.name}
+                                </Link>
+                            ))}
+                            <div className="flex flex-col gap-2 mt-4">
+                                <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary/10">
+                                    <Link href="../auth/login" onClick={() => setIsOpen(false)}>
+                                        Login
+                                    </Link>
+                                </Button>
+                                <Button asChild className="bg-primary hover:bg-primary/90">
+                                    <Link href="../auth/register" onClick={() => setIsOpen(false)}>
+                                        Register
+                                    </Link>
+                                </Button>
+                            </div>
+                        </div>
+                    </SheetContent>
+                </Sheet>
             </div>
-        </div>
-    );
+        </header>
+    )
 }
 
-export default Header;
