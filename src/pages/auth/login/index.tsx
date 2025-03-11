@@ -1,22 +1,11 @@
-import {LoginComponent} from "@/components/custom/auth/login-form";
-import {GetServerSideProps} from "next";
+import { LoginForm } from "@/components/custom/auth/login-form"
 
-
-const LoginPage: React.FC = () => {
+export default function LoginPage() {
     return (
-        <div className="flex min-h-svh flex-col items-center justify-center bg-black/10">
-            {/*<div className="w-full max-w-sm md:max-w-3xl">*/}
-                <LoginComponent/>
-            {/*</div>*/}
+        <div className="min-h-screen pt-20 pb-10 flex items-center justify-center bg-kungfu-pattern">
+            <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 to-amber-800/20 z-0"></div>
+            <LoginForm />
         </div>
-    );
+    )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({}) => {
-    return {
-        props: {
-        },
-    };
-};
-
-export default LoginPage;

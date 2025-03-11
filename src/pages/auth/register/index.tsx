@@ -1,20 +1,11 @@
-import {RegisterComponent} from "@/components/custom/auth/register-form";
-import {GetServerSideProps} from "next";
+import { RegisterForm } from "@/components/custom/auth/register-form"
 
-const Register: React.FC = () => {
+export default function RegisterPage() {
     return (
-        <div className="flex min-h-screen flex-col justify-center bg-black/10">
-            {/*<div className="w-full max-w-sm md:max-w-6xl">*/}
-                <RegisterComponent/>
-            {/*</div>*/}
+        <div className="min-h-screen pt-20 pb-10 flex items-center justify-center bg-kungfu-pattern">
+            <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 to-amber-800/20 z-0"></div>
+            <RegisterForm />
         </div>
-    );
+    )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
-    return {
-        props: {
-        },
-    };
-};
-export default Register;

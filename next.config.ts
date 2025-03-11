@@ -5,6 +5,7 @@ const nextConfig = {
             "legendsofwindemere.com",
             "i.imgur.com",
             "i.pinimg.com",
+            "kungfu-pizza.ro"
         ],
     },
 };
