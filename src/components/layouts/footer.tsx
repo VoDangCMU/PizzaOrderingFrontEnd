@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { WudangLogo } from "@/components/custom/layouts/wudang-logo"
+import { WudangLogo } from "@/components/layouts/wudang-logo"
 
 export default function Footer() {
     return (
@@ -18,7 +18,7 @@ export default function Footer() {
                         <h3 className="text-sm font-medium mb-4">Navigation</h3>
                         <ul className="space-y-2 text-sm">
                             <li>
-                                <Link href="/" className="text-muted-foreground hover:text-primary">
+                                <Link href="/public" className="text-muted-foreground hover:text-primary">
                                     Home
                                 </Link>
                             </li>

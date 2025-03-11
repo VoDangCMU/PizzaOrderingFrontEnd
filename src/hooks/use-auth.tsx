@@ -27,7 +27,7 @@ interface RegisterData {
 interface AuthContextType {
     isLoggedIn: boolean
     user: User | null
-    login: (username: string, password: string) => Promise<boolean>
+    login: (username: string, password: string, keepLogin : boolean) => Promise<boolean>
     register: (data: RegisterData) => Promise<boolean>
     logout: () => void
 }
@@ -53,53 +53,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     }, [])
 
-    // Mock login function
-    const login = async (username: string, password: string) => {
-        // In a real app, this would make an API call
+    const login = async (username: string, password: string, keepLogin: boolean) => {
         try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            const response = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username, password, keepLogin }),
+            });
 
-            // For demo purposes, any username/password combination works
-            const mockUser: User = {
-                id: "user-1",
-                username: username,
-                firstName: "John",
-                lastName: "Doe",
-                email: "john@example.com",
-                image: "/kungfu-user-avatar.png",
+            if (!response.ok) {
+                throw new Error("An error occurred while logging in");
             }
 
-            setUser(mockUser)
-            setIsLoggedIn(true)
-            localStorage.setItem("user", JSON.stringify(mockUser))
-            return true
+            const responseBody = await response.json();
+
+            if (responseBody && responseBody.user) {
+                setUser(responseBody.user);
+                setIsLoggedIn(true);
+                localStorage.setItem("user", JSON.stringify(responseBody.user));
+                return true;
+            } else {
+                throw new Error("Invalid response body");
+            }
         } catch (error) {
-            console.error("Login failed:", error)
-            return false
+            console.error("Login failed:", error);
+            return false;
         }
-    }
+    };
 
-    // Mock register function
+
     const register = async (data: RegisterData) => {
-        // In a real app, this would make an API call
         try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000))
 
-            // For demo purposes, any registration works
-            const mockUser: User = {
-                id: "user-1",
-                username: data.username,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                email: data.email,
-                image: "/kungfu-user-avatar.png",
+            const response = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+
+            if (!response.ok) {
+                throw new Error("An error occurred while registering")
             }
-
-            setUser(mockUser)
-            setIsLoggedIn(true)
-            localStorage.setItem("user", JSON.stringify(mockUser))
             return true
         } catch (error) {
             console.error("Registration failed:", error)
@@ -107,7 +105,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     }
 
-    // Logout function
     const logout = () => {
         setUser(null)
         setIsLoggedIn(false)

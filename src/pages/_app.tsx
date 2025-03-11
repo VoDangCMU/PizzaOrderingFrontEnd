@@ -3,7 +3,8 @@ import React from "react";
 import {AppProps} from "next/app";
 // import i18n from "../../i18n";
 import "@/styles/globals.css";
-import Header from "@/components/custom/layouts/header";
+import Header from "@/components/layouts/header";
+import Footer from "@/components/layouts/footer";
 // import { Provider } from 'react-redux';
 // import { store, persistor} from "@/utils/redux/store";
 // import {PersistGate} from "redux-persist/integration/react";
@@ -27,6 +28,7 @@ function App({Component, pageProps}: AppProps) {
         <>
             <Header/>
             <Component {...pageProps} />
+            <Footer />
         </>
         //             <FooterComp />
         //         </Layout>

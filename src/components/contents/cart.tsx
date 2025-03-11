@@ -1,5 +1,5 @@
 import { useState } from "react";
-import PizzaCardComponent from "@/components/custom/contents/cart-item";
+import PizzaCardComponent from "@/components/contents/cart-item";
 import { Button } from "@/components/ui/button";
 
 interface CartItem {
