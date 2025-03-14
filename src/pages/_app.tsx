@@ -1,14 +1,15 @@
-import React from "react";
+import React, {useEffect} from "react";
 // import { appWithTranslation } from "next-i18next";
 import {AppProps} from "next/app";
 // import i18n from "../../i18n";
 import "@/styles/globals.css";
 import Header from "@/components/layouts/header";
 import Footer from "@/components/layouts/footer";
+// import {router} from "next/client";
+import {useRouter} from "next/router";
 // import { Provider } from 'react-redux';
 // import { store, persistor} from "@/utils/redux/store";
 // import {PersistGate} from "redux-persist/integration/react";
-
 
 function App({Component, pageProps}: AppProps) {
     // useEffect(() => {
@@ -17,6 +18,19 @@ function App({Component, pageProps}: AppProps) {
     //         i18n.changeLanguage(browserLanguage);
     //     }
     // }, []);
+    const router = useRouter();
+    const [isReady, setReady] = React.useState(false);
+    useEffect(() => {
+        if(router.isReady){
+            setReady(true);
+        }
+    },[router.isReady])
+    if(!isReady){
+        return null;
+    }
+    const hiddenHeader =["/dashboard", "/dashboard/analytics", "/dashboard/customers",
+                                    "/dashboard/menu", "/dashboard/orders"
+    ];
     return (
         // < Provider store={store} >
         //     <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
@@ -26,7 +40,7 @@ function App({Component, pageProps}: AppProps) {
         //             <Content>
 
         <>
-            <Header/>
+            { !hiddenHeader.includes(router.pathname) && <Header/>}
             <Component {...pageProps} />
             <Footer />
         </>
