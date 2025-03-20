@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { MoreHorizontal, Search, Filter, Download, Eye, CheckCircle, XCircle, Clock, Truck } from "lucide-react"
-import DashboardLayout from "@/components/layouts/DashboardLayout";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState("")

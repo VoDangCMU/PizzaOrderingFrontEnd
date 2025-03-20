@@ -29,7 +29,8 @@ function App({Component, pageProps}: AppProps) {
         return null;
     }
     const hiddenHeader =["/dashboard", "/dashboard/analytics", "/dashboard/customers",
-                                    "/dashboard/menu", "/dashboard/orders"
+                                    "/dashboard/menu", "/dashboard/orders","/dashboard/settings",
+                                    "/dashboard/ingredients",
     ];
     return (
         // < Provider store={store} >

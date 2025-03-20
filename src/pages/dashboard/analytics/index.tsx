@@ -18,7 +18,7 @@ import {
 } from "lucide-react"
 import { AreaChart, BarChart } from "@/components/dashboard/charts"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import DashboardLayout from "@/components/layouts/DashboardLayout";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState("30days")

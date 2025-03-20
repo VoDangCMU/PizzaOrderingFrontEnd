@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Save, Upload, Bell, Mail, Lock, CreditCard, Users, Phone, Globe, MoreHorizontal } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import DashboardLayout from "@/components/layouts/DashboardLayout";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("general")

@@ -5,16 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, Search, Filter, Download, Eye, Mail, Phone, Star, StarOff, ShoppingBag } from "lucide-react"
-import DashboardLayout from "@/components/layouts/DashboardLayout";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 export default function CustomersPage() {
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Filter customers based on search query
   const filteredCustomers = customers.filter(
     (customer) =>
       customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -67,7 +65,6 @@ export default function CustomersPage() {
                     <TableHead>Contact</TableHead>
                     <TableHead>Orders</TableHead>
                     <TableHead>Total Spent</TableHead>
-                    <TableHead>Status</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -107,19 +104,6 @@ export default function CustomersPage() {
                               </div>
                             </TableCell>
                             <TableCell>${customer.totalSpent.toFixed(2)}</TableCell>
-                            <TableCell>
-                              {customer.vip ? (
-                                  <Badge
-                                      className="bg-amber-100 text-amber-800 dark:bg-amber-800/20 dark:text-amber-400 flex w-fit items-center">
-                                    <Star className="mr-1 h-3 w-3 fill-current"/>
-                                    VIP
-                                  </Badge>
-                              ) : (
-                                  <Badge variant="outline" className="text-muted-foreground">
-                                    Regular
-                                  </Badge>
-                              )}
-                            </TableCell>
                             <TableCell>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>

@@ -3,12 +3,12 @@
 import type React from "react"
 
 import { useRouter } from "next/router"
-import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { LayoutDashboard, ShoppingBag, Pizza, Users, BarChart3, Settings, LogOut, Bell, Search } from "lucide-react"
+import {LayoutDashboard, ShoppingBag, Pizza, Users, BarChart3, Settings, LogOut, Bell, Search, Leaf} from "lucide-react"
+import NavItem from "@/components/dashboard/NavItem";
 
 type DashboardLayoutProps = {
     children: React.ReactNode
@@ -29,43 +29,78 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         </div>
                         <div className="font-bold text-lg">Võ Đang Admin</div>
                     </div>
-                    <nav className="flex-1 px-2 py-4 space-y-1">
-                        <NavItem
-                            href="/dashboard"
-                            icon={<LayoutDashboard className="mr-3 h-5 w-5" />}
-                            text="Dashboard"
-                            active={currentPath === "/dashboard"}
-                        />
-                        <NavItem
-                            href="/dashboard/orders"
-                            icon={<ShoppingBag className="mr-3 h-5 w-5" />}
-                            text="Orders"
-                            active={currentPath === "/dashboard/orders"}
-                        />
-                        <NavItem
-                            href="/dashboard/menu"
-                            icon={<Pizza className="mr-3 h-5 w-5" />}
-                            text="Menu Items"
-                            active={currentPath === "/dashboard/menu"}
-                        />
-                        <NavItem
-                            href="/dashboard/customers"
-                            icon={<Users className="mr-3 h-5 w-5" />}
-                            text="Customers"
-                            active={currentPath === "/dashboard/customers"}
-                        />
-                        <NavItem
-                            href="/dashboard/analytics"
-                            icon={<BarChart3 className="mr-3 h-5 w-5" />}
-                            text="Analytics"
-                            active={currentPath === "/dashboard/analytics"}
-                        />
-                        <NavItem
-                            href="/dashboard/settings"
-                            icon={<Settings className="mr-3 h-5 w-5" />}
-                            text="Settings"
-                            active={currentPath === "/dashboard/settings"}
-                        />
+                    <nav className="flex-1 px-2 py-4 space-y-6 ">
+                        <div>
+                            <div className="pl-2.5">
+                                <span className="text-sm ">Main</span>
+                            </div>
+
+                            <NavItem
+                                href="/dashboard"
+                                icon={<LayoutDashboard className="mr-3 h-5 w-5" />}
+                                text="Dashboard"
+                                active={currentPath === "/dashboard"}
+                            />
+                            <NavItem
+                                href="/dashboard/orders"
+                                icon={<ShoppingBag className="mr-3 h-5 w-5" />}
+                                text="Orders"
+                                active={currentPath === "/dashboard/orders"}
+                            />
+                        </div>
+
+                        <div>
+                            <div className="pl-2.5">
+                                <span className="text-sm ">Menu management</span>
+                            </div>
+                            <NavItem
+                                href="/dashboard/menu"
+                                icon={<Pizza className="mr-3 h-5 w-5"/>}
+                                text="Menu Items"
+                                active={currentPath === "/dashboard/menu"}
+                            />
+                            <NavItem href={"/dashboard/ingredients"}
+                                     icon={<Leaf className="mr-3 h-5 w-5"/> }
+                                     text={"Ingredients"}
+                                     active={currentPath === "/dashboard/ingredients"}
+                            />
+                        </div>
+
+                        <div>
+                            <div className="pl-2.5">
+                                <span className="text-sm ">Users</span>
+                            </div>
+                            <NavItem
+                                href="/dashboard/customers"
+                                icon={<Users className="mr-3 h-5 w-5"/>}
+                                text="Customers"
+                                active={currentPath === "/dashboard/customers"}
+                            />
+                        </div>
+                        <div>
+                            <div className="pl-2.5">
+                                <span className="text-sm ">Reports</span>
+                            </div>
+                            <NavItem
+                                href="/dashboard/analytics"
+                                icon={<BarChart3 className="mr-3 h-5 w-5"/>}
+                                text="Analytics"
+                                active={currentPath === "/dashboard/analytics"}
+                            />
+                        </div>
+
+                        <div>
+                            <div className="pl-2.5">
+                                <span className="text-sm ">Settings</span>
+                            </div>
+                            <NavItem
+                                href="/dashboard/settings"
+                                icon={<Settings className="mr-3 h-5 w-5"/>}
+                                text="Settings"
+                                active={currentPath === "/dashboard/settings"}
+                            />
+                        </div>
+
                     </nav>
                     <div className="border-t border-gray-200 dark:border-gray-800 p-4">
                         <div className="flex items-center gap-3">
@@ -123,26 +158,4 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     )
 }
 
-type NavItemProps = {
-    href: string
-    icon: React.ReactNode
-    text: string
-    active: boolean
-}
-
-function NavItem({ href, icon, text, active }: NavItemProps) {
-    return (
-        <Link
-            href={href}
-            className={`flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                active
-                    ? "bg-primary text-white"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
-            }`}
-        >
-            {icon}
-            {text}
-        </Link>
-    )
-}
 
