@@ -5,8 +5,7 @@ import type React from "react"
 import type { NextPage } from "next"
 import Head from "next/head"
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent} from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import {
   DollarSign,
@@ -50,13 +49,6 @@ const Dashboard: NextPage = () => {
             </div>
 
             <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-              <TabsList>
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                <TabsTrigger value="reports">Reports</TabsTrigger>
-                <TabsTrigger value="notifications">Notifications</TabsTrigger>
-              </TabsList>
-
               <TabsContent value="overview" className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   <MetricCardComponent
@@ -91,48 +83,6 @@ const Dashboard: NextPage = () => {
 
                 <RevenueOverviewComponent/>
                 <CardRecentOrdersComponent/>
-              </TabsContent>
-
-              <TabsContent value="analytics" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Analytics Content</CardTitle>
-                    <CardDescription>Detailed analytics will be displayed here.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-[400px] flex items-center justify-center border rounded-md">
-                      <p className="text-muted-foreground">Analytics dashboard content</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="reports" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Reports Content</CardTitle>
-                    <CardDescription>Generated reports will be displayed here.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-[400px] flex items-center justify-center border rounded-md">
-                      <p className="text-muted-foreground">Reports dashboard content</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="notifications" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Notifications Content</CardTitle>
-                    <CardDescription>Your notifications will be displayed here.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-[400px] flex items-center justify-center border rounded-md">
-                      <p className="text-muted-foreground">Notifications dashboard content</p>
-                    </div>
-                  </CardContent>
-                </Card>
               </TabsContent>
             </Tabs>
           </div>

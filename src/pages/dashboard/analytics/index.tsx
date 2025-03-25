@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent} from "@/components/ui/tabs"
 import {
   Calendar,
   Download,
@@ -13,12 +13,11 @@ import {
   ShoppingBag,
   Users,
   Utensils,
-  ArrowUpRight,
-  ArrowDownRight,
 } from "lucide-react"
-import { AreaChart, BarChart } from "@/components/dashboard/charts"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import MetricCardComponent from "@/components/dashboard/MetricCard";
+import RevenueOverviewComponent from "@/components/dashboard/RevenueOverview";
 
 export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState("30days")
@@ -52,37 +51,30 @@ export default function AnalyticsPage() {
           </div>
 
           <Tabs defaultValue="overview" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="sales">Sales</TabsTrigger>
-              <TabsTrigger value="products">Products</TabsTrigger>
-              <TabsTrigger value="customers">Customers</TabsTrigger>
-            </TabsList>
-
             <TabsContent value="overview" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <MetricCard
+                <MetricCardComponent
                     title="Total Revenue"
                     value="$45,231.89"
                     description="+20.1% from last month"
                     trend="up"
                     icon={<DollarSign className="h-4 w-4 text-muted-foreground"/>}
                 />
-                <MetricCard
+                <MetricCardComponent
                     title="Orders"
                     value="2,345"
                     description="+12.3% from last month"
                     trend="up"
                     icon={<ShoppingBag className="h-4 w-4 text-muted-foreground"/>}
                 />
-                <MetricCard
+                <MetricCardComponent
                     title="Customers"
                     value="1,893"
                     description="+8.2% from last month"
                     trend="up"
                     icon={<Users className="h-4 w-4 text-muted-foreground"/>}
                 />
-                <MetricCard
+                <MetricCardComponent
                     title="Active Menu Items"
                     value="32"
                     description="-2 from last month"
@@ -91,27 +83,7 @@ export default function AnalyticsPage() {
                 />
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <Card className="col-span-4">
-                  <CardHeader>
-                    <CardTitle>Revenue Overview</CardTitle>
-                    <CardDescription>Daily revenue for the past 30 days</CardDescription>
-                  </CardHeader>
-                  <CardContent className="px-2">
-                    <AreaChart/>
-                  </CardContent>
-                </Card>
-
-                <Card className="col-span-3">
-                  <CardHeader>
-                    <CardTitle>Popular Items</CardTitle>
-                    <CardDescription>Top selling menu items this month</CardDescription>
-                  </CardHeader>
-                  <CardContent className="px-2">
-                    <BarChart/>
-                  </CardContent>
-                </Card>
-              </div>
+              <RevenueOverviewComponent/>
 
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <Card>
@@ -151,48 +123,6 @@ export default function AnalyticsPage() {
                 </Card>
               </div>
             </TabsContent>
-
-            <TabsContent value="sales" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Sales Analytics</CardTitle>
-                  <CardDescription>Detailed sales data and trends</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[400px] flex items-center justify-center border rounded-md">
-                    <p className="text-muted-foreground">Sales analytics content</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="products" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Product Analytics</CardTitle>
-                  <CardDescription>Performance metrics for your menu items</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[400px] flex items-center justify-center border rounded-md">
-                    <p className="text-muted-foreground">Product analytics content</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="customers" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Customer Analytics</CardTitle>
-                  <CardDescription>Insights about your customer base</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[400px] flex items-center justify-center border rounded-md">
-                    <p className="text-muted-foreground">Customer analytics content</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
           </Tabs>
         </div>
       </DashboardLayout>
@@ -200,37 +130,4 @@ export default function AnalyticsPage() {
   )
 }
 
-function MetricCard({
-                      title,
-                      value,
-                      description,
-                      trend,
-                      icon,
-                    }: {
-  title: string
-  value: string
-  description: string
-  trend: "up" | "down"
-  icon: React.ReactNode
-}) {
-  return (
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">{title}</CardTitle>
-          {icon}
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{value}</div>
-          <p className="text-xs text-muted-foreground flex items-center mt-1">
-            {trend === "up" ? (
-                <ArrowUpRight className="mr-1 h-4 w-4 text-green-600"/>
-            ) : (
-                <ArrowDownRight className="mr-1 h-4 w-4 text-red-600"/>
-            )}
-            <span className={trend === "up" ? "text-green-600" : "text-red-600"}>{description}</span>
-          </p>
-        </CardContent>
-      </Card>
-  )
-}
 
