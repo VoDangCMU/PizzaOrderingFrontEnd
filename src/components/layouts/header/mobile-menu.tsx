@@ -106,7 +106,7 @@ export function MobileMenu() {
                                     <>
                                         <Button
                                             asChild
-                                            variant="kungfu"
+                                            variant="default"
                                             className="w-full bg-kungfu-red hover:bg-kungfu-darkRed text-white"
                                         >
                                             <Link href="../auth/login" onClick={() => setIsMobileMenuOpen(false)}>
@@ -115,7 +115,7 @@ export function MobileMenu() {
                                         </Button>
                                         <Button
                                             asChild
-                                            variant="kungfu"
+                                            variant="default"
                                             className="w-full bg-kungfu-gold hover:bg-kungfu-darkGold text-white"
                                         >
                                             <Link href="../auth/register" onClick={() => setIsMobileMenuOpen(false)}>
