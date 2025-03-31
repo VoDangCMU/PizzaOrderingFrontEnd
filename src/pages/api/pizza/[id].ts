@@ -3,9 +3,9 @@ import { axiosAPIInstance } from "@/lib/axios.config";
 import { parse } from "cookie";
 
 const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
-    const id = req.query.id;
+    const name = req.query.name;
     try {
-        const response = await axiosAPIInstance.get(`/pizza/${id}`);
+        const response = await axiosAPIInstance.get(`/pizza?name=${name}`);
         res.status(200).json(response.data);
     } catch (error) {
         res.status(500).json({ message: "Error fetching pizza data", error });

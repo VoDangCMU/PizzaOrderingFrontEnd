@@ -21,3 +21,10 @@ export interface PizzaCardProps {
 export interface PizzaListProps {
     pizzas: PizzaCardProps[];
 }
+
+export interface PizzaResponse{
+    name: string;
+    unitPrice: number;
+    id : string;
+    description : string;
+}

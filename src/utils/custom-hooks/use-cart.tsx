@@ -1,24 +1,22 @@
-"use client"
+
+import type React from "react"
 
 import { useState, useEffect, createContext, useContext } from "react"
-import type { ReactNode } from "react"
-
-interface Pizza {
-    id: string
-    name: string
-    description: string
-    unitPrice: string
-    createdAt: string
-    updatedAt: string
-}
 
 export interface CartItem {
     id: string
     quantity: number
+    note: string
     createdAt: string
     updatedAt: string
-    note: string
-    pizza: Pizza
+    pizza: {
+        id: string
+        name: string
+        description: string
+        unitPrice: string
+        createdAt: string
+        updatedAt: string
+    }
 }
 
 interface CartContextType {
@@ -41,11 +39,12 @@ const CartContext = createContext<CartContextType>({
     totalPrice: 0,
 })
 
-export function CartProvider({ children }: { children: ReactNode }) {
+export function CartProvider({ children }: { children: React.ReactNode }) {
     const [cartItems, setCartItems] = useState<CartItem[]>([])
     const [totalItems, setTotalItems] = useState(0)
     const [totalPrice, setTotalPrice] = useState(0)
 
+    // Load cart from localStorage on mount
     useEffect(() => {
         const storedCart = localStorage.getItem("cart")
         if (storedCart) {
@@ -53,11 +52,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     }, [])
 
+    // Update localStorage and totals when cart changes
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(cartItems))
 
+        // Calculate totals
         const items = cartItems.reduce((sum, item) => sum + item.quantity, 0)
-        const price = cartItems.reduce((sum, item) => sum + parseFloat(item.pizza.unitPrice) * item.quantity, 0)
+        const price = cartItems.reduce((sum, item) => sum + Number.parseFloat(item.pizza.unitPrice) * item.quantity, 0)
 
         setTotalItems(items)
         setTotalPrice(price)
@@ -65,7 +66,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const addToCart = (item: CartItem) => {
         setCartItems((prev) => {
-            const existingItemIndex = prev.findIndex((i) => i.pizza.id === item.pizza.id)
+            const existingItemIndex = prev.findIndex((i) => i.id === item.id)
 
             if (existingItemIndex >= 0) {
                 const updatedItems = [...prev]
@@ -78,13 +79,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
 
     const removeFromCart = (id: string) => {
-        setCartItems((prev) => prev.filter((item) => item.pizza.id !== id))
+        setCartItems((prev) => prev.filter((item) => item.id !== id))
     }
 
     const updateQuantity = (id: string, quantity: number) => {
-        setCartItems((prev) =>
-            prev.map((item) => (item.pizza.id === id ? { ...item, quantity: Math.max(1, quantity) } : item))
-        )
+        setCartItems((prev) => prev.map((item) => (item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item)))
     }
 
     const clearCart = () => {
@@ -94,18 +93,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return (
         <CartContext.Provider
             value={{
-                cartItems,
-                addToCart,
-                removeFromCart,
-                updateQuantity,
-                clearCart,
-                totalItems,
-                totalPrice,
-            }}
-        >
-            {children}
-        </CartContext.Provider>
-    )
+        cartItems,
+            addToCart,
+            removeFromCart,
+            updateQuantity,
+            clearCart,
+            totalItems,
+            totalPrice,
+    }}
+>
+    {children}
+    </CartContext.Provider>
+)
 }
 
 export const useCart = () => useContext(CartContext)
+
