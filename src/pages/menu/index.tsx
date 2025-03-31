@@ -1,4 +1,3 @@
-"use client"
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
@@ -92,19 +91,15 @@ const pizzas = [
     },
 ]
 
-// Categories
-const categories = ["All", "Specialty", "Vegetarian", "Meat", "Classic", "Signature"]
 
 export default function MenuPage() {
     const [searchTerm, setSearchTerm] = useState("")
-    const [selectedCategory, setSelectedCategory] = useState("All")
+    const [selectedCategory] = useState("All")
     const [filteredPizzas, setFilteredPizzas] = useState(pizzas)
 
-    // Filter pizzas based on search term and category
     useEffect(() => {
         let filtered = pizzas
 
-        // Filter by search term
         if (searchTerm) {
             filtered = filtered.filter(
                 (pizza) =>
@@ -114,7 +109,6 @@ export default function MenuPage() {
             )
         }
 
-        // Filter by category
         if (selectedCategory !== "All") {
             filtered = filtered.filter((pizza) => pizza.category === selectedCategory)
         }
@@ -163,24 +157,6 @@ export default function MenuPage() {
                     </motion.div>
 
                     {/* Category Filters */}
-                    <motion.div
-                        className="flex flex-wrap justify-center gap-2 mb-8"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.4 }}
-                    >
-                        {categories.map((category, index) => (
-                            <Button
-                                key={index}
-                                variant={selectedCategory === category ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => setSelectedCategory(category)}
-                                className="rounded-full"
-                            >
-                                {category}
-                            </Button>
-                        ))}
-                    </motion.div>
                 </div>
 
                 {/* Pizza Grid */}
@@ -200,6 +176,8 @@ export default function MenuPage() {
                                             <Image
                                                 src={pizza.image || "https://i.imgur.com/ts6tQmj.jpeg"}
                                                 alt={pizza.name}
+                                                width={300}
+                                                height={300}
                                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">

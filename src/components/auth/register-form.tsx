@@ -155,7 +155,7 @@ export function RegisterForm() {
                                     name="username"
                                     value={formData.username}
                                     onChange={handleInputChange}
-                                    placeholder="kungfu_master"
+                                    placeholder="Example"
                                     className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
                                     required
                                 />
@@ -169,7 +169,7 @@ export function RegisterForm() {
                                     type="email"
                                     value={formData.email}
                                     onChange={handleInputChange}
-                                    placeholder="john@example.com"
+                                    placeholder="John@example.com"
                                     className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
                                     required
                                 />
@@ -181,6 +181,7 @@ export function RegisterForm() {
                                     id="password"
                                     name="password"
                                     type="password"
+                                    placeholder={"At least 7 characters"}
                                     value={formData.password}
                                     onChange={handleInputChange}
                                     onFocus={() => setPasswordFocused(true)}

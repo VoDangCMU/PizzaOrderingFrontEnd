@@ -2,15 +2,16 @@
 
 import type React from "react"
 import { useState } from "react"
-import Link from "next/link"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { PizzaWindow } from "@/components/contents/pizza-window"
 import { useRouter } from "next/navigation"
+import {loginSuccess} from "@/store/slices/authSlice";
+import {useDispatch} from "react-redux";
 
 interface FormErrors {
     username: string;
@@ -21,10 +22,7 @@ const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
         opacity: 1,
-        transition: {
-            when: "beforeChildren",
-            staggerChildren: 0.1,
-        },
+        transition: { when: "beforeChildren", staggerChildren: 0.1 },
     },
 }
 
@@ -36,52 +34,28 @@ const itemVariants = {
 export function LoginForm() {
     const [passwordFocused, setPasswordFocused] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        username: "",
-        password: "",
-        keepLogin: false,
-    });
-
-    const [errors, setErrors] = useState({
-        username: "",
-        password: "",
-    });
-
+    const [formData, setFormData] = useState({ username: "", password: "", keepLogin: false });
+    const [errors, setErrors] = useState<FormErrors>({ username: "", password: "" });
+    const dispatch = useDispatch();
     const router = useRouter();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleCheckboxChange = (checked: boolean) => {
-        setFormData((prev) => ({
-            ...prev,
-            keepLogin: checked,
-        }));
+        setFormData((prev) => ({ ...prev, keepLogin: checked }));
     };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        if (!value) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                [name]: `${name.charAt(0).toUpperCase() + name.slice(1)} is required`,
-            }));
-        } else {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                [name]: "",
-            }));
-        }
+        setErrors((prev) => ({ ...prev, [name]: value ? "" : `${name.charAt(0).toUpperCase() + name.slice(1)} is required` }));
     };
 
     const validateForm = () => {
-        let isValid = true;
         const newErrors: FormErrors = { username: "", password: "" };
+        let isValid = true;
 
         if (!formData.username) {
             newErrors.username = "Username is required";
@@ -98,8 +72,6 @@ export function LoginForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        // Kiểm tra lỗi trong form trước khi gửi
         if (!validateForm()) return;
 
         setIsLoading(true);
@@ -107,41 +79,36 @@ export function LoginForm() {
         try {
             const response = await fetch("/api/auth/login", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    username: formData.username,
-                    password: formData.password,
-                    keepLogin: formData.keepLogin,
-                }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: formData.username, password: formData.password, keepLogin: formData.keepLogin }),
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || "Login failed");
+                throw new Error(errorData.message || "Invalid username or password");
             }
 
-            // Chuyển hướng sau khi đăng nhập thành công
+            const data: { username: string; userId: string; token: string } = await response.json();
+
+            dispatch(loginSuccess({
+                userId: data.userId,
+                username: data.username,
+                token: data.token,
+                permission : ""
+            }));
+
+            localStorage.setItem("token", data.token);
             router.push("../");
         } catch (error) {
             console.error("Login failed:", error);
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                password: "An error occurred while logging in. Please try again.",
-            }));
+            setErrors({ username: "Invalid username or password", password: "Invalid username or password" });
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <motion.div
-            className="container max-w-md px-4 z-10"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-        >
+        <motion.div className="container max-w-md px-4 z-10" variants={containerVariants} initial="hidden" animate="visible">
             <motion.div variants={itemVariants}>
                 <Card className="kungfu-card border-red-800/30 overflow-hidden">
                     <CardHeader className="space-y-1 text-center">
@@ -161,88 +128,26 @@ export function LoginForm() {
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="username">Username</Label>
-                                <Input
-                                    id="username"
-                                    name="username"
-                                    value={formData.username}
-                                    onChange={handleInputChange}
-                                    onBlur={handleBlur}
-                                    placeholder="kungfu_master"
-                                    className={`${
-                                        errors.username ? "border-red-500" : "border-amber-800/30"
-                                    } bg-white/50 backdrop-blur-sm focus-visible:ring-red-800`}
-                                    required
-                                />
+                                <Input id="username" name="username" value={formData.username} onChange={handleInputChange} onBlur={handleBlur} placeholder="example" className={`${errors.username ? "border-red-500" : "border-amber-800/30"} bg-white/50 backdrop-blur-sm focus-visible:ring-red-800`} required />
                                 {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
                             </div>
 
                             <div className="space-y-2">
                                 <Label htmlFor="password">Password</Label>
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    value={formData.password}
-                                    onChange={handleInputChange}
-                                    onBlur={handleBlur}
-                                    onFocus={() => setPasswordFocused(true)}
-                                    className={`${
-                                        errors.password ? "border-red-500" : "border-amber-800/30"
-                                    } bg-white/50 backdrop-blur-sm focus-visible:ring-red-800`}
-                                    required
-                                />
+                                <Input id="password" name="password" type="password" value={formData.password} onChange={handleInputChange} onBlur={handleBlur} onFocus={() => setPasswordFocused(true)} className={`${errors.password ? "border-red-500" : "border-amber-800/30"} bg-white/50 backdrop-blur-sm focus-visible:ring-red-800`} required />
                                 {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
                             </div>
 
                             <div className="flex items-center space-x-2">
-                                <Checkbox
-                                    id="keepLogin"
-                                    checked={formData.keepLogin}
-                                    onCheckedChange={handleCheckboxChange}
-                                    className="data-[state=checked]:bg-red-800 data-[state=checked]:border-red-800"
-                                />
-                                <label
-                                    htmlFor="keepLogin"
-                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                >
-                                    Remember me
-                                </label>
+                                <Checkbox id="keepLogin" checked={formData.keepLogin} onCheckedChange={handleCheckboxChange} className="data-[state=checked]:bg-red-800 data-[state=checked]:border-red-800" />
+                                <label htmlFor="keepLogin" className="text-sm font-medium leading-none">Remember me</label>
                             </div>
 
-                            <div>
-                                <Button
-                                    type="submit"
-                                    className="w-full bg-red-800 hover:bg-red-700 text-white kungfu-button"
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? (
-                                        <>
-                                            <span
-                                                className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-                                            Signing in...
-                                        </>
-                                    ) : (
-                                        "Sign In"
-                                    )}
-                                </Button>
-                            </div>
+                            <Button type="submit" className="w-full bg-red-800 hover:bg-red-700 text-white kungfu-button" disabled={isLoading}>
+                                {isLoading ? <><span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span> Signing in...</> : "Sign In"}
+                            </Button>
                         </form>
                     </CardContent>
-
-                    <CardFooter className="flex flex-col space-y-2">
-                        <motion.div className="text-sm text-center text-muted-foreground" variants={itemVariants}>
-                            <Link href="/forgot-password" className="underline underline-offset-4 hover:text-red-800">
-                                Forgot your password?
-                            </Link>
-                        </motion.div>
-
-                        <motion.div className="text-sm text-center text-muted-foreground" variants={itemVariants}>
-                            Don&apos;t have an account?{" "}
-                            <Link href="../auth/register" className="underline underline-offset-4 hover:text-red-800">
-                                Sign up
-                            </Link>
-                        </motion.div>
-                    </CardFooter>
                 </Card>
             </motion.div>
         </motion.div>

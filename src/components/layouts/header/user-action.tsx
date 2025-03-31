@@ -9,14 +9,16 @@ import { Badge } from "@/components/ui/badge"
 import { Search, ShoppingCart } from "lucide-react"
 import { useState } from "react"
 import { useCart } from "@/hooks/use-cart"
-import { useAuth } from "@/hooks/use-auth"
+import {useSelector} from "react-redux";
+import {selectAuth} from "@/store/slices/authSlice";
 
 
 
 export function UserActions() {
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const { cartItems } = useCart()
-    const { isLoggedIn, user } = useAuth()
+    const {userId, username} = useSelector(selectAuth);
+    const isAuthed = userId !== null
 
     return (
         <div className="hidden md:flex items-center gap-4">
@@ -70,11 +72,11 @@ export function UserActions() {
             </motion.div>
 
             <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6 }}>
-                {isLoggedIn ? (
+                {isAuthed ? (
                     <Avatar className="h-9 w-9 cursor-pointer">
-                        <AvatarImage src={user?.image || ""} alt={user?.username || "User"} />
+                        <AvatarImage src={"https://i.imgur.com/Clt9Lmg.png"} alt={username || "User"} />
                         <AvatarFallback className="bg-primary text-primary-foreground">
-                            {user?.username?.charAt(0) || "U"}
+                            {username?.charAt(0) || "U"}
                         </AvatarFallback>
                     </Avatar>
                 ) : (
