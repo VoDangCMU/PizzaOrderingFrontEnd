@@ -15,7 +15,7 @@ const values = [
         icon: Fire,
         title: "Disciplined Preparation",
         description:
-            "Each pizza is crafted with the focus and precision of a martial arts master, ensuring perfection in every slice.",
+            "Each pizza is crafted with the focus and precision of a martial arts master, ensuring perfection in every slices.",
     },
     {
         icon: Heart,

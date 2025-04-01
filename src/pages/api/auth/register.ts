@@ -10,12 +10,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const data = {
             username: req.body.username,
             password: req.body.password,
-            dateOfBirth: req.body.dateOfBirth,
+            dateOfBirth: req.body.dateOfBirth.toString(),
             firstName: req.body.firstName,
             lastName: req.body.lastName,
-            phone: req.body.phone,
+            phone: req.body.phone.toString(),
             email: req.body.email,
-            address: req.body.address
+            address: req.body.address,
+            role : "member"
         }
         if (!data.username || !data.password || !data.dateOfBirth || !data.firstName || !data.lastName || !data.phone || !data.email || !data.address) {
             return res.status(400).json({message: "Please enter required fields!"});

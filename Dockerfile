@@ -6,11 +6,7 @@ WORKDIR /home/node/pizza_ordering_frontend
 COPY package*.json ./
 COPY yarn.lock ./
 COPY tsconfig.json ./
-#COPY next-i18next.config.js ./
-#COPY next-sitemap.config.js ./
 COPY next.config.ts ./
-#COPY .env .env
-
 RUN npm install --force --global yarn typescript
 
 RUN yarn install --frozen-lockfile
