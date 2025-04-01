@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Plus, Minus, Trash2 } from "lucide-react"
 import { useCart } from "@/hooks/use-cart"
 import type { CartItem as CartItemType } from "@/hooks/use-cart"
+import Image from "next/image";
 
 interface CartItemProps {
     item: CartItemType
@@ -23,10 +24,12 @@ export function CartItem({ item, delay = 0 }: CartItemProps) {
             <Card className="overflow-hidden">
                 <div className="flex flex-col sm:flex-row">
                     <div className="w-full sm:w-1/4 aspect-square">
-                        <img
+                        <Image
                             src={`/placeholder.svg?height=200&width=200&text=${encodeURIComponent(item.pizza.name)}`}
                             alt={item.pizza.name}
                             className="w-full h-full object-cover"
+                            width={"200"}
+                            height={"200"}
                         />
                     </div>
                     <div className="flex-1 p-4">
