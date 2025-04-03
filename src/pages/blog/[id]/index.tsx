@@ -13,11 +13,23 @@ import { calculateSimilarity } from "@/lib/similarity"
 import Image from "next/image"
 import Link from "next/link";
 
+
+interface Blog {
+    id: number,
+    title: string,
+    author: string,
+    tags: string[],
+    date : string,
+    category: string,
+    rating: number,
+    image: string,
+    excerpt: string,
+}
 export default function BlogPostPage() {
     const params = useParams()
     const router = useRouter()
-    const [post, setPost] = useState<any>(null)
-    const [relatedPosts, setRelatedPosts] = useState<any[]>([])
+    const [post, setPost] = useState<Blog>()
+    const [relatedPosts, setRelatedPosts] = useState<Blog[]>([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {

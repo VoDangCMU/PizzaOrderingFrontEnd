@@ -21,7 +21,7 @@ interface CartResponse {
 export default function CartPage() {
     const { cartItems: storedCartItems, addToCart, clearCart } = useCart()
     const [isLoading, setIsLoading] = useState(true)
-
+    console.log(storedCartItems)
     useEffect(() => {
         const fetchCartData = async () => {
             setIsLoading(true)
@@ -55,7 +55,6 @@ export default function CartPage() {
                     statusCode: 200,
                 }
 
-                // Clear existing cart and add new items
                 clearCart()
                 mockResponse.data.cartItems.forEach((item) => {
                     addToCart(item)
