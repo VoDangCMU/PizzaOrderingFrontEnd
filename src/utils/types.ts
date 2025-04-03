@@ -28,3 +28,10 @@ export interface PizzaResponse{
     id : string;
     description : string;
 }
+
+
+export interface PizzaCategoryResponse {
+    name: string;
+    description: string;
+    id : string;
+}

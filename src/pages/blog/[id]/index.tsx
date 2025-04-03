@@ -11,6 +11,7 @@ import { BlogComments } from "@/components/contents/blog/blog-comments"
 import { RelatedPosts } from "@/components/contents/blog/related-posts"
 import { calculateSimilarity } from "@/lib/similarity"
 import Image from "next/image"
+import Link from "next/link";
 
 export default function BlogPostPage() {
     const params = useParams()
@@ -20,14 +21,12 @@ export default function BlogPostPage() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        // Find the post by ID
         const postId = Number(params.id)
         const foundPost = blogPosts.find((p) => p.id === postId)
 
         if (foundPost) {
             setPost(foundPost)
 
-            // Find related posts based on similarity
             const related = blogPosts
                 .filter((p) => p.id !== postId)
                 .map((p) => ({
@@ -60,7 +59,7 @@ export default function BlogPostPage() {
                 <div className="text-center">
                     <p className="text-lg text-muted-foreground">Post not found</p>
                     <Button asChild className="mt-4">
-                        <a href="/blog">Back to Blog</a>
+                        <Link href="../blog">Back to Blog</Link>
                     </Button>
                 </div>
             </div>
@@ -155,22 +154,22 @@ export default function BlogPostPage() {
 
                         <h2>The Tasting Experience</h2>
                         <p>
-                            When you take your first bite of the {post.title}, you'll understand why we consider pizza-making a
+                            When you take your first bite of the {post.title}, you will understand why we consider pizza-making a
                             martial art. The crispy yet chewy crust, the tangy sauce, the melty cheese, and the perfectly balanced
-                            toppings create a symphony of flavors that's both powerful and harmonious.
+                            toppings create a symphony of flavors that is both powerful and harmonious.
                         </p>
 
                         <p>
                             Like a well-executed kung fu move, this pizza appears simple but contains layers of complexity that reveal
-                            themselves with each bite. It's an experience that engages all your senses and leaves you with a deep
+                            themselves with each bite. It is an experience that engages all your senses and leaves you with a deep
                             appreciation for the craft.
                         </p>
 
                         <h2>Conclusion</h2>
                         <p>
-                            The {post.title} isn't just food—it's a testament to our dedication to the art of pizza-making. We invite
+                            The {post.title} is not just food it is a testament to our dedication to the art of pizza-making. We invite
                             you to experience this masterpiece for yourself and discover why our customers consider it one of the
-                            finest pizzas they've ever tasted.
+                            finest pizzas they have ever tasted.
                         </p>
                     </motion.div>
 

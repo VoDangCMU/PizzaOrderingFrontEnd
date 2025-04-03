@@ -34,7 +34,7 @@ export function EmptyCart() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
                 >
-                    Looks like you haven't added any pizzas to your cart yet.
+                    Looks like you have not added any pizzas to your cart yet.
                 </motion.p>
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
