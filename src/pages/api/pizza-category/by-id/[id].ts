@@ -2,34 +2,33 @@ import {NextApiRequest, NextApiResponse} from "next";
 import {axiosAPIInstance} from "@/lib/axios.config";
 
 const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
-    const id = req.query.id;
-    const token = req.headers.authorization;
+    const id = req.query.id || "";
     try {
-        const response = await axiosAPIInstance.get(`/user/get-by-id/${id}`, {
-            headers : {
-                Authorization: token
-            }
-        });
+        const response = await axiosAPIInstance.get(`/pizza-category/get-by-id/${id}`);
+
+        if (response.status != 200) {
+            res.status(response.data.statusCode).json({"message": response.data.message});
+        }
+
         res.status(200).json(response.data);
-    } catch (error) {
-        res.status(500).json({message: "Error fetching pizza data", error});
+    } catch {
+        res.status(500).json({message: ("Failed to get pizza category with id " + id)});
     }
 };
-
 
 const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
     const id = req.query.id;
     const token = req.headers.authorization;
-
     try {
-        const response = await axiosAPIInstance.put(`/user/delete/${id}`, {
-            headers : {
+        const response = await axiosAPIInstance.put(`/pizza-category/delete/${id}`, {
+            headers: {
                 Authorization: token
             }
         });
         if (response.status !== 200) {
             res.status(response.data.statusCode).json({"message": response.data.message});
         }
+
         res.status(200).json(response.data);
     } catch (e) {
         res.status(500).json({message: e});
@@ -38,21 +37,13 @@ const handleDelete = async (req: NextApiRequest, res: NextApiResponse) => {
 
 const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
     const id = req.query.id;
+    const {name, description} = req.body;
     const token = req.headers.authorization;
-    const {
-        username,
-        oldPassword,
-        newPassword,
-        firstName,
-        lastName,
-        phone,
-        email,
-        address,
-        dateOfBirth,
-    } = req.body;
     try {
-        const response = await axiosAPIInstance.put(`/user/update`, {
-            username, id, firstName, lastName, phone, email, address, dateOfBirth, oldPassword, newPassword
+        const response = await axiosAPIInstance.put(`/pizza-category/update`, {
+            id,
+            name,
+            description
         }, {
             headers : {
                 Authorization: token
@@ -62,6 +53,7 @@ const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
         if (response.status !== 200) {
             res.status(response.data.statusCode).json({"message": response.data.message});
         }
+
         res.status(200).json(response.data);
     } catch (e) {
         res.status(500).json({message: e});

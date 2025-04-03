@@ -1,24 +1,30 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { axiosAPIInstance } from "@/lib/axios.config";
-import {PizzaResponse} from "@/utils/types";
+import {NextApiRequest, NextApiResponse} from "next";
+import {axiosAPIInstance} from "@/lib/axios.config";
+
+const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
+    const { name, categoryID, unitPrice, description } = req.body;
+    const token = req.headers.authorization;
+    try {
+        const response = await axiosAPIInstance.post(`/pizza/create`, {name, categoryID, unitPrice, description} , {
+        headers : {
+            Authorization: token,
+        }
+        });
+        if (response.status != 200) {
+            res.status(response.data.statusCode).json({"message": response.data.message});
+        }
+
+        res.status(200).json(response.data);
+    } catch {
+        res.status(500).json({message: ("Failed to create pizza")});
+    }
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== "GET") {
-        return res.status(405).json({ message: "Method not allowed" });
-    }
-
-    try {
-        const response = await axiosAPIInstance.get(`/pizza`);
-
-        const modifiedPizzas = response.data.data.map((pizza: PizzaResponse) => ({
-            id: pizza.id,
-            name: pizza.name,
-            description: pizza.description,
-            price: pizza.unitPrice,
-        }));
-
-        res.status(200).json(modifiedPizzas);
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching pizzas data", error: error });
+    switch (req.method) {
+        case "POST":
+            return handlePost(req, res);
+        default:
+            return res.status(405).json({message: "Method not allowed"});
     }
 }
