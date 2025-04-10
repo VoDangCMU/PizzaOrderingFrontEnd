@@ -79,18 +79,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         </div>
                         <div>
                             <div className="pl-2.5">
-                                <span className="text-sm ">Reports</span>
-                            </div>
-                            <NavItem
-                                href="/dashboard/analytics"
-                                icon={<BarChart3 className="mr-3 h-5 w-5"/>}
-                                text="Analytics"
-                                active={currentPath === "/dashboard/analytics"}
-                            />
-                        </div>
-
-                        <div>
-                            <div className="pl-2.5">
                                 <span className="text-sm ">Settings</span>
                             </div>
                             <NavItem

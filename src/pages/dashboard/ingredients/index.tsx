@@ -1,13 +1,12 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Search, Filter, Edit, Trash2, Plus, DollarSign, Scale } from 'lucide-react'
+import {useEffect, useState} from "react"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
+import {Edit, Filter, ImageIcon, MoreHorizontal, Plus, Search, Trash2} from 'lucide-react'
 import DashboardLayout from "@/components/dashboard/DashboardLayout"
 import {
     Dialog,
@@ -17,28 +16,26 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
+import {Label} from "@/components/ui/label"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
+import {format} from "date-fns";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
+    AlertDialog, AlertDialogAction, AlertDialogCancel,
     AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
+    AlertDialogDescription, AlertDialogFooter,
     AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+    AlertDialogTitle
+} from "@/components/ui/alert-dialog";
+import {toast} from "@/components/ui/use-toast";
+import axios from "axios";
 
 // Types
 interface Ingredient {
     id: number
     name: string
-    category: string
-    stock: number
-    unit: string
-    costPerUnit: number
-    status: "In Stock" | "Low Stock" | "Out of Stock"
+    description: string
+    createdAt: string
+    image: string
 }
 
 export default function IngredientsPage() {
@@ -54,134 +51,20 @@ export default function IngredientsPage() {
         unit: "kg",
         costPerUnit: 0,
     })
-
+    const [ingredients, setIngredients] = useState<Ingredient[]>([])
     // Sample data
-    const [ingredients, setIngredients] = useState<Ingredient[]>([
-        {
-            id: 1,
-            name: "Mozzarella Cheese",
-            category: "Dairy",
-            stock: 45,
-            unit: "kg",
-            costPerUnit: 8.5,
-            status: "In Stock"
-        },
-        {
-            id: 2,
-            name: "Tomato Sauce",
-            category: "Sauce",
-            stock: 32,
-            unit: "liter",
-            costPerUnit: 3.25,
-            status: "In Stock"
-        },
-        {
-            id: 3,
-            name: "Pepperoni",
-            category: "Meat",
-            stock: 12,
-            unit: "kg",
-            costPerUnit: 12.75,
-            status: "Low Stock"
-        },
-        {
-            id: 4,
-            name: "Mushrooms",
-            category: "Vegetable",
-            stock: 8,
-            unit: "kg",
-            costPerUnit: 6.5,
-            status: "Low Stock"
-        },
-        {
-            id: 5,
-            name: "Black Olives",
-            category: "Vegetable",
-            stock: 0,
-            unit: "kg",
-            costPerUnit: 7.25,
-            status: "Out of Stock"
-        },
-        {
-            id: 6,
-            name: "Bell Peppers",
-            category: "Vegetable",
-            stock: 15,
-            unit: "kg",
-            costPerUnit: 4.5,
-            status: "In Stock"
-        },
-        {
-            id: 7,
-            name: "Basil",
-            category: "Herb",
-            stock: 3,
-            unit: "kg",
-            costPerUnit: 15.0,
-            status: "Low Stock"
-        },
-        {
-            id: 8,
-            name: "Flour",
-            category: "Baking",
-            stock: 50,
-            unit: "kg",
-            costPerUnit: 1.75,
-            status: "In Stock"
-        },
-        {
-            id: 9,
-            name: "Olive Oil",
-            category: "Oil",
-            stock: 18,
-            unit: "liter",
-            costPerUnit: 9.99,
-            status: "In Stock"
-        },
-        {
-            id: 10,
-            name: "Garlic",
-            category: "Herb",
-            stock: 5,
-            unit: "kg",
-            costPerUnit: 8.25,
-            status: "Low Stock"
-        },
-    ])
 
+    const formatted = (date :string) => {
+        return format(new Date(date), "HH:mm:ss dd/MM/yyyy");
+    }
     // Filter ingredients based on search query
-    const filteredIngredients = ingredients.filter(ingredient =>
-        ingredient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        ingredient.category.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    // const filteredIngredients = ingredients.filter(ingredient =>
+    //     ingredient.name.toLowerCase().includes(searchQuery.toLowerCase())
+    // )
 
     // Add new ingredient
     const handleAddIngredient = () => {
-        const status =
-            newIngredient.stock === 0
-                ? "Out of Stock"
-                : newIngredient.stock < 10
-                    ? "Low Stock"
-                    : "In Stock"
 
-        const ingredient: Ingredient = {
-            id: Math.max(...ingredients.map(i => i.id), 0) + 1,
-            name: newIngredient.name,
-            category: newIngredient.category.charAt(0).toUpperCase() + newIngredient.category.slice(1),
-            stock: newIngredient.stock,
-            unit: newIngredient.unit,
-            costPerUnit: newIngredient.costPerUnit,
-            status: status as "In Stock" | "Low Stock" | "Out of Stock"
-        }
-
-        setIngredients([...ingredients, ingredient])
-        setNewIngredient({
-            name: "",
-            category: "dairy",
-            stock: 0,
-            unit: "kg",
-            costPerUnit: 0,
-        })
         setIsAddDialogOpen(false)
     }
 
@@ -189,45 +72,46 @@ export default function IngredientsPage() {
     const handleEditIngredient = () => {
         if (!currentIngredient) return
 
-        const status =
-            currentIngredient.stock === 0
-                ? "Out of Stock"
-                : currentIngredient.stock < 10
-                    ? "Low Stock"
-                    : "In Stock"
-
-        const updatedIngredient = {
-            ...currentIngredient,
-            status: status as "In Stock" | "Low Stock" | "Out of Stock"
-        }
-
-        setIngredients(ingredients.map(ing =>
-            ing.id === currentIngredient.id ? updatedIngredient : ing
-        ))
         setIsEditDialogOpen(false)
     }
 
-    // Delete ingredient
-    const handleDeleteIngredient = () => {
-        if (!currentIngredient) return
-        setIngredients(ingredients.filter(ing => ing.id !== currentIngredient.id))
-        setIsDeleteDialogOpen(false)
-    }
+    const fetchIngredients = async () => {
+        try {
+            const res = await fetch(`/api/ingredient/get-all`,{
+                method: "GET",
+            });
+            const data = await res.json();
+            setIngredients(data.data);
 
-    // Get status badge color
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case "In Stock":
-                return "bg-green-100 text-green-800 dark:bg-green-800/20 dark:text-green-400"
-            case "Low Stock":
-                return "bg-amber-100 text-amber-800 dark:bg-amber-800/20 dark:text-amber-400"
-            case "Out of Stock":
-                return "bg-red-100 text-red-800 dark:bg-red-800/20 dark:text-red-400"
-            default:
-                return "bg-gray-100 text-gray-800 dark:bg-gray-800/20 dark:text-gray-400"
+        } catch (err) {
+            console.error("Error fetching ingredients:", err);
         }
     }
 
+    // Delete ingredient
+    const handleDeleteIngredient = async () => {
+        const token = localStorage.getItem("token");
+
+        try {
+            await axios.delete("/api/ingredient/by-id/delete", {
+                headers: {
+                    Authorization: `${token}`,
+                },
+                data: {
+                    id: currentIngredient?.id,
+                },
+            });
+            fetchIngredients();
+        } catch (e) {
+            console.error("Error fetching ingredients:", e);
+        } finally {
+            setIsDeleteDialogOpen(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchIngredients();
+    }, [])
     return (
         <DashboardLayout>
             <div className="space-y-6">
@@ -241,7 +125,8 @@ export default function IngredientsPage() {
                             <Filter className="mr-2 h-4 w-4"/>
                             Filter
                         </Button>
-                        <Button size="sm" className="bg-primary hover:bg-primary/90" onClick={() => setIsAddDialogOpen(true)}>
+                        <Button size="sm" className="bg-primary hover:bg-primary/90"
+                                onClick={() => setIsAddDialogOpen(true)}>
                             <Plus className="mr-2 h-4 w-4"/>
                             Add Ingredient
                         </Button>
@@ -252,7 +137,8 @@ export default function IngredientsPage() {
                     <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <CardTitle>Ingredient Management</CardTitle>
-                            <CardDescription>You have {filteredIngredients.length} ingredients in total</CardDescription>
+                            <CardDescription>You have {ingredients.length} ingredients in
+                                total</CardDescription>
                         </div>
                         <div className="relative">
                             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>
@@ -269,42 +155,33 @@ export default function IngredientsPage() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
+                                    <TableHead>Image</TableHead>
                                     <TableHead>Name</TableHead>
-                                    <TableHead>Category</TableHead>
-                                    <TableHead>Stock</TableHead>
-                                    <TableHead>Unit</TableHead>
-                                    <TableHead>Cost Per Unit</TableHead>
-                                    <TableHead>Status</TableHead>
+                                    <TableHead>Description</TableHead>
+                                    <TableHead>Create At</TableHead>
                                     <TableHead>Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {filteredIngredients.length > 0 ? (
-                                    filteredIngredients.map((ingredient) => (
+                                { ingredients.length > 0 ? (
+                                    ingredients.map((ingredient) => (
                                         <TableRow key={ingredient.id}>
-                                            <TableCell className="font-medium">{ingredient.name}</TableCell>
-                                            <TableCell>{ingredient.category}</TableCell>
                                             <TableCell>
-                                                <div className="flex items-center gap-1">
-                                                    <Scale className="h-4 w-4 text-muted-foreground"/>
-                                                    {ingredient.stock}
+                                                <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center">
+                                                    {ingredient.image ? (
+                                                        <img
+                                                            src={ingredient.image || "/placeholder.svg"}
+                                                            alt={ingredient.name}
+                                                            className="h-full w-full object-cover rounded-md"
+                                                        />
+                                                    ) : (
+                                                        <ImageIcon className="h-5 w-5 text-muted-foreground"/>
+                                                    )}
                                                 </div>
                                             </TableCell>
-                                            <TableCell>{ingredient.unit}</TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center gap-1">
-                                                    <DollarSign className="h-4 w-4 text-muted-foreground"/>
-                                                    {ingredient.costPerUnit.toFixed(2)}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge
-                                                    variant="outline"
-                                                    className={getStatusColor(ingredient.status)}
-                                                >
-                                                    {ingredient.status}
-                                                </Badge>
-                                            </TableCell>
+                                            <TableCell className="font-medium min-w-52">{ingredient.name}</TableCell>
+                                            <TableCell className=" text-justify  ">{ingredient.description}</TableCell>
+                                            <TableCell className="min-w-52"> {formatted(ingredient.createdAt)}</TableCell>
                                             <TableCell>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -363,7 +240,7 @@ export default function IngredientsPage() {
                             <Input
                                 id="name"
                                 value={newIngredient.name}
-                                onChange={(e) => setNewIngredient({ ...newIngredient, name: e.target.value })}
+                                onChange={(e) => setNewIngredient({...newIngredient, name: e.target.value})}
                                 className="col-span-3"
                             />
                         </div>
@@ -373,10 +250,10 @@ export default function IngredientsPage() {
                             </Label>
                             <Select
                                 value={newIngredient.category}
-                                onValueChange={(value) => setNewIngredient({ ...newIngredient, category: value })}
+                                onValueChange={(value) => setNewIngredient({...newIngredient, category: value})}
                             >
                                 <SelectTrigger className="col-span-3">
-                                    <SelectValue placeholder="Select category" />
+                                    <SelectValue placeholder="Select category"/>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="dairy">Dairy</SelectItem>
@@ -398,7 +275,7 @@ export default function IngredientsPage() {
                                 id="stock"
                                 type="number"
                                 value={newIngredient.stock}
-                                onChange={(e) => setNewIngredient({ ...newIngredient, stock: Number(e.target.value) })}
+                                onChange={(e) => setNewIngredient({...newIngredient, stock: Number(e.target.value)})}
                                 className="col-span-3"
                             />
                         </div>
@@ -408,10 +285,10 @@ export default function IngredientsPage() {
                             </Label>
                             <Select
                                 value={newIngredient.unit}
-                                onValueChange={(value) => setNewIngredient({ ...newIngredient, unit: value })}
+                                onValueChange={(value) => setNewIngredient({...newIngredient, unit: value})}
                             >
                                 <SelectTrigger className="col-span-3">
-                                    <SelectValue placeholder="Select unit" />
+                                    <SelectValue placeholder="Select unit"/>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="kg">Kilogram (kg)</SelectItem>
@@ -431,7 +308,10 @@ export default function IngredientsPage() {
                                 type="number"
                                 step="0.01"
                                 value={newIngredient.costPerUnit}
-                                onChange={(e) => setNewIngredient({ ...newIngredient, costPerUnit: Number(e.target.value) })}
+                                onChange={(e) => setNewIngredient({
+                                    ...newIngredient,
+                                    costPerUnit: Number(e.target.value)
+                                })}
                                 className="col-span-3"
                             />
                         </div>
@@ -445,109 +325,100 @@ export default function IngredientsPage() {
                 </DialogContent>
             </Dialog>
 
-            {/* Edit Ingredient Dialog */}
-            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogContent className="sm:max-w-[500px]">
-                    <DialogHeader>
-                        <DialogTitle>Edit Ingredient</DialogTitle>
-                        <DialogDescription>
-                            Update the details of this ingredient.
-                        </DialogDescription>
-                    </DialogHeader>
-                    {currentIngredient && (
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="edit-name" className="text-right">
-                                    Name
-                                </Label>
-                                <Input
-                                    id="edit-name"
-                                    value={currentIngredient.name}
-                                    onChange={(e) => setCurrentIngredient({ ...currentIngredient, name: e.target.value })}
-                                    className="col-span-3"
-                                />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="edit-category" className="text-right">
-                                    Category
-                                </Label>
-                                <Select
-                                    value={currentIngredient.category.toLowerCase()}
-                                    onValueChange={(value) => setCurrentIngredient({
-                                        ...currentIngredient,
-                                        category: value.charAt(0).toUpperCase() + value.slice(1)
-                                    })}
-                                >
-                                    <SelectTrigger className="col-span-3">
-                                        <SelectValue placeholder="Select category" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="dairy">Dairy</SelectItem>
-                                        <SelectItem value="meat">Meat</SelectItem>
-                                        <SelectItem value="vegetable">Vegetable</SelectItem>
-                                        <SelectItem value="sauce">Sauce</SelectItem>
-                                        <SelectItem value="herb">Herb</SelectItem>
-                                        <SelectItem value="baking">Baking</SelectItem>
-                                        <SelectItem value="oil">Oil</SelectItem>
-                                        <SelectItem value="other">Other</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="edit-stock" className="text-right">
-                                    Stock
-                                </Label>
-                                <Input
-                                    id="edit-stock"
-                                    type="number"
-                                    value={currentIngredient.stock}
-                                    onChange={(e) => setCurrentIngredient({ ...currentIngredient, stock: Number(e.target.value) })}
-                                    className="col-span-3"
-                                />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="edit-unit" className="text-right">
-                                    Unit
-                                </Label>
-                                <Select
-                                    value={currentIngredient.unit}
-                                    onValueChange={(value) => setCurrentIngredient({ ...currentIngredient, unit: value })}
-                                >
-                                    <SelectTrigger className="col-span-3">
-                                        <SelectValue placeholder="Select unit" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="kg">Kilogram (kg)</SelectItem>
-                                        <SelectItem value="g">Gram (g)</SelectItem>
-                                        <SelectItem value="liter">Liter (L)</SelectItem>
-                                        <SelectItem value="ml">Milliliter (ml)</SelectItem>
-                                        <SelectItem value="unit">Unit (pcs)</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="edit-cost" className="text-right">
-                                    Cost Per Unit
-                                </Label>
-                                <Input
-                                    id="edit-cost"
-                                    type="number"
-                                    step="0.01"
-                                    value={currentIngredient.costPerUnit}
-                                    onChange={(e) => setCurrentIngredient({ ...currentIngredient, costPerUnit: Number(e.target.value) })}
-                                    className="col-span-3"
-                                />
-                            </div>
-                        </div>
-                    )}
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                            Cancel
-                        </Button>
-                        <Button onClick={handleEditIngredient}>Save Changes</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            {/*/!* Edit Ingredient Dialog *!/*/}
+            {/*<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>*/}
+            {/*    <DialogContent className="sm:max-w-[500px]">*/}
+            {/*        <DialogHeader>*/}
+            {/*            <DialogTitle>Edit Ingredient</DialogTitle>*/}
+            {/*            <DialogDescription>*/}
+            {/*                Update the details of this ingredient.*/}
+            {/*            </DialogDescription>*/}
+            {/*        </DialogHeader>*/}
+            {/*        {currentIngredient && (*/}
+            {/*            <div className="grid gap-4 py-4">*/}
+            {/*                <div className="grid grid-cols-4 items-center gap-4">*/}
+            {/*                    <Label htmlFor="edit-name" className="text-right">*/}
+            {/*                        Name*/}
+            {/*                    </Label>*/}
+            {/*                    <Input*/}
+            {/*                        id="edit-name"*/}
+            {/*                        value={currentIngredient.name}*/}
+            {/*                        onChange={(e) => setCurrentIngredient({ ...currentIngredient, name: e.target.value })}*/}
+            {/*                        className="col-span-3"*/}
+            {/*                    />*/}
+            {/*                </div>*/}
+            {/*                <div className="grid grid-cols-4 items-center gap-4">*/}
+            {/*                    <Label htmlFor="edit-category" className="text-right">*/}
+            {/*                        Category*/}
+            {/*                    </Label>*/}
+            {/*                    <Select*/}
+            {/*                        value={currentIngredient.category.toLowerCase()}*/}
+            {/*                        onValueChange={(value) => setCurrentIngredient({*/}
+            {/*                            ...currentIngredient,*/}
+            {/*                            category: value.charAt(0).toUpperCase() + value.slice(1)*/}
+            {/*                        })}*/}
+            {/*                    >*/}
+            {/*                        <SelectTrigger className="col-span-3">*/}
+            {/*                            <SelectValue placeholder="Select category" />*/}
+            {/*                        </SelectTrigger>*/}
+            {/*                        <SelectContent>*/}
+            {/*                            <SelectItem value="dairy">Dairy</SelectItem>*/}
+            {/*                            <SelectItem value="meat">Meat</SelectItem>*/}
+            {/*                            <SelectItem value="vegetable">Vegetable</SelectItem>*/}
+            {/*                            <SelectItem value="sauce">Sauce</SelectItem>*/}
+            {/*                            <SelectItem value="herb">Herb</SelectItem>*/}
+            {/*                            <SelectItem value="baking">Baking</SelectItem>*/}
+            {/*                            <SelectItem value="oil">Oil</SelectItem>*/}
+            {/*                            <SelectItem value="other">Other</SelectItem>*/}
+            {/*                        </SelectContent>*/}
+            {/*                    </Select>*/}
+            {/*                </div>*/}
+            {/*                <div className="grid grid-cols-4 items-center gap-4">*/}
+
+            {/*                </div>*/}
+            {/*                <div className="grid grid-cols-4 items-center gap-4">*/}
+            {/*                    <Label htmlFor="edit-unit" className="text-right">*/}
+            {/*                        Unit*/}
+            {/*                    </Label>*/}
+            {/*                    <Select*/}
+            {/*                        value={currentIngredient.unit}*/}
+            {/*                        onValueChange={(value) => setCurrentIngredient({ ...currentIngredient, unit: value })}*/}
+            {/*                    >*/}
+            {/*                        <SelectTrigger className="col-span-3">*/}
+            {/*                            <SelectValue placeholder="Select unit" />*/}
+            {/*                        </SelectTrigger>*/}
+            {/*                        <SelectContent>*/}
+            {/*                            <SelectItem value="kg">Kilogram (kg)</SelectItem>*/}
+            {/*                            <SelectItem value="g">Gram (g)</SelectItem>*/}
+            {/*                            <SelectItem value="liter">Liter (L)</SelectItem>*/}
+            {/*                            <SelectItem value="ml">Milliliter (ml)</SelectItem>*/}
+            {/*                            <SelectItem value="unit">Unit (pcs)</SelectItem>*/}
+            {/*                        </SelectContent>*/}
+            {/*                    </Select>*/}
+            {/*                </div>*/}
+            {/*                <div className="grid grid-cols-4 items-center gap-4">*/}
+            {/*                    <Label htmlFor="edit-cost" className="text-right">*/}
+            {/*                        Cost Per Unit*/}
+            {/*                    </Label>*/}
+            {/*                    <Input*/}
+            {/*                        id="edit-cost"*/}
+            {/*                        type="number"*/}
+            {/*                        step="0.01"*/}
+            {/*                        value={currentIngredient.costPerUnit}*/}
+            {/*                        onChange={(e) => setCurrentIngredient({ ...currentIngredient, costPerUnit: Number(e.target.value) })}*/}
+            {/*                        className="col-span-3"*/}
+            {/*                    />*/}
+            {/*                </div>*/}
+            {/*            </div>*/}
+            {/*        )}*/}
+            {/*        <DialogFooter>*/}
+            {/*            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>*/}
+            {/*                Cancel*/}
+            {/*            </Button>*/}
+            {/*            <Button onClick={handleEditIngredient}>Save Changes</Button>*/}
+            {/*        </DialogFooter>*/}
+            {/*    </DialogContent>*/}
+            {/*</Dialog>*/}
 
             {/* Delete Confirmation Dialog */}
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
@@ -561,7 +432,7 @@ export default function IngredientsPage() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteIngredient} className="bg-red-500 hover:bg-red-600">
+                        <AlertDialogAction onClick= {handleDeleteIngredient} className="bg-red-500 hover:bg-red-600">
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>
