@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, Search, Filter, Download, Eye, Mail, Phone, ShoppingBag } from "lucide-react"
 import DashboardLayout from "@/components/dashboard/DashboardLayout"
+import axios from "axios";
 
 interface User {
     id: number
@@ -31,24 +32,17 @@ export default function CustomersPage() {
     const fetchData = async () => {
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`/api/user/get-all`, {
-                method: "GET",
+            const res = await axios.get(`/api/user/get-all`, {
                 headers:{
                     Authorization: `${token}`
                 }
             });
-            const data = await res.json();
-            console.log(data.data);
-            if (Array.isArray(data.data)) {
-                setCustomers(data.data);
-            } else {
-                console.warn("data.data is not an array", data);
-                setCustomers([]);
+            if (res.status === 200) {
+                console.log(res.data.data)
+                setCustomers(res.data.data)
             }
-
         } catch (err) {
             console.error("Error fetching customers:", err);
-            setCustomers([]);
         }
     }
 
