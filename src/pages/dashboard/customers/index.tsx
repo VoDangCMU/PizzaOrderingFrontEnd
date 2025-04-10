@@ -1,15 +1,46 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Search, Filter, Download, Eye, Mail, Phone, ShoppingBag } from "lucide-react"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow
+} from "@/components/ui/table"
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage
+} from "@/components/ui/avatar"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import {
+    MoreHorizontal,
+    Search,
+    Filter,
+    Download,
+    Eye,
+    Mail,
+    Phone,
+    ShoppingBag
+} from "lucide-react"
 import DashboardLayout from "@/components/dashboard/DashboardLayout"
-import axios from "axios";
+import axios from "axios"
 
 interface User {
     id: number
@@ -33,22 +64,20 @@ export default function CustomersPage() {
         const token = localStorage.getItem('token');
         try {
             const res = await axios.get(`/api/user/get-all`, {
-                headers:{
+                headers: {
                     Authorization: `${token}`
                 }
             });
             if (res.status === 200) {
-                console.log(res.data.data)
-                setCustomers(res.data.data)
+                setCustomers(res.data.data);
             }
         } catch (err) {
             console.error("Error fetching customers:", err);
         }
-    }
-
+    };
     useEffect(() => {
-        fetchData()
-    }, [])
+      fetchData();
+    }, []);
 
     return (
         <DashboardLayout>
@@ -74,8 +103,7 @@ export default function CustomersPage() {
                     <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <CardTitle>Customer Management</CardTitle>
-                            <CardDescription>
-                            </CardDescription>
+                            <CardDescription></CardDescription>
                         </div>
                         <div className="relative">
                             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -89,94 +117,97 @@ export default function CustomersPage() {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Customer</TableHead>
-                                    <TableHead>Contact</TableHead>
-                                    <TableHead>Orders</TableHead>
-                                    <TableHead>Total Spent</TableHead>
-                                    <TableHead>Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {customers.length > 0 ? (
-                                    customers.map((customer) => (
-                                        <TableRow key={customer.id}>
-                                            <TableCell>
-                                                <div className="flex items-center gap-3">
-                                                    {/*<Avatar className="h-9 w-9">*/}
-                                                    {/*    <AvatarImage src={customer.avatar || "/placeholder-user.jpg"} />*/}
-                                                    {/*    <AvatarFallback>*/}
-                                                    {/*        {customer.firstName[0]}{customer.lastName[0]}*/}
-                                                    {/*    </AvatarFallback>*/}
-                                                    {/*</Avatar>*/}
-                                                    <div>
-                                                        <div className="font-medium">
-                                                            {customer.firstName} {customer.lastName}
+                        <div className="overflow-x-auto">
+                            <Table className="table-fixed w-full">
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-[220px]">Customer</TableHead>
+                                        <TableHead className="w-[150px]">Date Of Birth</TableHead>
+                                        <TableHead className="w-[220px]">Contact</TableHead>
+                                        <TableHead className="w-[200px]">Address</TableHead>
+                                        <TableHead className="w-[120px]">Role</TableHead>
+                                        <TableHead className="w-[100px]">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {customers.length > 0 ? (
+                                        customers.map((customer) => (
+                                            <TableRow key={customer.id}>
+                                                <TableCell className="w-[220px]">
+                                                    <div className="flex items-center gap-3 truncate">
+                                                        <Avatar className="h-9 w-9">
+                                                            <AvatarImage
+                                                                src={customer.avatar || "/placeholder-user.jpg"}
+                                                            />
+                                                            <AvatarFallback>
+                                                                {customer.firstName[0]}
+                                                                {customer.lastName[0]}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="truncate">
+                                                            <div className="font-medium">
+                                                                {customer.firstName} {customer.lastName}
+                                                            </div>
+                                                            <div className="text-xs text-muted-foreground">
+                                                                Customer since{" "}
+                                                                {new Date(customer.createdAt).toLocaleDateString()}
+                                                            </div>
                                                         </div>
-                                                        <div className="text-xs text-muted-foreground">
-                                                            Customer since {new Date(customer.createdAt).toLocaleDateString()}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="w-[150px] whitespace-nowrap">
+                                                    {new Date(customer.dateOfBirth).toLocaleDateString()}
+                                                </TableCell>
+                                                <TableCell className="w-[220px] whitespace-nowrap">
+                                                    <div className="flex flex-col gap-1">
+                                                        <div className="flex items-center text-sm">
+                                                            <Mail className="mr-2 h-3 w-3 text-muted-foreground" />
+                                                            {customer.email}
+                                                        </div>
+                                                        <div className="flex items-center text-sm">
+                                                            <Phone className="mr-2 h-3 w-3 text-muted-foreground" />
+                                                            {customer.phone}
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex flex-col gap-1">
-                                                    <div className="flex items-center text-sm">
-                                                        <Mail className="mr-2 h-3 w-3 text-muted-foreground" />
-                                                        {customer.email}
-                                                    </div>
-                                                    <div className="flex items-center text-sm">
-                                                        <Phone className="mr-2 h-3 w-3 text-muted-foreground" />
-                                                        {customer.phone}
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center gap-1">
-                                                    <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-                                                    {/* Optional: You can show number of orders here if you have it */}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                {/* Optional: You can show totalSpent here if you have it */}
-                                            </TableCell>
-                                            <TableCell>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                            <span className="sr-only">Open menu</span>
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem>
-                                                            <Eye className="mr-2 h-4 w-4" />
-                                                            View profile
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem>
-                                                            <Mail className="mr-2 h-4 w-4" />
-                                                            Send email
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem>
-                                                            <ShoppingBag className="mr-2 h-4 w-4" />
-                                                            View orders
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                </TableCell>
+                                                <TableCell className="w-[200px] truncate">
+                                                    {customer.address}
+                                                </TableCell>
+                                                <TableCell className="w-[120px] font-medium">
+                                                    {customer.role}
+                                                </TableCell>
+                                                <TableCell className="w-[100px]">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                                <span className="sr-only">Open menu</span>
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuItem>
+                                                                <Mail className="mr-2 h-4 w-4" />
+                                                                Send email
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem>
+                                                                <ShoppingBag className="mr-2 h-4 w-4" />
+                                                                View orders
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="h-24 text-center">
+                                                No customers found.
                                             </TableCell>
                                         </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell colSpan={6} className="h-24 text-center">
-                                            No customers found.
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
