@@ -12,6 +12,7 @@ import {Edit, Eye, ImageIcon, MoreHorizontal, Plus, Search, Trash2} from "lucide
 
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import {format} from "date-fns";
+import axios from "axios";
 
 interface Size {
   id: string
@@ -43,27 +44,16 @@ export default function MenuPage() {
     const [categoryFilter, setCategoryFilter] = useState("all")
 
     const [menuItems, setMenuItems] = useState<MenuItem[]>([])
-    // Filter menu items based on search query and category filter
-    // const filteredItems = menuItems.filter((item) => {
-    //   const matchesSearch =
-    //     item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    //     item.description.toLowerCase().includes(searchQuery.toLowerCase())
-    //
-    //   const matchesCategory = categoryFilter === "all" || item.category === categoryFilter
-    //
-    //   return matchesSearch && matchesCategory
-    // })
   const formattedDate = (date: string) =>{
-      return format( new Date(date), 'HH:mm:ss dd/MM/yyyy')
+      return format( new Date(date), 'dd/MM/yyyy')
   }
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/pizza/get-all`, {
-          method: "GET",
-        })
-        const result = await response.json()
-        setMenuItems(result.data)
+          const res = await axios.get(`/api/pizza/get-all`);
+          if(res.status == 200){
+              setMenuItems(res.data.data)
+          }
       } catch (e) {
         console.error("Failed to fetch data", e)
       }
@@ -124,7 +114,7 @@ export default function MenuPage() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    {/*<TableHead>Image</TableHead>*/}
+                                    <TableHead>Image</TableHead>
                                     <TableHead>Name</TableHead>
                                     <TableHead>Description</TableHead>
                                     <TableHead>Unit Price</TableHead>

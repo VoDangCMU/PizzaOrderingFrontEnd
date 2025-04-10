@@ -55,7 +55,7 @@ export default function IngredientsPage() {
     // Sample data
 
     const formatted = (date :string) => {
-        return format(new Date(date), "HH:mm:ss dd/MM/yyyy");
+        return format(new Date(date), "dd/MM/yyyy");
     }
     // Filter ingredients based on search query
     // const filteredIngredients = ingredients.filter(ingredient =>
@@ -77,12 +77,10 @@ export default function IngredientsPage() {
 
     const fetchIngredients = async () => {
         try {
-            const res = await fetch(`/api/ingredient/get-all`,{
-                method: "GET",
-            });
-            const data = await res.json();
-            setIngredients(data.data);
-
+            const res = await axios.get("/api/ingredient/get-all");
+            if(res.status === 200) {
+                setIngredients(res.data.data)
+            }
         } catch (err) {
             console.error("Error fetching ingredients:", err);
         }
@@ -179,9 +177,9 @@ export default function IngredientsPage() {
                                                     )}
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="font-medium min-w-52">{ingredient.name}</TableCell>
-                                            <TableCell className=" text-justify  ">{ingredient.description}</TableCell>
-                                            <TableCell className="min-w-52"> {formatted(ingredient.createdAt)}</TableCell>
+                                            <TableCell className="font-medium">{ingredient.name}</TableCell>
+                                            <TableCell className="text-justify">{ingredient.description}</TableCell>
+                                            <TableCell className="w-32"> {formatted(ingredient.createdAt)}</TableCell>
                                             <TableCell>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
