@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import {useEffect, useState} from "react"
 import {
     Card,
     CardContent,
@@ -8,8 +8,8 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
 import {
     Table,
     TableBody,
@@ -34,13 +34,12 @@ import {
     Search,
     Filter,
     Download,
-    Eye,
     Mail,
     Phone,
     ShoppingBag
 } from "lucide-react"
 import DashboardLayout from "@/components/dashboard/DashboardLayout"
-import axios from "axios"
+import axios from "axios";
 
 interface User {
     id: number
@@ -59,25 +58,33 @@ interface User {
 export default function CustomersPage() {
     const [searchQuery, setSearchQuery] = useState("")
     const [customers, setCustomers] = useState<User[]>([])
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [totalPages, setTotalPages] = useState(0);
 
     const fetchData = async () => {
         const token = localStorage.getItem('token');
         try {
-            const res = await axios.get(`/api/user/get-all`, {
+            const res = await axios.get(`/api/user/get-all?page=${page}&pageSize=${pageSize}`, {
                 headers: {
                     Authorization: `${token}`
                 }
             });
-            if (res.status === 200) {
-                setCustomers(res.data.data);
+            if (res.data.statusCode != 200) {
+                console.error(res.data.message)
             }
+            console.log(res.data);
+            setCustomers(res.data.data.users);
+            setTotalPages(res.data.totalPages || 0);
         } catch (err) {
             console.error("Error fetching customers:", err);
         }
     };
+
     useEffect(() => {
-      fetchData();
-    }, []);
+        fetchData();
+    }, [page, pageSize]);
+
 
     return (
         <DashboardLayout>
@@ -89,11 +96,11 @@ export default function CustomersPage() {
                     </div>
                     <div className="flex items-center gap-2">
                         <Button variant="outline" size="sm">
-                            <Filter className="mr-2 h-4 w-4" />
+                            <Filter className="mr-2 h-4 w-4"/>
                             Filter
                         </Button>
                         <Button size="sm" className="bg-primary hover:bg-primary/90">
-                            <Download className="mr-2 h-4 w-4" />
+                            <Download className="mr-2 h-4 w-4"/>
                             Export
                         </Button>
                     </div>
@@ -106,7 +113,7 @@ export default function CustomersPage() {
                             <CardDescription></CardDescription>
                         </div>
                         <div className="relative">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>
                             <Input
                                 type="search"
                                 placeholder="Search customers..."
@@ -161,11 +168,11 @@ export default function CustomersPage() {
                                                 <TableCell className="w-[220px] whitespace-nowrap">
                                                     <div className="flex flex-col gap-1">
                                                         <div className="flex items-center text-sm">
-                                                            <Mail className="mr-2 h-3 w-3 text-muted-foreground" />
+                                                            <Mail className="mr-2 h-3 w-3 text-muted-foreground"/>
                                                             {customer.email}
                                                         </div>
                                                         <div className="flex items-center text-sm">
-                                                            <Phone className="mr-2 h-3 w-3 text-muted-foreground" />
+                                                            <Phone className="mr-2 h-3 w-3 text-muted-foreground"/>
                                                             {customer.phone}
                                                         </div>
                                                     </div>
@@ -180,17 +187,17 @@ export default function CustomersPage() {
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
                                                             <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                                <MoreHorizontal className="h-4 w-4" />
+                                                                <MoreHorizontal className="h-4 w-4"/>
                                                                 <span className="sr-only">Open menu</span>
                                                             </Button>
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end">
                                                             <DropdownMenuItem>
-                                                                <Mail className="mr-2 h-4 w-4" />
+                                                                <Mail className="mr-2 h-4 w-4"/>
                                                                 Send email
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem>
-                                                                <ShoppingBag className="mr-2 h-4 w-4" />
+                                                                <ShoppingBag className="mr-2 h-4 w-4"/>
                                                                 View orders
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>

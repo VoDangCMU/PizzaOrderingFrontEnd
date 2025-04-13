@@ -2,19 +2,19 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import {useState} from "react"
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { PizzaWindow } from "@/components/contents/pizza-window"
-import { useRouter } from "next/router"
-import { toast } from "@/components/ui/use-toast"
+import {motion} from "framer-motion"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
+import {PizzaWindow} from "@/components/contents/pizza-window"
+import {useRouter} from "next/router"
+import {toast} from "@/components/ui/use-toast"
 
 const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: {opacity: 0},
     visible: {
         opacity: 1,
         transition: {
@@ -25,8 +25,8 @@ const containerVariants = {
 }
 
 const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
+    hidden: {opacity: 0, y: 20},
+    visible: {opacity: 1, y: 0},
 }
 
 export function RegisterForm() {
@@ -46,7 +46,7 @@ export function RegisterForm() {
     const router = useRouter()
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
+        const {name, value} = e.target
         setFormData((prev) => ({
             ...prev,
             [name]: value,
@@ -108,7 +108,8 @@ export function RegisterForm() {
                 <Card className="kungfu-card border-red-800/30 overflow-hidden">
                     <CardHeader className="space-y-1 text-center">
                         <motion.div variants={itemVariants}>
-                            <CardTitle className="text-3xl font-bold tracking-tight text-red-800">Join the Disciples</CardTitle>
+                            <CardTitle className="text-3xl font-bold tracking-tight text-red-800">Join the
+                                Disciples</CardTitle>
                         </motion.div>
                         <motion.div variants={itemVariants}>
                             <CardDescription>Create your account to begin your pizza journey</CardDescription>
@@ -117,7 +118,7 @@ export function RegisterForm() {
 
                     <CardContent className="space-y-6">
                         <motion.div className="relative mx-auto w-64 h-64 mb-6" variants={itemVariants}>
-                            <PizzaWindow isPasswordFocused={passwordFocused} />
+                            <PizzaWindow isPasswordFocused={passwordFocused}/>
                         </motion.div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
@@ -146,90 +147,90 @@ export function RegisterForm() {
                                         required
                                     />
                                 </motion.div>
+                                <motion.div className="space-y-2" variants={itemVariants}>
+                                    <Label htmlFor="username">Username</Label>
+                                    <Input
+                                        id="username"
+                                        name="username"
+                                        value={formData.username}
+                                        onChange={handleInputChange}
+                                        placeholder="Example"
+                                        className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
+                                        required
+                                    />
+                                </motion.div>
+
+                                <motion.div className="space-y-2" variants={itemVariants}>
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                        placeholder="John@example.com"
+                                        className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
+                                        required
+                                    />
+                                </motion.div>
+
+                                <motion.div className="space-y-2" variants={itemVariants}>
+                                    <Label htmlFor="password">Password</Label>
+                                    <Input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        placeholder={"At least 7 characters"}
+                                        value={formData.password}
+                                        onChange={handleInputChange}
+                                        onFocus={() => setPasswordFocused(true)}
+                                        onBlur={() => setPasswordFocused(false)}
+                                        className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
+                                        required
+                                    />
+                                </motion.div>
+
+                                <motion.div className="space-y-2" variants={itemVariants}>
+                                    <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                                    <Input
+                                        id="dateOfBirth"
+                                        name="dateOfBirth"
+                                        type="date"
+                                        value={formData.dateOfBirth}
+                                        onChange={handleInputChange}
+                                        className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
+                                        required
+                                    />
+                                </motion.div>
+
+                                <motion.div className="space-y-2" variants={itemVariants}>
+                                    <Label htmlFor="phone">Phone</Label>
+                                    <Input
+                                        id="phone"
+                                        name="phone"
+                                        type="tel"
+                                        value={formData.phone}
+                                        onChange={handleInputChange}
+                                        placeholder="+1 (123) 456-7890"
+                                        className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
+                                        required
+                                    />
+                                </motion.div>
+
+                                <motion.div className="space-y-2" variants={itemVariants}>
+                                    <Label htmlFor="address">Address</Label>
+                                    <Input
+                                        id="address"
+                                        name="address"
+                                        value={formData.address}
+                                        onChange={handleInputChange}
+                                        placeholder="12 Nguyen Van Linh Street, Da Nang, Viet Nam"
+                                        className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
+                                        required
+                                    />
+                                </motion.div>
                             </div>
 
-                            <motion.div className="space-y-2" variants={itemVariants}>
-                                <Label htmlFor="username">Username</Label>
-                                <Input
-                                    id="username"
-                                    name="username"
-                                    value={formData.username}
-                                    onChange={handleInputChange}
-                                    placeholder="Example"
-                                    className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
-                                    required
-                                />
-                            </motion.div>
-
-                            <motion.div className="space-y-2" variants={itemVariants}>
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    placeholder="John@example.com"
-                                    className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
-                                    required
-                                />
-                            </motion.div>
-
-                            <motion.div className="space-y-2" variants={itemVariants}>
-                                <Label htmlFor="password">Password</Label>
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    placeholder={"At least 7 characters"}
-                                    value={formData.password}
-                                    onChange={handleInputChange}
-                                    onFocus={() => setPasswordFocused(true)}
-                                    onBlur={() => setPasswordFocused(false)}
-                                    className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
-                                    required
-                                />
-                            </motion.div>
-
-                            <motion.div className="space-y-2" variants={itemVariants}>
-                                <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                                <Input
-                                    id="dateOfBirth"
-                                    name="dateOfBirth"
-                                    type="date"
-                                    value={formData.dateOfBirth}
-                                    onChange={handleInputChange}
-                                    className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
-                                    required
-                                />
-                            </motion.div>
-
-                            <motion.div className="space-y-2" variants={itemVariants}>
-                                <Label htmlFor="phone">Phone</Label>
-                                <Input
-                                    id="phone"
-                                    name="phone"
-                                    type="tel"
-                                    value={formData.phone}
-                                    onChange={handleInputChange}
-                                    placeholder="+1 (123) 456-7890"
-                                    className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
-                                    required
-                                />
-                            </motion.div>
-
-                            <motion.div className="space-y-2" variants={itemVariants}>
-                                <Label htmlFor="address">Address</Label>
-                                <Input
-                                    id="address"
-                                    name="address"
-                                    value={formData.address}
-                                    onChange={handleInputChange}
-                                    placeholder="123 Kungfu Street, Pizza City"
-                                    className="bg-white/50 backdrop-blur-sm border-amber-800/30 focus-visible:ring-red-800"
-                                    required
-                                />
-                            </motion.div>
 
                             <motion.div variants={itemVariants}>
                                 <Button
@@ -239,7 +240,8 @@ export function RegisterForm() {
                                 >
                                     {isLoading ? (
                                         <>
-                                            <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                                            <span
+                                                className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                                             Creating account...
                                         </>
                                     ) : (
@@ -251,7 +253,8 @@ export function RegisterForm() {
                     </CardContent>
 
                     <CardFooter>
-                        <motion.div className="text-sm text-center w-full text-muted-foreground" variants={itemVariants}>
+                        <motion.div className="text-sm text-center w-full text-muted-foreground"
+                                    variants={itemVariants}>
                             Already have an account?{" "}
                             <Link href="../auth/login" className="underline underline-offset-4 hover:text-red-800">
                                 Sign in

@@ -128,13 +128,13 @@ export function LoginForm() {
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="username">Username</Label>
-                                <Input id="username" name="username" value={formData.username} onChange={handleInputChange} onBlur={handleBlur} placeholder="example" className={`${errors.username ? "border-red-500" : "border-amber-800/30"} bg-white/50 backdrop-blur-sm focus-visible:ring-red-800`} required />
+                                <Input id="username" name="username" value={formData.username} onChange={handleInputChange} onBlur={handleBlur} placeholder="example@gmail.com" className={`${errors.username ? "border-red-500" : "border-amber-800/30"} bg-white/50 backdrop-blur-sm focus-visible:ring-red-800`} required />
                                 {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
                             </div>
 
                             <div className="space-y-2">
                                 <Label htmlFor="password">Password</Label>
-                                <Input id="password" name="password" type="password" value={formData.password} onChange={handleInputChange} onBlur={handleBlur} onFocus={() => setPasswordFocused(true)} className={`${errors.password ? "border-red-500" : "border-amber-800/30"} bg-white/50 backdrop-blur-sm focus-visible:ring-red-800`} required />
+                                <Input placeholder={"************"} id="password" name="password" type="password" value={formData.password} onChange={handleInputChange} onBlur={handleBlur} onFocus={() => setPasswordFocused(true)} className={`${errors.password ? "border-red-500" : "border-amber-800/30"} bg-white/50 backdrop-blur-sm focus-visible:ring-red-800`} required />
                                 {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
                             </div>
 

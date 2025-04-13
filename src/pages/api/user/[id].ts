@@ -10,8 +10,10 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
                 Authorization: token
             }
         });
+        console.log(response);
         res.status(200).json(response.data);
-    } catch (error) {
+
+    } catch (e) {
         res.status(500).json({message: "Error fetching pizza data", error});
     }
 };

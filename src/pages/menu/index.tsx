@@ -13,7 +13,7 @@ interface Pizza {
     id: string;
     name: string;
     description: string;
-    price: string;
+    unitPrice: string;
 }
 
 const categories = ["All", "Specialty", "Vegetarian", "Meat", "Classic", "Signature"];
@@ -27,8 +27,8 @@ export default function MenuPage() {
     useEffect(() => {
         const fetchPizzas = async () => {
             try {
-                const response = await axios.get("/api/pizza");
-                setPizzas(response.data);
+                const response = await axios.get("/api/pizza/get-all");
+                setPizzas(response.data.data);
             } catch (error) {
                 console.error("Error fetching pizzas:", error);
             }
@@ -144,7 +144,7 @@ export default function MenuPage() {
                                             <CardDescription className="line-clamp-2 h-10">{pizza.description}</CardDescription>
                                         </CardHeader>
                                         <CardFooter className="p-4 pt-0 mt-auto flex justify-between items-center">
-                                            <span className="text-lg font-bold text-primary">${parseFloat(pizza.price).toFixed(2)}</span>
+                                            <span className="text-lg font-bold text-primary">${pizza.unitPrice}</span>
                                             <Button size="sm" className="bg-primary hover:bg-primary/90 text-white btn-hover">
                                                 <ShoppingCart className="h-4 w-4 mr-2" />
                                                 Order
