@@ -7,13 +7,8 @@ import { EmptyResults } from "./empty-results"
 interface BlogPost {
     id: number
     title: string
-    excerpt: string
-    date: string
-    author: string
-    image: string
-    rating: number
-    category: string
-    tags: string[]
+    body: string
+    createAt: Date
 }
 
 interface BlogGridProps {
@@ -40,4 +35,3 @@ export function BlogGrid({ posts }: BlogGridProps) {
         </div>
     )
 }
-

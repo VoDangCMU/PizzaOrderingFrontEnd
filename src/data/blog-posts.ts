@@ -2,14 +2,9 @@ export const blogPosts = [
     {
         id: 1,
         title: "Dragon's Breath Pizza: A Fiery Delight",
-        excerpt:
+        body:
             "Experience the heat and flavor of our signature Dragon's Breath Pizza. This spicy masterpiece will awaken your taste buds and test your kungfu spirit!",
-        date: "March 15, 2023",
-        author: "Master Wong",
-        image: "https://i.imgur.com/pclqHD4.jpeg?height=300&width=500",
-        rating: 4.5,
-        category: "Specialty",
-        tags: ["spicy", "signature", "pepperoni", "dragon-fruit"],
+        createdAt: "March 15, 2023",
     },
     {
         id: 2,

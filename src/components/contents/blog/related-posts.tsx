@@ -49,4 +49,3 @@ export function RelatedPosts({ posts }: RelatedPostsProps) {
         </section>
     )
 }
-

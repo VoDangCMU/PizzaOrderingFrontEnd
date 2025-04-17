@@ -1,5 +1,7 @@
+"use client"
+
 import { useState, useRef, useEffect } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { blogPosts } from "@/data/blog-posts"
 
@@ -11,6 +13,10 @@ interface MindmapNode {
     relevance: number
     x: number
     y: number
+    children: MindmapNode[]
+    parent?: MindmapNode
+    depth: number
+    position: "top" | "bottom" | "root"
 }
 
 interface SearchTreeMindmapProps {
@@ -21,8 +27,12 @@ export function SearchTreeMindmap({ searchTerm }: SearchTreeMindmapProps) {
     const router = useRouter()
     const svgRef = useRef<SVGSVGElement>(null)
     const [nodes, setNodes] = useState<MindmapNode[]>([])
+    const [connections, setConnections] = useState<{ from: MindmapNode; to: MindmapNode }[]>([])
     const [hoveredNode, setHoveredNode] = useState<MindmapNode | null>(null)
     const [dimensions, setDimensions] = useState({ width: 1000, height: 600 })
+    const [isSearching, setIsSearching] = useState(false)
+    const [rootNode, setRootNode] = useState<MindmapNode | null>(null)
+    const [selectedNode, setSelectedNode] = useState<MindmapNode | null>(null)
 
     // Calculate relevance score between search term and blog post
     const calculateRelevance = (post: (typeof blogPosts)[0], term: string) => {
@@ -56,88 +66,232 @@ export function SearchTreeMindmap({ searchTerm }: SearchTreeMindmapProps) {
         return Math.min(score, 1)
     }
 
-    // Build the tree structure based on search term
-    useEffect(() => {
-        if (!searchTerm.trim()) return
+    // Build binary tree structure
+    const buildBinaryTree = (posts: (typeof blogPosts & { relevance: number })[], maxDepth = 4) => {
+        if (posts.length === 0) return null
 
-        // Calculate relevance for each post
-        const postsWithRelevance = blogPosts.map((post) => ({
-            ...post,
-            relevance: calculateRelevance(post, searchTerm),
-        }))
-
-        // Sort by relevance (highest first)
-        postsWithRelevance.sort((a, b) => b.relevance - a.relevance)
-
-        // Create root node (search term)
-        const rootNode: MindmapNode = {
+        // Create root node
+        const root: MindmapNode = {
             id: -1,
             title: searchTerm,
             category: "Search",
             excerpt: `Search results for "${searchTerm}"`,
             relevance: 1,
-            x: 120, // Left side of the screen
+            x: 120, // Left position for horizontal layout
             y: dimensions.height / 2, // Center vertically
+            children: [],
+            depth: 0,
+            position: "root",
         }
 
-        // Create nodes for blog posts
-        const blogNodes: MindmapNode[] = postsWithRelevance.map((post, index) => ({
-            id: post.id,
-            title: post.title,
-            category: post.category,
-            excerpt: post.excerpt,
-            relevance: post.relevance,
-            x: 0, // Will be calculated
-            y: 0, // Will be calculated
-        }))
+        // Sort posts by relevance
+        const sortedPosts = [...posts].sort((a, b) => b.relevance - a.relevance)
 
-        // Calculate positions - HORIZONTAL LAYOUT
-        const startX = 250 // Start position after root node
-        const centerY = dimensions.height / 2
-        const nodeSpacing = 180 // Horizontal spacing between nodes
-        const verticalSpread = dimensions.height * 0.7 // How much to spread vertically
+        // Function to recursively build the tree
+        const buildSubtree = (
+            parentNode: MindmapNode,
+            availablePosts: (typeof blogPosts & { relevance: number })[],
+            depth: number,
+            position: "top" | "bottom",
+        ) => {
+            if (depth >= maxDepth || availablePosts.length === 0) return
 
-        // Group posts by relevance tiers for better organization
-        const tiers: MindmapNode[][] = [[], [], []] // High, Medium, Low relevance
+            // Take the post with highest relevance
+            const post = availablePosts[0]
+            const remainingPosts = availablePosts.slice(1)
 
-        blogNodes.forEach((node) => {
-            if (node.relevance >= 0.7) {
-                tiers[0].push(node) // High relevance
-            } else if (node.relevance >= 0.4) {
-                tiers[1].push(node) // Medium relevance
-            } else {
-                tiers[2].push(node) // Low relevance
+            // Create node for this post
+            const node: MindmapNode = {
+                id: post.id,
+                title: post.title,
+                category: post.category,
+                excerpt: post.excerpt,
+                relevance: post.relevance,
+                x: 0, // Will be calculated later
+                y: 0, // Will be calculated later
+                children: [],
+                parent: parentNode,
+                depth: depth,
+                position: position,
             }
-        })
 
-        // Position nodes by tiers
-        let currentX = startX
+            // Add this node as a child to parent
+            parentNode.children.push(node)
 
-        tiers.forEach((tier, tierIndex) => {
-            if (tier.length === 0) return
+            // Recursively build top and bottom subtrees
+            if (remainingPosts.length > 0) {
+                buildSubtree(node, remainingPosts.slice(0, Math.ceil(remainingPosts.length / 2)), depth + 1, "top")
+            }
 
-            // Calculate vertical distribution for this tier
-            const tierHeight = Math.min(tier.length * 80, verticalSpread)
-            const tierYStart = centerY - tierHeight / 2
-            const tierYStep = tier.length > 1 ? tierHeight / (tier.length - 1) : 0
+            if (remainingPosts.length > 1) {
+                buildSubtree(node, remainingPosts.slice(Math.ceil(remainingPosts.length / 2)), depth + 1, "bottom")
+            }
+        }
 
-            tier.forEach((node, nodeIndex) => {
-                node.x = currentX
+        // Build top and bottom subtrees from root
+        if (sortedPosts.length > 0) {
+            buildSubtree(root, sortedPosts.slice(0, Math.ceil(sortedPosts.length / 2)), 1, "top")
+        }
 
-                // Distribute nodes vertically within their tier
-                if (tier.length === 1) {
-                    node.y = centerY // Single node centered
-                } else {
-                    node.y = tierYStart + nodeIndex * tierYStep
+        if (sortedPosts.length > 1) {
+            buildSubtree(root, sortedPosts.slice(Math.ceil(sortedPosts.length / 2)), 1, "bottom")
+        }
+
+        return root
+    }
+
+    // Calculate positions for all nodes in the tree - HORIZONTAL LAYOUT with EVEN SPACING
+    const calculatePositions = (root: MindmapNode | null) => {
+        if (!root) return []
+
+        // Improved spacing for better visualization
+        const horizontalSpacing = 220 // Space between depth levels (horizontal)
+        const verticalSpacingBase = 150 // Base vertical spacing
+        const allNodes: MindmapNode[] = []
+        const allConnections: { from: MindmapNode; to: MindmapNode }[] = []
+
+        // Set root position
+        root.x = 120 // Left position
+        root.y = dimensions.height / 2 // Center vertically
+        allNodes.push(root)
+
+        // Function to count total nodes in a subtree
+        const countSubtreeNodes = (node: MindmapNode): number => {
+            if (node.children.length === 0) return 1
+            return 1 + node.children.reduce((sum, child) => sum + countSubtreeNodes(child), 0)
+        }
+
+        // Function to recursively calculate positions with even spacing
+        const calculateSubtreePositions = (node: MindmapNode, availableHeight: number, startY: number) => {
+            const topChildren = node.children.filter((child) => child.position === "top")
+            const bottomChildren = node.children.filter((child) => child.position === "bottom")
+
+            // Calculate total nodes in each subtree to determine space allocation
+            const topNodesCount = topChildren.reduce((sum, child) => sum + countSubtreeNodes(child), 0)
+            const bottomNodesCount = bottomChildren.reduce((sum, child) => sum + countSubtreeNodes(child), 0)
+            const totalNodesCount = topNodesCount + bottomNodesCount
+
+            // Adjust vertical spacing based on depth to create a more balanced tree
+            const verticalSpacing = Math.max(verticalSpacingBase - node.depth * 20, 80)
+
+            // Calculate positions for top children
+            if (topChildren.length > 0) {
+                const topHeight = (availableHeight * topNodesCount) / totalNodesCount
+                let topStartY = startY
+
+                topChildren.forEach((child, index) => {
+                    // Calculate subtree node count for this child
+                    const childNodesCount = countSubtreeNodes(child)
+                    const childHeight = (topHeight * childNodesCount) / topNodesCount
+
+                    // Position this child
+                    child.x = node.x + horizontalSpacing
+                    child.y = topStartY + childHeight / 2 + (index * verticalSpacing) / 2
+
+                    // Ensure minimum spacing between nodes
+                    if (index > 0) {
+                        const prevChild = topChildren[index - 1]
+                        const minY = prevChild.y + verticalSpacing
+                        if (child.y < minY) child.y = minY
+                    }
+
+                    allNodes.push(child)
+                    allConnections.push({ from: node, to: child })
+
+                    // Recursively position this child's subtree
+                    calculateSubtreePositions(child, childHeight, topStartY)
+
+                    // Update start Y for next child
+                    topStartY += childHeight
+                })
+            }
+
+            // Calculate positions for bottom children
+            if (bottomChildren.length > 0) {
+                const bottomHeight = (availableHeight * bottomNodesCount) / totalNodesCount
+                let bottomStartY = startY + (availableHeight * topNodesCount) / totalNodesCount
+
+                bottomChildren.forEach((child, index) => {
+                    // Calculate subtree node count for this child
+                    const childNodesCount = countSubtreeNodes(child)
+                    const childHeight = (bottomHeight * childNodesCount) / bottomNodesCount
+
+                    // Position this child
+                    child.x = node.x + horizontalSpacing
+                    child.y = bottomStartY + childHeight / 2 + (index * verticalSpacing) / 2
+
+                    // Ensure minimum spacing between nodes
+                    if (index > 0) {
+                        const prevChild = bottomChildren[index - 1]
+                        const minY = prevChild.y + verticalSpacing
+                        if (child.y < minY) child.y = minY
+                    }
+
+                    allNodes.push(child)
+                    allConnections.push({ from: node, to: child })
+
+                    // Recursively position this child's subtree
+                    calculateSubtreePositions(child, childHeight, bottomStartY)
+
+                    // Update start Y for next child
+                    bottomStartY += childHeight
+                })
+            }
+        }
+
+        calculateSubtreePositions(root, dimensions.height, 0)
+
+        // Final adjustment to ensure all nodes are within the visible area
+        const minY = Math.min(...allNodes.map((node) => node.y))
+        const maxY = Math.max(...allNodes.map((node) => node.y))
+        const verticalPadding = 50
+
+        if (minY < verticalPadding || maxY > dimensions.height - verticalPadding) {
+            const currentRange = maxY - minY
+            const targetRange = dimensions.height - 2 * verticalPadding
+            const scale = targetRange / currentRange
+
+            allNodes.forEach((node) => {
+                if (node !== root) {
+                    // Adjust Y position to fit within visible area
+                    node.y = verticalPadding + (node.y - minY) * scale
                 }
             })
+        }
 
-            // Move to next tier's x position
-            currentX += nodeSpacing
-        })
+        return { nodes: allNodes, connections: allConnections }
+    }
 
-        // Combine all nodes
-        setNodes([rootNode, ...blogNodes])
+    // Build the tree structure based on search term
+    useEffect(() => {
+        if (!searchTerm.trim()) return
+
+        setIsSearching(true)
+
+        // Small delay to allow for animation
+        setTimeout(() => {
+            // Calculate relevance for each post
+            const postsWithRelevance = blogPosts.map((post) => ({
+                ...post,
+                relevance: calculateRelevance(post, searchTerm),
+            }))
+
+            // Build binary tree
+            const root = buildBinaryTree(postsWithRelevance)
+            setRootNode(root)
+
+            if (root) {
+                // Calculate positions
+                const { nodes, connections } = calculatePositions(root)
+                setNodes(nodes)
+                setConnections(connections)
+            } else {
+                setNodes([])
+                setConnections([])
+            }
+
+            setIsSearching(false)
+        }, 500)
     }, [searchTerm, dimensions])
 
     // Update dimensions on resize
@@ -156,9 +310,13 @@ export function SearchTreeMindmap({ searchTerm }: SearchTreeMindmapProps) {
 
     // Handle node click
     const handleNodeClick = (node: MindmapNode) => {
+        setSelectedNode(node)
+
+        // Add a small delay before navigation for animation effect
         if (node.id > 0) {
-            // Only navigate for actual blog posts
-            router.push(`/blog/${node.id}`)
+            setTimeout(() => {
+                router.push(`/blog/${node.id}`)
+            }, 300)
         }
     }
 
@@ -180,21 +338,40 @@ export function SearchTreeMindmap({ searchTerm }: SearchTreeMindmapProps) {
         }
     }
 
-    // Get node size based on relevance
-    const getNodeSize = (relevance: number, isRoot: boolean) => {
-        if (isRoot) return 60
-        return 30 + relevance * 20
+    // Get node dimensions based on relevance and depth
+    const getNodeDimensions = (node: MindmapNode) => {
+        if (node.position === "root") {
+            return { width: 160, height: 70 }
+        }
+
+        // Decrease size as we go deeper
+        const baseWidth = 160 - node.depth * 5
+        const width = Math.max(130, baseWidth)
+        const height = 60
+
+        return { width, height }
     }
 
-    // Get line thickness based on relevance
-    const getLineThickness = (relevance: number) => {
-        return 1 + relevance * 3
+    // Get relevance label
+    const getRelevanceLabel = (relevance: number) => {
+        if (relevance >= 0.7) return "High"
+        if (relevance >= 0.4) return "Medium"
+        return "Low"
+    }
+
+    if (isSearching) {
+        return (
+            <div className="w-full h-full flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-kungfu-red border-t-transparent rounded-full animate-spin mr-3"></div>
+                <p className="text-lg font-medium text-kungfu-red">Tìm kiếm bài viết...</p>
+            </div>
+        )
     }
 
     if (nodes.length === 0) {
         return (
             <div className="w-full h-full flex items-center justify-center">
-                <p className="text-muted-foreground">Enter a search term to see related blog posts</p>
+                <p className="text-muted-foreground">Nhập từ khóa tìm kiếm để xem các bài viết liên quan</p>
             </div>
         )
     }
@@ -208,152 +385,163 @@ export function SearchTreeMindmap({ searchTerm }: SearchTreeMindmapProps) {
                 viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
                 className="mindmap-svg"
             >
-                {/* Background gradient for visual appeal */}
-                <defs>
-                    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#f3e5f5" stopOpacity="0.6" />
-                        <stop offset="100%" stopColor="#e8f5e9" stopOpacity="0.3" />
-                    </linearGradient>
-                    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feGaussianBlur stdDeviation="5" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                    </filter>
-                </defs>
+                {/* Background */}
+                <rect x="0" y="0" width={dimensions.width} height={dimensions.height} fill="#f8f9fa" />
 
-                <rect x="0" y="0" width={dimensions.width} height={dimensions.height} fill="url(#bg-gradient)" />
+                {/* Draw connections */}
+                <AnimatePresence>
+                    {connections.map((connection, index) => {
+                        const from = connection.from
+                        const to = connection.to
+                        const fromDimensions = getNodeDimensions(from)
+                        const toDimensions = getNodeDimensions(to)
 
-                {/* Draw connections from root to each blog node */}
-                {nodes.length > 0 &&
-                    nodes
-                        .slice(1)
-                        .map((node) => (
+                        // Create a path between nodes
+                        const startX = from.x + fromDimensions.width / 2
+                        const startY = from.y
+                        const endX = to.x - toDimensions.width / 2
+                        const endY = to.y
+
+                        // Add some curvature
+                        const controlX = (startX + endX) / 2
+                        const path = `M ${startX},${startY} C ${controlX},${startY} ${controlX},${endY} ${endX},${endY}`
+
+                        return (
                             <motion.path
-                                key={`line-${node.id}`}
-                                d={`M ${nodes[0].x},${nodes[0].y} C ${(nodes[0].x + node.x) / 2},${nodes[0].y} ${(nodes[0].x + node.x) / 2},${node.y} ${node.x},${node.y}`}
-                                stroke={getCategoryColor(node.category)}
-                                strokeWidth={getLineThickness(node.relevance)}
-                                strokeOpacity={0.6}
+                                key={`connection-${from.id}-${to.id}`}
+                                d={path}
+                                stroke="#d1d5db"
+                                strokeWidth={2}
                                 fill="none"
-                                initial={{ pathLength: 0 }}
-                                animate={{ pathLength: 1 }}
-                                transition={{ duration: 1, delay: 0.2 }}
+                                initial={{ pathLength: 0, opacity: 0 }}
+                                animate={{ pathLength: 1, opacity: 1 }}
+                                exit={{ pathLength: 0, opacity: 0 }}
+                                transition={{
+                                    duration: 0.5,
+                                    delay: 0.1 + index * 0.05,
+                                }}
                             />
-                        ))}
+                        )
+                    })}
+                </AnimatePresence>
 
                 {/* Draw nodes */}
-                {nodes.map((node, index) => {
-                    const isRoot = index === 0
-                    const nodeSize = getNodeSize(node.relevance, isRoot)
-                    const isHovered = hoveredNode?.id === node.id
+                <AnimatePresence>
+                    {nodes.map((node, index) => {
+                        const { width, height } = getNodeDimensions(node)
+                        const isHovered = hoveredNode?.id === node.id
+                        const isRoot = node.position === "root"
+                        const isSelected = selectedNode?.id === node.id
+                        const categoryColor = getCategoryColor(node.category)
 
-                    return (
-                        <g
-                            key={`node-${node.id}`}
-                            onClick={() => handleNodeClick(node)}
-                            onMouseEnter={() => setHoveredNode(node)}
-                            onMouseLeave={() => setHoveredNode(null)}
-                            style={{ cursor: node.id > 0 ? "pointer" : "default" }}
-                        >
-                            {/* Node shadow for depth effect */}
-                            <motion.circle
-                                cx={node.x}
-                                cy={node.y}
-                                r={nodeSize + 2}
-                                fill={getCategoryColor(isRoot ? "Search" : node.category)}
-                                opacity={0.3}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                            />
-
-                            {/* Main node circle */}
-                            <motion.circle
-                                cx={node.x}
-                                cy={node.y}
-                                r={nodeSize}
-                                fill={getCategoryColor(isRoot ? "Search" : node.category)}
-                                fillOpacity={isHovered ? 1 : 0.8}
-                                stroke="#fff"
-                                strokeWidth={2}
-                                filter={isHovered ? "url(#glow)" : ""}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                            />
-
-                            {/* Node title */}
-                            <motion.text
-                                x={node.x}
-                                y={node.y}
-                                textAnchor="middle"
-                                dominantBaseline="middle"
-                                fill="#fff"
-                                fontSize={isRoot ? 16 : 12}
-                                fontWeight="bold"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
+                        return (
+                            <motion.g
+                                key={`node-${node.id}`}
+                                onClick={() => handleNodeClick(node)}
+                                onMouseEnter={() => setHoveredNode(node)}
+                                onMouseLeave={() => setHoveredNode(null)}
+                                style={{ cursor: node.id > 0 ? "pointer" : "default" }}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.8 }}
+                                transition={{
+                                    type: "spring",
+                                    stiffness: 300,
+                                    damping: 25,
+                                    delay: isRoot ? 0 : 0.1 + index * 0.05,
+                                }}
                             >
-                                {isRoot ? node.title : node.title.length > 15 ? node.title.substring(0, 15) + "..." : node.title}
-                            </motion.text>
+                                {/* Node background */}
+                                <motion.rect
+                                    x={node.x - width / 2}
+                                    y={node.y - height / 2}
+                                    width={width}
+                                    height={height}
+                                    rx={6}
+                                    ry={6}
+                                    fill={isRoot ? "#f0f4ff" : "white"}
+                                    stroke={isRoot ? "#818cf8" : categoryColor}
+                                    strokeWidth={isHovered || isSelected ? 2 : 1}
+                                    filter={isHovered || isSelected ? "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))" : "none"}
+                                    whileHover={{ scale: 1.05 }}
+                                />
 
-                            {/* Relevance percentage for blog nodes */}
-                            {!isRoot && (
-                                <motion.text
+                                {/* Category indicator */}
+                                <rect
+                                    x={node.x - width / 2}
+                                    y={node.y - height / 2}
+                                    width={6}
+                                    height={height}
+                                    fill={categoryColor}
+                                    rx={3}
+                                    ry={3}
+                                />
+
+                                {/* Node title */}
+                                <text
                                     x={node.x}
-                                    y={node.y + nodeSize + 15}
+                                    y={node.y - 5}
                                     textAnchor="middle"
-                                    fill="#666"
+                                    fill="#1f2937"
+                                    fontSize={isRoot ? 12 : 10}
+                                    fontWeight="500"
+                                    className="select-none"
+                                >
+                                    {node.title.length > 20 ? node.title.substring(0, 20) + "..." : node.title}
+                                </text>
+
+                                {/* Category and relevance info */}
+                                <text
+                                    x={node.x}
+                                    y={node.y + 15}
+                                    textAnchor="middle"
+                                    fill="#6b7280"
                                     fontSize={10}
-                                    fontWeight="bold"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.5, delay: index * 0.1 + 0.4 }}
+                                    className="select-none"
                                 >
-                                    {`${Math.round(node.relevance * 100)}%`}
-                                </motion.text>
-                            )}
+                                    {isRoot ? "Search Term" : `${node.category} • ${Math.round(node.relevance * 100)}%`}
+                                </text>
 
-                            {/* Category label for blog nodes */}
-                            {!isRoot && (
-                                <motion.text
-                                    x={node.x}
-                                    y={node.y - nodeSize - 8}
-                                    textAnchor="middle"
-                                    fill={getCategoryColor(node.category)}
-                                    fontSize={9}
-                                    fontWeight="bold"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.5, delay: index * 0.1 + 0.5 }}
-                                >
-                                    {node.category}
-                                </motion.text>
-                            )}
-                        </g>
-                    )
-                })}
+                                {/* Click indicator for blog posts */}
+                            </motion.g>
+                        )
+                    })}
+                </AnimatePresence>
 
                 {/* Tooltip for hovered node */}
-                {hoveredNode && (
-                    <foreignObject
-                        x={hoveredNode.x + getNodeSize(hoveredNode.relevance, hoveredNode.id === -1) + 10}
-                        y={hoveredNode.y - 60}
-                        width={250}
-                        height={120}
-                    >
-                        <div className="bg-white/90 dark:bg-gray-800/90 p-3 rounded-lg shadow-lg text-sm border backdrop-blur-sm">
-                            <p className="font-bold text-kungfu-red">{hoveredNode.title}</p>
-                            {hoveredNode.id > 0 && (
-                                <>
-                                    <p className="text-muted-foreground text-xs">Category: {hoveredNode.category}</p>
-                                    <p className="text-muted-foreground text-xs line-clamp-2 mt-1">{hoveredNode.excerpt}</p>
-                                    <p className="text-primary text-xs mt-2 font-medium">Click to view post</p>
-                                </>
-                            )}
-                        </div>
-                    </foreignObject>
-                )}
+                <AnimatePresence>
+                    {hoveredNode && hoveredNode.id > 0 && (
+                        <motion.foreignObject
+                            x={hoveredNode.x + getNodeDimensions(hoveredNode).width / 2 + 10}
+                            y={hoveredNode.y - 70}
+                            width={280}
+                            height={140}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <div className="bg-white p-3 rounded-lg shadow-lg text-sm border border-gray-200">
+                                <p className="font-bold text-gray-900">{hoveredNode.title}</p>
+                                <div className="flex items-center mt-1">
+                  <span
+                      className="inline-block w-3 h-3 rounded-full mr-2"
+                      style={{ backgroundColor: getCategoryColor(hoveredNode.category) }}
+                  ></span>
+                                    <p className="text-gray-600 text-xs">{hoveredNode.category}</p>
+                                    <span className="mx-2 text-gray-400">•</span>
+                                    <p className="text-gray-600 text-xs">
+                                        {getRelevanceLabel(hoveredNode.relevance)} ({Math.round(hoveredNode.relevance * 100)}%)
+                                    </p>
+                                </div>
+                                <p className="text-gray-600 text-xs line-clamp-2 mt-2">{hoveredNode.excerpt}</p>
+                                <div className="mt-2 bg-gray-100 text-gray-800 py-1 px-2 rounded text-center text-xs font-medium">
+                                    Click vào node để xem bài viết
+                                </div>
+                            </div>
+                        </motion.foreignObject>
+                    )}
+                </AnimatePresence>
             </svg>
         </div>
     )
