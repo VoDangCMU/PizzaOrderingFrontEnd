@@ -10,31 +10,58 @@ import Link from "next/link"
 
 const pizzas = [
     {
-        id: 1,
-        name: "Dragon's Breath",
+        id: 166,
+        name: "The Hawaiian Pizza",
         description:
             "Spicy pepperoni, jalapeños, and dragon fruit on our signature crust, finished with a fiery sauce that brings the heat of a dragon's breath.",
         price: "$18.99",
-        image: "https://i.imgur.com/ts6tQmj.jpeg?height=200&width=200",
-        category: "Specialty",
+        image: "https://pizzas.khoav4.com/The Hawaiian Pizza.png?height=200&width=200",
+        category: "Classic",
     },
     {
-        id: 2,
-        name: "Tai Chi Supreme",
+        id: 192,
+        name: "The Pepper Salami Pizza",
         description:
-            "A balanced harmony of vegetables and cheeses, representing the yin and yang of flavors. Perfect for those seeking balance in their meal.",
+            "Hearty vinegar and emu stew, slow-cooked with chives and kohlrabi for a comforting, flavorful meal..",
         price: "$16.99",
-        image: "https://i.imgur.com/ts6tQmj.jpeg?height=200&width=200",
-        category: "Vegetarian",
+        image: "https://pizzas.khoav4.com/The Pepper Salami Pizza.png?height=200&width=200",
+        category: "Supreme",
     },
     {
-        id: 3,
-        name: "Wudang Master",
+        id: 177,
+        name: "The Italian Capocollo Pizza",
         description:
-            "Our signature pizza with five secret ingredients, passed down through generations of pizza masters. A true taste of tradition.",
+            "A classic pie filled with delicious beef and spicy scallops, baked in a salty pastry crust and topped with a golden-brown lattice.",
         price: "$21.99",
-        image: "https://i.imgur.com/ts6tQmj.jpeg?height=200&width=200",
-        category: "Signature",
+        image: "https://pizzas.khoav4.com/The Italian Capocollo Pizza.png?height=200&width=200",
+        category: "Classic",
+    },
+    {
+        id: 174,
+        name: "The Greek Pizza",
+        description:
+            "Baked parrotfish-stuffed venison, seasoned with caraway seed and rich herbs, accompanied by roasted radish medley.",
+        price: "$21.99",
+        image: "https://pizzas.khoav4.com/The Greek Pizza.png?height=200&width=200",
+        category: "Classic",
+    },
+    {
+        id: 181,
+        name: "The Southwest Chicken Pizza",
+        description:
+            "Three carob carrot with cornichons, bean shoots, parsnip, cabbage and tamari. With a side of baked nectarine, and your choice of white bread or candle nut.",
+        price: "$21.99",
+        image: "https://pizzas.khoav4.com/The Southwest Chicken Pizza.png?height=200&width=200",
+        category: "Chicken",
+    },
+    {
+        id: 184,
+        name: "The Chicken Pesto Pizza",
+        description:
+            "A simple cherry pie. No fancy stuff. Just pie.",
+        price: "$21.99",
+        image: "https://pizzas.khoav4.com/The Chicken Pesto Pizza.png?height=200&width=200",
+        category: "Chicken",
     },
 ]
 

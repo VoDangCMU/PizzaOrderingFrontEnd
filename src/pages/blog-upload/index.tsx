@@ -13,6 +13,8 @@ import { toast } from "@/components/ui/use-toast"
 import { RichTextEditor } from "@/components/contents/blog/rich-text-editor"
 import { FileText, Save, Sparkles, BookOpen, Lightbulb } from "lucide-react"
 import { useBlogContext } from "@/context/blog-context"
+import axios from "axios";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 
 export default function BlogUploadPage() {
     const router = useRouter()
@@ -20,7 +22,48 @@ export default function BlogUploadPage() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [title, setTitle] = useState("")
     const [body, setBody] = useState("")
+    const ai_api = localStorage.getItem("ai_api")
 
+    const [showPopover, setShowPopover] = useState(false)
+    const [aiApiInput, setAiApiInput] = useState(localStorage.getItem("ai_api") || "")
+    const [socketApiInput, setSocketApiInput] = useState(localStorage.getItem("socket_api") || "")
+
+    const handleSaveApis = () => {
+        localStorage.setItem("ai_api", aiApiInput)
+        localStorage.setItem("socket_api", socketApiInput)
+        toast({
+            title: "API settings saved",
+            description: "The API endpoints have been updated in localStorage.",
+        })
+        setShowPopover(false)
+    }
+
+    const handleGenerateBody = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setIsSubmitting(true)
+
+        try {
+            const response = await axios.post(`${ai_api}/generate_post`, {
+                description: title,
+                length : 30
+            })
+
+            if (response.status !== 200) {
+                throw new Error("Failed to generate content")
+            }
+
+            const generatedContent = response.data.response
+            setBody(generatedContent)
+        } catch {
+            toast({
+                title: "Error generating content",
+                description: "There was an error generating the blog post content. Please try again.",
+                variant: "destructive",
+            })
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
@@ -117,6 +160,50 @@ export default function BlogUploadPage() {
                             Share your knowledge and experiences with the Võ Đang Pizza community
                         </p>
                     </motion.div>
+                    <div className="flex justify-between items-center pb-4">
+                        <Popover
+                            open={showPopover} onOpenChange={setShowPopover}>
+                            <PopoverTrigger
+                                asChild>
+                                <Button variant="outline" className="text-sm">⚙️ Set API Endpoints</Button>
+                            </ PopoverTrigger>
+                            <PopoverContent
+                                className="w-80 bg-white border-amber-200 shadow-md space-y-4">
+                                <div>
+                                    <Label htmlFor="ai-api" className="text-sm">AI API Endpoint</Label>
+                                    <Input
+                                        id="ai-api"
+                                        value={aiApiInput}
+                                        onChange={(e) => setAiApiInput(e.target.value)}
+                                        placeholder="https://your-ai-api.com"
+                                        className="mt-1"
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor="socket-api" className="text-sm">Socket API Endpoint</Label>
+                                    <Input
+                                        id="socket-api"
+                                        value={socketApiInput}
+                                        onChange={(e) => setSocketApiInput(e.target.value)}
+                                        placeholder="wss://your-socket-api.com"
+                                        className="mt-1"
+                                    />
+                                </div>
+                                <div className="flex justify-end">
+                                    <Button size="sm" onClick={handleSaveApis}>Save</Button>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+
+                        <Button
+                            variant="ghost"
+                            className="text-kungfu-red hover:bg-red-50 hover:text-red-600 text-sm"
+                            onClick={(e) => handleGenerateBody(e)}
+                            disabled={isSubmitting}
+                        >
+                            ✨ Auto-generate Body
+                        </Button>
+                    </div>
 
                     <motion.div variants={itemVariants}>
                         <Card className="border-amber-200 bg-white/90 backdrop-blur-sm shadow-md overflow-hidden">

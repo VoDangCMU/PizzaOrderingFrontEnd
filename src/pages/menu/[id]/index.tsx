@@ -202,7 +202,7 @@ export default function PizzaDetailPage() {
                         <Card className="overflow-hidden kungfu-card border-kungfu-gold/30">
                             <div className="aspect-square relative">
                                 <Image
-                                    src={"https://i.imgur.com/ts6tQmj.jpeg"}
+                                    src={ `https://pizzas.khoav4.com/${pizza.name}.png` || "/placeholder.svg"}
                                     alt={pizza.name}
                                     fill
                                     className="object-cover"

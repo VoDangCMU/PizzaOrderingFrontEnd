@@ -129,7 +129,7 @@ export default function MenuPage() {
                                     <Card className="h-full flex flex-col overflow-hidden border-primary/10 shadow-lg hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm">
                                         <div className="aspect-square overflow-hidden relative group">
                                             <Image
-                                                src={ "https://i.imgur.com/ts6tQmj.jpeg"}
+                                                src={ `https://pizzas.khoav4.com/${pizza.name}.png` || "/placeholder.svg"}
                                                 alt={pizza.name}
                                                 width={300}
                                                 height={300}

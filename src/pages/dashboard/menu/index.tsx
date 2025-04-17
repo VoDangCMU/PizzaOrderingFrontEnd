@@ -101,11 +101,9 @@ export default function MenuPage() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">All Categories</SelectItem>
-                                    <SelectItem value="Specialty">Specialty</SelectItem>
+                                    <SelectItem value="Chicken">Specialty</SelectItem>
                                     <SelectItem value="Vegetarian">Vegetarian</SelectItem>
-                                    <SelectItem value="Meat">Meat</SelectItem>
                                     <SelectItem value="Classic">Classic</SelectItem>
-                                    <SelectItem value="Signature">Signature</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -132,7 +130,7 @@ export default function MenuPage() {
                                               className="h-10 w-10 rounded-md bg-muted flex items-center justify-center">
                                             {item.image ? (
                                                 <img
-                                                    src={item.image || "/placeholder.svg"}
+                                                    src={`https://pizzas.khoav4.com/${item.name}.png` || "/placeholder.svg"}
                                                     alt={item.name}
                                                     className="h-full w-full object-cover rounded-md"
                                                 />

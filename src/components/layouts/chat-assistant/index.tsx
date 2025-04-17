@@ -31,7 +31,7 @@ export function ChatAssistant() {
     ])
     const [input, setInput] = useState("")
     const scrollAreaRef = useRef<HTMLDivElement>(null)
-
+    const ai_api = localStorage.getItem("ai_api")
     useEffect(() => {
         if (scrollAreaRef.current) {
             const scrollContainer = scrollAreaRef.current.querySelector("[data-radix-scroll-area-viewport]")
@@ -41,7 +41,7 @@ export function ChatAssistant() {
         }
     }, [messages])
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (!input.trim()) return
 
         const userMessage: Message = {
@@ -55,26 +55,44 @@ export function ChatAssistant() {
         setInput("")
         setIsTyping(true)
 
-        setTimeout(() => {
-            const responses = [
-                "Our signature Võ Đang Supreme Pizza combines ancient flavors with modern techniques. Would you like to try it?",
-                "The secret to our perfect crust is the balance of yin and yang in our dough preparation. It's all about harmony!",
-                "We have a special discount for martial arts practitioners. Just show your belt or membership card!",
-                "Our delivery ninjas can bring your order faster than you can say 'Võ Đang Mountain'!",
-                "Have you tried our Dragon's Breath pizza? It's spicy but balanced, just like a perfect martial arts form.",
-            ]
+        try {
+            const res = await fetch(`${ai_api}/chat`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    query: input,
+                }),
+            })
+
+            const data = await res.json()
 
             const assistantMessage: Message = {
                 id: (Date.now() + 1).toString(),
-                content: responses[Math.floor(Math.random() * responses.length)],
+                content: data.reply || "Sorry, I didn't get that.",
                 sender: "assistant",
                 timestamp: new Date(),
             }
 
-            setIsTyping(false)
             setMessages((prev) => [...prev, assistantMessage])
-        }, 1500)
+        } catch (err) {
+            console.error("Failed to fetch AI response:", err)
+
+            setMessages((prev) => [
+                ...prev,
+                {
+                    id: (Date.now() + 1).toString(),
+                    content: "Oops! Something went wrong. Please try again later.",
+                    sender: "assistant",
+                    timestamp: new Date(),
+                },
+            ])
+        } finally {
+            setIsTyping(false)
+        }
     }
+
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Enter") {

@@ -16,9 +16,9 @@ export default function Home() {
     const valuesInView = useInView(valuesRef, { once: true, amount: 0.2 })
     const ctaInView = useInView(ctaRef, { once: true, amount: 0.2 })
 
+
     useEffect(() => {
         const animateElements = document.querySelectorAll(".animate-on-scroll")
-
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
