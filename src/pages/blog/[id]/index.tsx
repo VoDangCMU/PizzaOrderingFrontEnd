@@ -1,58 +1,58 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ChevronLeft, Star, Calendar, User, Share2 } from "lucide-react"
-import { blogPosts } from "@/data/blog-posts"
-import { BlogComments } from "@/components/contents/blog/blog-comments"
-import { RelatedPosts } from "@/components/contents/blog/related-posts"
-import { calculateSimilarity } from "@/lib/similarity"
-import Image from "next/image"
+import {
+    ChevronLeft,
+    Calendar,
+    MoreHorizontal,
+    MessageSquare,
+    Smile,
+} from "lucide-react"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { detectEmotion } from "@/lib/emotion-detector"
+import { BlogChatbot } from "@/components/contents/blog/blog-chatbot"
 import Link from "next/link";
-
+import axios from "axios";
 
 interface Blog {
-    id: number,
-    title: string,
-    author: string,
-    tags: string[],
-    date : string,
-    category: string,
-    rating: number,
-    image: string,
-    excerpt: string,
+    id: number
+    title: string
+    body: string
+    createdAt: string
 }
+
 export default function BlogPostPage() {
     const params = useParams()
     const router = useRouter()
-    const [post, setPost] = useState<Blog>()
-    const [relatedPosts, setRelatedPosts] = useState<Blog[]>([])
+    const [post, setPost] = useState<Blog | null>(null)
     const [loading, setLoading] = useState(true)
+    const [showChatbot, setShowChatbot] = useState(false)
+    const [showEmotionDetector, setShowEmotionDetector] = useState(false)
 
     useEffect(() => {
-        const postId = Number(params.id)
-        const foundPost = blogPosts.find((p) => p.id === postId)
+        const fetchPost = async () => {
+            try {
+                const postId = Number(params.id)
+                const response = await axios.get(`/api/blog/by-id/${postId}`)
 
-        if (foundPost) {
-            setPost(foundPost)
-
-            const related = blogPosts
-                .filter((p) => p.id !== postId)
-                .map((p) => ({
-                    ...p,
-                    similarity: calculateSimilarity(foundPost, p),
-                }))
-                .sort((a, b) => b.similarity - a.similarity)
-                .slice(0, 3)
-
-            setRelatedPosts(related)
+                if (response.status === 200) {
+                    setPost(response.data.data)
+                } else {
+                    router.push("/blog")
+                }
+            } catch (error) {
+                console.error("Failed to fetch blog post:", error)
+                router.push("/blog")
+            } finally {
+                setLoading(false)
+            }
         }
 
-        setLoading(false)
-    }, [params.id])
+        fetchPost()
+    }, [params.id, router])
+
 
     if (loading) {
         return (
@@ -71,20 +71,83 @@ export default function BlogPostPage() {
                 <div className="text-center">
                     <p className="text-lg text-muted-foreground">Post not found</p>
                     <Button asChild className="mt-4">
-                        <Link href="../blog">Back to Blog</Link>
+                        <Link href="/blog">Back to Blog</Link>
                     </Button>
                 </div>
             </div>
         )
     }
 
+    const emotion = post ? detectEmotion(post.body) : { name: "Informative", emoji: "📚" }
+
     return (
-        <div className="min-h-screen pt-24 pb-16">
-            <div className="container px-4">
-                <Button variant="ghost" size="sm" className="mb-6" onClick={() => router.push("/blog")}>
-                    <ChevronLeft className="h-4 w-4 mr-2" />
-                    Back to Blog
-                </Button>
+        <div className="min-h-screen pt-24 pb-16 bg-gradient-to-b from-amber-50/50 via-white to-red-50/30">
+            {/* Decorative elements */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+                <div className="absolute -top-24 -right-24 w-96 h-96 bg-red-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+                <div className="absolute top-1/3 -left-24 w-96 h-96 bg-amber-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+                <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-red-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+            </div>
+
+            <div className="container px-4 relative z-10">
+                <div className="flex justify-between items-center mb-6">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => router.push("/blog")}
+                        className="hover:bg-amber-100 transition-colors"
+                    >
+                        <ChevronLeft className="h-4 w-4 mr-2" />
+                        Back to Blog
+                    </Button>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-amber-100 transition-colors">
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="border-amber-200 bg-white/90 backdrop-blur-sm">
+                            <Dialog open={showChatbot} onOpenChange={setShowChatbot}>
+                                <DialogTrigger asChild>
+                                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="hover:bg-amber-50">
+                                        <MessageSquare className="mr-2 h-4 w-4 text-kungfu-red" />
+                                        <span>Chat about this post</span>
+                                    </DropdownMenuItem>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px] border-amber-200 bg-white/90 backdrop-blur-sm">
+                                    <DialogHeader>
+                                        {/*<DialogTitle className="text-kungfu-red">Chat about "{post.title}"</DialogTitle>*/}
+                                    </DialogHeader>
+                                    <BlogChatbot postTitle={post.title} />
+                                </DialogContent>
+                            </Dialog>
+
+                            <Dialog open={showEmotionDetector} onOpenChange={setShowEmotionDetector}>
+                                <DialogTrigger asChild>
+                                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="hover:bg-amber-50">
+                                        <Smile className="mr-2 h-4 w-4 text-amber-500" />
+                                        <span>Detect emotion</span>
+                                    </DropdownMenuItem>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px] border-amber-200 bg-white/90 backdrop-blur-sm">
+                                    <DialogHeader>
+                                        <DialogTitle className="text-kungfu-red">Emotion Analysis</DialogTitle>
+                                    </DialogHeader>
+                                    <div className="flex items-center justify-center p-6">
+                                        <div className="text-center">
+                                            <div className="text-6xl mb-4 animate-bounce">{emotion.emoji}</div>
+                                            <p className="text-xl font-bold text-kungfu-red">{emotion.name}</p>
+                                            <p className="text-sm text-muted-foreground mt-2">
+                                                This post has a {emotion.name} tone based on its content.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
 
                 <article className="max-w-4xl mx-auto">
                     <motion.header
@@ -93,120 +156,31 @@ export default function BlogPostPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
                     >
-                        <div className="flex flex-wrap gap-2 mb-4">
-                            <Badge className="bg-kungfu-red text-white">{post.category}</Badge>
-                            {post.tags.map((tag: string) => (
-                                <Badge key={tag} variant="outline" className="bg-kungfu-red/10">
-                                    {tag}
-                                </Badge>
-                            ))}
-                        </div>
-
-                        <h1 className="text-3xl md:text-5xl font-bold mb-4 kungfu-text">{post.title}</h1>
+                        <h1 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-kungfu-red via-red-600 to-amber-700 bg-clip-text text-transparent">
+                            {post.title}
+                        </h1>
 
                         <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
-                            <div className="flex items-center">
-                                <Calendar className="w-4 h-4 mr-1" />
-                                {post.date}
-                            </div>
-                            <div className="flex items-center">
-                                <User className="w-4 h-4 mr-1" />
-                                {post.author}
-                            </div>
-                            <div className="flex items-center">
-                                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 mr-1" />
-                                <span>{post.rating.toFixed(1)}</span>
+                            <div className="flex items-center bg-amber-50 px-3 py-1 rounded-full">
+                                <Calendar className="w-4 h-4 mr-1 text-amber-500" />
+                                {new Date(post.createdAt).toLocaleDateString("en-US", {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                })}
                             </div>
                         </div>
                     </motion.header>
 
                     <motion.div
-                        className="relative aspect-video mb-8 rounded-xl overflow-hidden"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                    >
-                        <Image src={post.image || "/placeholder.svg"} alt={post.title} fill className="object-cover" />
-                    </motion.div>
-
-                    <motion.div
-                        className="prose prose-lg max-w-none mb-12"
+                        className="prose prose-lg max-w-none mb-12 bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-amber-100"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.3 }}
-                    >
-                        <p className="lead text-xl mb-6">{post.excerpt}</p>
-
-                        <h2>The Art of Pizza Making</h2>
-                        <p>
-                            At Võ Đang Pizza, we believe that making pizza is not just cooking it is a form of martial art. Each
-                            movement, from kneading the dough to arranging the toppings, requires precision, discipline, and years of
-                            practice to master.
-                        </p>
-
-                        <p>
-                            The {post.title} exemplifies this philosophy. Our master chefs train for years to perfect the balance of
-                            flavors and textures that make this pizza special. Like a kung fu master who understands that true power
-                            comes from harmony and balance, our pizza artisans know that the perfect pizza is about the harmony of
-                            ingredients.
-                        </p>
-
-                        <h2>Ingredients and Preparation</h2>
-                        <p>
-                            We source only the finest ingredients for our {post.title}. The dough is prepared 48 hours in advance,
-                            allowing it to develop complex flavors through slow fermentation. This patience is reminiscent of the
-                            martial arts philosophy that mastery cannot be rushed.
-                        </p>
-
-                        <p>
-                            The sauce is made from San Marzano tomatoes, hand-crushed and simmered with a secret blend of herbs. Our
-                            cheese is a special mixture that provides the perfect melt and stretch. And the toppings are arranged with
-                            the precision of a martial arts form, ensuring every bite delivers the perfect balance of flavors.
-                        </p>
-
-                        <h2>The Tasting Experience</h2>
-                        <p>
-                            When you take your first bite of the {post.title}, you will understand why we consider pizza-making a
-                            martial art. The crispy yet chewy crust, the tangy sauce, the melty cheese, and the perfectly balanced
-                            toppings create a symphony of flavors that is both powerful and harmonious.
-                        </p>
-
-                        <p>
-                            Like a well-executed kung fu move, this pizza appears simple but contains layers of complexity that reveal
-                            themselves with each bite. It is an experience that engages all your senses and leaves you with a deep
-                            appreciation for the craft.
-                        </p>
-
-                        <h2>Conclusion</h2>
-                        <p>
-                            The {post.title} is not just food it is a testament to our dedication to the art of pizza-making. We invite
-                            you to experience this masterpiece for yourself and discover why our customers consider it one of the
-                            finest pizzas they have ever tasted.
-                        </p>
-                    </motion.div>
-
-                    <motion.div
-                        className="flex items-center justify-between py-6 border-t border-b mb-12"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.6, delay: 0.4 }}
-                    >
-                        <div className="text-sm font-medium">Share this article</div>
-                        <div className="flex gap-2">
-                            <Button variant="outline" size="icon">
-                                <Share2 className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    </motion.div>
-
-                    <BlogComments postId={post.id} />
+                        dangerouslySetInnerHTML={{ __html: post.body }}
+                    />
                 </article>
-
-                <div className="mt-16">
-                    <RelatedPosts posts={relatedPosts} />
-                </div>
             </div>
         </div>
     )
 }
-

@@ -75,4 +75,3 @@ export function FeaturedPost({ post }: FeaturedPostProps) {
         </motion.div>
     )
 }
-

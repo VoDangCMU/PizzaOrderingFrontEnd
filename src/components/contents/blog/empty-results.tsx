@@ -35,7 +35,7 @@ export function EmptyResults() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
                 >
-                    We couldn not find any blog posts matching your search criteria.
+                    We couldn't find any blog posts matching your search criteria.
                 </motion.p>
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -53,4 +53,3 @@ export function EmptyResults() {
         </motion.div>
     )
 }
-

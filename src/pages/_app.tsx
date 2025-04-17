@@ -9,6 +9,7 @@ import {useRouter} from "next/router";
 import {Provider} from "react-redux";
 import AuthProvider from "@/components/provider/auth-provider";
 import {store} from "@/store";
+import {BlogProvider} from "@/context/blog-context";
 
 
 function App({Component, pageProps}: AppProps) {
@@ -32,13 +33,17 @@ function App({Component, pageProps}: AppProps) {
         <>
             <Provider store={store}>
                 <AuthProvider>
-                    {!hiddenHeader.includes(router.pathname) && <Header/>}
-                    <Component {...pageProps} />
-                    <Footer/>
+                    {/*<CartProvider>*/}
+                    <BlogProvider>
+                        {!hiddenHeader.includes(router.pathname) && <Header/>}
+                        <Component {...pageProps} />
+                        <Footer/>
+                    </BlogProvider>
                 </AuthProvider>
             </Provider>
         </>
 
     );
 }
+
 export default App;
