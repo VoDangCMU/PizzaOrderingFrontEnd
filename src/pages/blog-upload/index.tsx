@@ -44,7 +44,8 @@ export default function BlogUploadPage() {
 
         try {
             const response = await axios.post(`${ai_api}/generate_post`, {
-                description: title,
+                title : title,
+                description: body,
                 length : 30
             })
 
