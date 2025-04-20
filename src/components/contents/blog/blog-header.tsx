@@ -1,7 +1,6 @@
 "use client"
 
 import { motion } from "framer-motion"
-import Image from "next/image"
 import { Sparkles, BookOpen } from "lucide-react"
 
 export function BlogHeader() {
@@ -59,7 +58,6 @@ export function BlogHeader() {
                     transition={{ duration: 0.6, delay: 0.4 }}
                 >
                     <div className="h-px bg-gradient-to-r from-transparent via-amber-300 to-transparent flex-grow"></div>
-                    <Image src="/kungfu-divider.png" alt="Kungfu Divider" width={80} height={20} className="object-contain" />
                     <div className="h-px bg-gradient-to-r from-transparent via-amber-300 to-transparent flex-grow"></div>
                 </motion.div>
             </motion.div>

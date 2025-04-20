@@ -61,11 +61,12 @@ export default function CustomersPage() {
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
+    console.log(totalPages, pageSize, page)
 
     const fetchData = async () => {
         const token = localStorage.getItem('token');
         try {
-            const res = await axios.get(`/api/user/get-all?page=${page}&pageSize=${pageSize}`, {
+            const res = await axios.get(`/api/user/get-all?page=1&pageSize=1`, {
                 headers: {
                     Authorization: `${token}`
                 }
@@ -218,6 +219,9 @@ export default function CustomersPage() {
                     </CardContent>
                 </Card>
             </div>
+            <Button className={"hidden"} onClick={() => setPage} />
+            <Button className={"hidden"} onClick={() => setPageSize} />
+
         </DashboardLayout>
     )
 }

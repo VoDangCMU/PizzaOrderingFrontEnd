@@ -1,3 +1,5 @@
+"use client"
+
 import type React from "react"
 
 import { useState } from "react"
@@ -6,21 +8,49 @@ import { Input } from "@/components/ui/input"
 import { Info, Search } from "lucide-react"
 import { SearchTreeMindmap } from "@/components/contents/blog/search-tree-mindmap"
 import { motion, AnimatePresence } from "framer-motion"
+import axios from "axios";
+
+interface SearchResult {
+    id: string
+    title: string
+    similarity: number
+    content: string
+}
+
+interface SearchResponse {
+    results: SearchResult[]
+}
 
 export default function BlogMapPage() {
     const [showInfo, setShowInfo] = useState(false)
-    const [searchTerm, setSearchTerm] = useState("pizza")
-    const [inputValue, setInputValue] = useState("pizza")
+    const [searchTerm, setSearchTerm] = useState("")
+    const [inputValue, setInputValue] = useState("")
     const [isSearching, setIsSearching] = useState(false)
-
-    const handleSearch = (e: React.FormEvent) => {
+    const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+    const ai_api = localStorage.getItem("ai_api")
+    const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (inputValue.trim()) {
-            setIsSearching(true)
-            setTimeout(() => {
-                setSearchTerm(inputValue)
-                setIsSearching(false)
-            }, 500)
+        if (!inputValue.trim()) return
+
+        setIsSearching(true)
+        setSearchTerm(inputValue)
+
+        try {
+            const response = await axios.post(`${ai_api}/search`, {
+                content : inputValue,
+                limit: 10,
+            })
+
+            if (response.status != 200) {
+                throw new Error("Search request failed")
+            }
+
+            const data: SearchResponse =  response.data
+            setSearchResults(data.results)
+        } catch (error) {
+            console.error("Search error:", error)
+        } finally {
+            setIsSearching(false)
         }
     }
 
@@ -58,7 +88,7 @@ export default function BlogMapPage() {
                                 <li>Nhập từ khóa tìm kiếm để xem các bài viết liên quan</li>
                                 <li>Node gốc (bên trái) đại diện cho từ khóa tìm kiếm của bạn</li>
                                 <li>Mỗi node chỉ có tối đa 2 node con, tạo thành cấu trúc cây nhị phân ngang</li>
-                                <li>Các bài viết được sắp xếp theo độ liên quan với từ khóa tìm kiếm</li>
+                                <li>Các bài viết được sắp xếp theo độ tương đồng (similarity) với từ khóa tìm kiếm</li>
                                 <li>Di chuột qua các node để xem thông tin chi tiết</li>
                                 <li>Nhấp vào node bài viết để xem nội dung đầy đủ</li>
                             </ul>
@@ -90,7 +120,7 @@ export default function BlogMapPage() {
                 </form>
 
                 <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden h-[calc(100vh-280px)]">
-                    <SearchTreeMindmap searchTerm={searchTerm} />
+                    <SearchTreeMindmap searchTerm={searchTerm} searchResults={searchResults} />
                 </div>
             </div>
         </div>

@@ -2,9 +2,17 @@ export const blogPosts = [
     {
         id: 1,
         title: "Dragon's Breath Pizza: A Fiery Delight",
+        excerpt:
+            "Our Zen Garden Veggie Pizza offers a perfect balance of fresh vegetables and delicate herbs. It's a meditation for your palate!",
+        date: "April 22, 2023",
+        author: "Sifu Chen",
+        image: "https://i.imgur.com/pclqHD4.jpeg?height=300&width=500",
+        rating: 4.8,
+        category: "Vegetarian",
         body:
             "Experience the heat and flavor of our signature Dragon's Breath Pizza. This spicy masterpiece will awaken your taste buds and test your kungfu spirit!",
         createdAt: "March 15, 2023",
+        tags: ["vegetarian", "balanced", "herbs", "meditation"],
     },
     {
         id: 2,
