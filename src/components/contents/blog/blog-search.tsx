@@ -22,7 +22,7 @@ export function BlogSearch({ searchTerm, onSearchChange }: BlogSearchProps) {
     const router = useRouter()
     const [suggestions, setSuggestions] = useState<Blog[]>([])
     const [isTyping, setIsTyping] = useState(false)
-
+    console.log(isTyping)
     useEffect(() => {
         const fetchSuggestions = async () => {
             if (!searchTerm.trim()) {

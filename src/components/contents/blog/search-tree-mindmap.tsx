@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { useRouter } from "next/navigation"
+import {useState, useRef, useEffect, useCallback} from "react"
+import {motion, AnimatePresence} from "framer-motion"
+import {useRouter} from "next/navigation"
+import {MoreHorizontal} from "lucide-react";
 
 interface SearchResult {
     id: string
@@ -29,20 +30,19 @@ interface SearchTreeMindmapProps {
     searchResults: SearchResult[]
 }
 
-export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindmapProps) {
+export function SearchTreeMindmap({searchTerm, searchResults}: SearchTreeMindmapProps) {
     const router = useRouter()
     const svgRef = useRef<SVGSVGElement>(null)
     const [nodes, setNodes] = useState<MindmapNode[]>([])
     const [connections, setConnections] = useState<{ from: MindmapNode; to: MindmapNode }[]>([])
     const [hoveredNode, setHoveredNode] = useState<MindmapNode | null>(null)
-    const [dimensions, setDimensions] = useState({ width: 1000, height: 600 })
+    const [dimensions, setDimensions] = useState({width: 1000, height: 600})
     const [isSearching, setIsSearching] = useState(false)
     const [rootNode, setRootNode] = useState<MindmapNode | null>(null)
     const [selectedNode, setSelectedNode] = useState<MindmapNode | null>(null)
-
+    console.log(rootNode)
     // Build binary tree structure
-    const buildBinaryTree = (results: SearchResult[], maxDepth = 4) => {
-        if (results.length === 0) return null
+    const buildBinaryTree = useCallback((results: SearchResult[], maxDepth = 4) => {        if (results.length === 0) return null
 
         // Create root node
         const root: MindmapNode = {
@@ -110,11 +110,10 @@ export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindm
         }
 
         return root
-    }
+    }, [searchTerm, dimensions.height])
 
     // Calculate positions for all nodes in the tree - HORIZONTAL LAYOUT with EVEN SPACING
-    const calculatePositions = (root: MindmapNode | null) => {
-        if (!root) return { nodes: [], connections: [] }
+    const calculatePositions = useCallback((root: MindmapNode | null) => {        if (!root) return {nodes: [], connections: []}
 
         // Improved spacing for better visualization
         const horizontalSpacing = 220 // Space between depth levels (horizontal)
@@ -168,7 +167,7 @@ export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindm
                     }
 
                     allNodes.push(child)
-                    allConnections.push({ from: node, to: child })
+                    allConnections.push({from: node, to: child})
 
                     // Recursively position this child's subtree
                     calculateSubtreePositions(child, childHeight, topStartY)
@@ -200,7 +199,7 @@ export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindm
                     }
 
                     allNodes.push(child)
-                    allConnections.push({ from: node, to: child })
+                    allConnections.push({from: node, to: child})
 
                     // Recursively position this child's subtree
                     calculateSubtreePositions(child, childHeight, bottomStartY)
@@ -231,8 +230,8 @@ export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindm
             })
         }
 
-        return { nodes: allNodes, connections: allConnections }
-    }
+        return {nodes: allNodes, connections: allConnections}
+    }, [dimensions.height])
 
     // Build the tree structure based on search results
     useEffect(() => {
@@ -240,15 +239,12 @@ export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindm
 
         setIsSearching(true)
 
-        // Small delay to allow for animation
         setTimeout(() => {
-            // Build binary tree
             const root = buildBinaryTree(searchResults)
             setRootNode(root)
 
             if (root) {
-                // Calculate positions
-                const { nodes, connections } = calculatePositions(root)
+                const {nodes, connections} = calculatePositions(root)
                 setNodes(nodes)
                 setConnections(connections)
             } else {
@@ -258,14 +254,15 @@ export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindm
 
             setIsSearching(false)
         }, 300)
-    }, [searchTerm, searchResults, dimensions])
+    }, [searchTerm, searchResults, dimensions, buildBinaryTree, calculatePositions])
+
 
     // Update dimensions on resize
     useEffect(() => {
         const updateDimensions = () => {
             if (svgRef.current) {
-                const { width, height } = svgRef.current.getBoundingClientRect()
-                setDimensions({ width, height })
+                const {width, height} = svgRef.current.getBoundingClientRect()
+                setDimensions({width, height})
             }
         }
 
@@ -286,17 +283,17 @@ export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindm
         }
     }
 
-    // Get color based on similarity
-    const getSimilarityColor = (similarity: number) => {
-        if (similarity >= 0.7) return "#2e7d32" // High similarity - green
-        if (similarity >= 0.3) return "#e65100" // Medium similarity - orange
-        return "#b71c1c" // Low similarity - red
-    }
+    // // Get color based on similarity
+    // const getSimilarityColor = (similarity: number) => {
+    //     if (similarity >= 0.7) return "#2e7d32" // High similarity - green
+    //     if (similarity >= 0.3) return "#e65100" // Medium similarity - orange
+    //     return "#b71c1c" // Low similarity - red
+    // }
 
     // Get node dimensions based on similarity and depth
     const getNodeDimensions = (node: MindmapNode) => {
         if (node.position === "root") {
-            return { width: 160, height: 70 }
+            return {width: 160, height: 70}
         }
 
         // Decrease size as we go deeper
@@ -304,20 +301,21 @@ export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindm
         const width = Math.max(130, baseWidth)
         const height = 60
 
-        return { width, height }
+        return {width, height}
     }
 
-    // Get similarity label
-    const getSimilarityLabel = (similarity: number) => {
-        if (similarity >= 0.7) return "High"
-        if (similarity >= 0.3) return "Medium"
-        return "Low"
-    }
+    // // Get similarity label
+    // const getSimilarityLabel = (similarity: number) => {
+    //     if (similarity >= 0.7) return "High"
+    //     if (similarity >= 0.3) return "Medium"
+    //     return "Low"
+    // }
 
     if (isSearching) {
         return (
             <div className="w-full h-full flex items-center justify-center">
-                <div className="w-8 h-8 border-4 border-gray-400 border-t-transparent rounded-full animate-spin mr-3"></div>
+                <div
+                    className="w-8 h-8 border-4 border-gray-400 border-t-transparent rounded-full animate-spin mr-3"></div>
                 <p className="text-lg font-medium text-gray-600">Đang tìm kiếm...</p>
             </div>
         )
@@ -343,7 +341,7 @@ export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindm
                 className="mindmap-svg"
             >
                 {/* Background */}
-                <rect x="0" y="0" width={dimensions.width} height={dimensions.height} fill="#f8f9fa" />
+                <rect x="0" y="0" width={dimensions.width} height={dimensions.height} fill="#f8f9fa"/>
 
                 {/* Draw connections */}
                 <AnimatePresence>
@@ -363,16 +361,20 @@ export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindm
                         const controlX = (startX + endX) / 2
                         const path = `M ${startX},${startY} C ${controlX},${startY} ${controlX},${endY} ${endX},${endY}`
 
+                        // Get color based on similarity
+                        const connectionColor = "#d1d5db"
+                        const isHovered = hoveredNode?.id === to.id || hoveredNode?.id === from.id
+
                         return (
                             <motion.path
                                 key={`connection-${from.id}-${to.id}`}
                                 d={path}
-                                stroke="#d1d5db"
-                                strokeWidth={2}
+                                stroke={isHovered ? "#f59e0b" : connectionColor}
+                                strokeWidth={isHovered ? 3 : 2}
                                 fill="none"
-                                initial={{ pathLength: 0, opacity: 0 }}
-                                animate={{ pathLength: 1, opacity: 1 }}
-                                exit={{ pathLength: 0, opacity: 0 }}
+                                initial={{pathLength: 0, opacity: 0}}
+                                animate={{pathLength: 1, opacity: 1}}
+                                exit={{pathLength: 0, opacity: 0}}
                                 transition={{
                                     duration: 0.5,
                                     delay: 0.1 + index * 0.05,
@@ -385,11 +387,11 @@ export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindm
                 {/* Draw nodes */}
                 <AnimatePresence>
                     {nodes.map((node, index) => {
-                        const { width, height } = getNodeDimensions(node)
+                        const {width, height} = getNodeDimensions(node)
                         const isHovered = hoveredNode?.id === node.id
                         const isRoot = node.position === "root"
                         const isSelected = selectedNode?.id === node.id
-                        const nodeColor = isRoot ? "#818cf8" : getSimilarityColor(node.similarity)
+                        const nodeColor = "#f59e0b" // Amber color from the image
 
                         return (
                             <motion.g
@@ -397,10 +399,10 @@ export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindm
                                 onClick={() => handleNodeClick(node)}
                                 onMouseEnter={() => setHoveredNode(node)}
                                 onMouseLeave={() => setHoveredNode(null)}
-                                style={{ cursor: node.id !== "-1" ? "pointer" : "default" }}
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.8 }}
+                                style={{cursor: node.id !== "-1" ? "pointer" : "default"}}
+                                initial={{opacity: 0, scale: 0.8}}
+                                animate={{opacity: 1, scale: 1}}
+                                exit={{opacity: 0, scale: 0.8}}
                                 transition={{
                                     type: "spring",
                                     stiffness: 300,
@@ -408,94 +410,148 @@ export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindm
                                     delay: isRoot ? 0 : 0.1 + index * 0.05,
                                 }}
                             >
-                                {/* Node background */}
-                                <motion.rect
-                                    x={node.x - width / 2}
-                                    y={node.y - height / 2}
-                                    width={width}
-                                    height={height}
-                                    rx={6}
-                                    ry={6}
-                                    fill={isRoot ? "#f0f4ff" : "white"}
-                                    stroke={nodeColor}
-                                    strokeWidth={isHovered || isSelected ? 2 : 1}
-                                    filter={isHovered || isSelected ? "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))" : "none"}
-                                    whileHover={{ scale: 1.05 }}
-                                />
+                                {/* Card background with shadow */}
+                                <defs>
+                                    <filter id={`shadow-${node.id}`} x="-20%" y="-20%" width="140%" height="140%">
+                                        <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="rgba(0,0,0,0.15)"/>
+                                    </filter>
+                                </defs>
 
-                                {/* Category indicator */}
-                                <rect
-                                    x={node.x - width / 2}
-                                    y={node.y - height / 2}
-                                    width={6}
-                                    height={height}
-                                    fill={nodeColor}
-                                    rx={3}
-                                    ry={3}
-                                />
+                                {isRoot ? (
+                                    // Root node content
+                                    <>
+                                        <rect
+                                            x={node.x - width / 2}
+                                            y={node.y - height / 2}
+                                            width={width}
+                                            height={height}
+                                            rx={8}
+                                            ry={8}
+                                            fill="white"
+                                            stroke={nodeColor}
+                                            strokeWidth={isHovered || isSelected ? 2 : 1}
+                                            filter={isHovered || isSelected ? `url(#shadow-${node.id})` : "none"}
+                                        />
+                                        <text
+                                            x={node.x}
+                                            y={node.y}
+                                            textAnchor="middle"
+                                            fill="#1f2937"
+                                            fontSize={14}
+                                            fontWeight="bold"
+                                            className="select-none"
+                                        >
+                                            {`"${node.title}"`}
+                                        </text>
+                                    </>
+                                ) : (
+                                    // Regular node content styled as a blog card with clear title/body separation
+                                    <>
+                                        {/* Card background */}
+                                        <rect
+                                            x={node.x - width / 2}
+                                            y={node.y - height / 2}
+                                            width={width}
+                                            height={height}
+                                            rx={8}
+                                            ry={8}
+                                            fill="white"
+                                            stroke={nodeColor}
+                                            strokeWidth={isHovered || isSelected ? 2 : 1}
+                                            filter={isHovered || isSelected ? `url(#shadow-${node.id})` : "none"}
+                                        />
 
-                                {/* Node title */}
-                                <text
-                                    x={node.x}
-                                    y={node.y - 5}
-                                    textAnchor="middle"
-                                    fill="#1f2937"
-                                    fontSize={isRoot ? 12 : 10}
-                                    fontWeight="500"
-                                    className="select-none"
-                                >
-                                    {node.title.length > 20 ? node.title.substring(0, 20) + "..." : node.title}
-                                </text>
+                                        {/* More options icon */}
+                                        <foreignObject x={node.x + width / 2 - 30} y={node.y - height / 2 + 12}
+                                                       width={20} height={20}>
+                                            <div className="flex items-center justify-end">
+                                                <MoreHorizontal className="w-4 h-4 text-gray-400"/>
+                                            </div>
+                                        </foreignObject>
 
-                                {/* Similarity info */}
-                                <text
-                                    x={node.x}
-                                    y={node.y + 15}
-                                    textAnchor="middle"
-                                    fill="#6b7280"
-                                    fontSize={10}
-                                    className="select-none"
-                                >
-                                    {isRoot ? "Search Term" : `Similarity: ${Math.round(node.similarity * 100)}%`}
-                                </text>
+                                        {/* Similarity badge */}
+                                        <foreignObject x={node.x + width / 2 - 50} y={node.y - height / 2 + 12}
+                                                       width={40} height={20}>
+                                            <div
+                                                className="bg-amber-500 text-white text-xs font-medium px-2 py-0.5 rounded-full text-center">
+                                                {Math.round(node.similarity * 100)}%
+                                            </div>
+                                        </foreignObject>
+
+                                        {/* Title section with background */}
+                                        <rect
+                                            x={node.x - width / 2}
+                                            y={node.y - height / 2 + 35}
+                                            width={width}
+                                            height={30}
+                                            fill="#f8f9fa"
+                                            rx={0}
+                                            ry={0}
+                                        />
+
+                                        {/* Blog title */}
+                                        <foreignObject
+                                            x={node.x - width / 2 + 12}
+                                            y={node.y - height / 2 + 35}
+                                            width={width - 24}
+                                            height={30}
+                                        >
+                                            <div
+                                                className="text-sm font-medium text-gray-800 line-clamp-1 overflow-hidden flex items-center h-full"
+                                                style={{fontFamily: "system-ui, sans-serif"}}
+                                            >
+                                                {node.title}
+                                            </div>
+                                        </foreignObject>
+
+                                        {/* Divider line */}
+                                        <line
+                                            x1={node.x - width / 2}
+                                            y1={node.y - height / 2 + 65}
+                                            x2={node.x + width / 2}
+                                            y2={node.y - height / 2 + 65}
+                                            stroke="#e5e7eb"
+                                            strokeWidth={1}
+                                        />
+
+                                        {/* Blog content */}
+                                        <foreignObject
+                                            x={node.x - width / 2 + 12}
+                                            y={node.y - height / 2 + 70}
+                                            width={width - 24}
+                                            height={40}
+                                        >
+                                            <div
+                                                className="text-xs text-gray-600 line-clamp-2 overflow-hidden"
+                                                style={{fontFamily: "system-ui, sans-serif"}}
+                                            >
+                                                {node.content}
+                                            </div>
+                                        </foreignObject>
+
+                                        {/* Read Full Post button */}
+                                        <foreignObject
+                                            x={node.x - width / 2 + 12}
+                                            y={node.y + height / 2 - 45}
+                                            width={width - 24}
+                                            height={35}
+                                        >
+                                            <button
+                                                className="w-full bg-red-600 hover:bg-red-700 text-white text-sm font-medium py-2 px-4 rounded"
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    router.push(`/blog/${node.id}`)
+                                                }}
+                                            >
+                                                Read Full Post
+                                            </button>
+                                        </foreignObject>
+                                    </>
+                                )}
                             </motion.g>
                         )
                     })}
                 </AnimatePresence>
-
-                {/* Tooltip for hovered node */}
-                <AnimatePresence>
-                    {hoveredNode && hoveredNode.id !== "-1" && (
-                        <motion.foreignObject
-                            x={hoveredNode.x + getNodeDimensions(hoveredNode).width / 2 + 10}
-                            y={hoveredNode.y - 70}
-                            width={280}
-                            height={140}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -10 }}
-                            transition={{ duration: 0.2 }}
-                        >
-                            <div className="bg-white p-3 rounded-lg shadow-lg text-sm border border-gray-200">
-                                <p className="font-bold text-gray-900">{hoveredNode.title}</p>
-                                <div className="flex items-center mt-1">
-                  <span
-                      className="inline-block w-3 h-3 rounded-full mr-2"
-                      style={{ backgroundColor: getSimilarityColor(hoveredNode.similarity) }}
-                  ></span>
-                                    <p className="text-gray-600 text-xs">
-                                        {getSimilarityLabel(hoveredNode.similarity)} ({Math.round(hoveredNode.similarity * 100)}%)
-                                    </p>
-                                </div>
-                                <p className="text-gray-600 text-xs line-clamp-2 mt-2">{hoveredNode.content}</p>
-                                <div className="mt-2 bg-gray-100 text-gray-800 py-1 px-2 rounded text-center text-xs font-medium">
-                                    Click vào node để xem bài viết
-                                </div>
-                            </div>
-                        </motion.foreignObject>
-                    )}
-                </AnimatePresence>
             </svg>
-        </div>
-    )
+        </div>)
 }

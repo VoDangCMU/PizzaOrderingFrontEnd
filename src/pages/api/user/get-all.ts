@@ -9,7 +9,7 @@ const handlerGet = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     const { page, pageSize } = req.query;
     try {
-        const response = await axiosAPIInstance.get(`/user/get-all?page=${page}&pageSize=${25}`, {
+        const response = await axiosAPIInstance.get(`/user/get-all?page=${page}&pageSize=${pageSize}`, {
             headers: {
                 Authorization: token,
             }
@@ -25,21 +25,8 @@ const handlerGet = async (req: NextApiRequest, res: NextApiResponse) => {
 
         res.status(200).json(response.data);
 
-    } catch (error: any) {
+    } catch (error) {
         console.error("Error fetching user data", error);
-
-        // Kiểm tra nếu lỗi là từ axios
-        if (error.response) {
-            res.status(error.response.status).json({
-                message: error.response.statusText,
-                error: error.response.data,
-            });
-        } else {
-            res.status(500).json({
-                message: "Internal server error when fetching data from API",
-                error: error.message,
-            });
-        }
     }
 };
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { BlogCard } from "./blog-card"
+// import { BlogCard } from "./blog-card"
 
 interface BlogPost {
     id: number
@@ -42,7 +42,7 @@ export function RelatedPosts({ posts }: RelatedPostsProps) {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
                     >
-                        <BlogCard post={post} />
+                        {/*<BlogCard post={post} />*/}
                     </motion.div>
                 ))}
             </div>

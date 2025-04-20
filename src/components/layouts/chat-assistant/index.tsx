@@ -70,7 +70,7 @@ export function ChatAssistant() {
 
             const assistantMessage: Message = {
                 id: (Date.now() + 1).toString(),
-                content: data.reply || "Sorry, I didn't get that.",
+                content: data.response || "Sorry, I didn't get that.",
                 sender: "assistant",
                 timestamp: new Date(),
             }

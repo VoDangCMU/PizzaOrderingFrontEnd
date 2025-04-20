@@ -8,6 +8,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
 import {Edit, Filter, ImageIcon, MoreHorizontal, Plus, Search, Trash2} from 'lucide-react'
 import DashboardLayout from "@/components/dashboard/DashboardLayout"
+import Image from "next/image"
 import {
     Dialog,
     DialogContent,
@@ -26,7 +27,6 @@ import {
     AlertDialogHeader,
     AlertDialogTitle
 } from "@/components/ui/alert-dialog";
-import {toast} from "@/components/ui/use-toast";
 import axios from "axios";
 
 // Types
@@ -51,6 +51,8 @@ export default function IngredientsPage() {
         unit: "kg",
         costPerUnit: 0,
     })
+
+    console.log(isEditDialogOpen)
     const [ingredients, setIngredients] = useState<Ingredient[]>([])
     // Sample data
 
@@ -69,11 +71,11 @@ export default function IngredientsPage() {
     }
 
     // Edit ingredient
-    const handleEditIngredient = () => {
-        if (!currentIngredient) return
-
-        setIsEditDialogOpen(false)
-    }
+    // const handleEditIngredient = () => {
+    //     if (!currentIngredient) return
+    //
+    //     setIsEditDialogOpen(false)
+    // }
 
     const fetchIngredients = async () => {
         try {
@@ -167,7 +169,7 @@ export default function IngredientsPage() {
                                             <TableCell>
                                                 <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center">
                                                     {ingredient.image ? (
-                                                        <img
+                                                        <Image
                                                             src={ingredient.image || "/placeholder.svg"}
                                                             alt={ingredient.name}
                                                             className="h-full w-full object-cover rounded-md"
