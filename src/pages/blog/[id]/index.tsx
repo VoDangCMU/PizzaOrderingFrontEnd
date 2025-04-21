@@ -119,7 +119,7 @@ export default function BlogPostPage() {
                                     <DialogHeader>
                                         {/*<DialogTitle className="text-kungfu-red">Chat about "{post.title}"</DialogTitle>*/}
                                     </DialogHeader>
-                                    <BlogChatbot postTitle={post.title} />
+                                    <BlogChatbot postTitle={post.title} postId={post.id.toString()} />
                                 </DialogContent>
                             </Dialog>
 
