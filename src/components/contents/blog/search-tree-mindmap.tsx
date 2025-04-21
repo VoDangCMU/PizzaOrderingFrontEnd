@@ -40,7 +40,7 @@ export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindm
     const [isSearching, setIsSearching] = useState(false)
     const [rootNode, setRootNode] = useState<MindmapNode | null>(null)
     const [selectedNode, setSelectedNode] = useState<MindmapNode | null>(null)
-
+    console.log("root node", rootNode)
     // Build binary tree structure
     const buildBinaryTree = useCallback(
         (results: SearchResult[], maxDepth = 4) => {

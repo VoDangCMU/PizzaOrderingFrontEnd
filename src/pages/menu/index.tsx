@@ -292,7 +292,7 @@ export default function MenuPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.4 }}
                     >
-                        {categories.map((category, index) => (
+                        {categories.map((category) => (
                             <Button
                                 key={category}
                                 variant={selectedCategory === category ? "default" : "outline"}
