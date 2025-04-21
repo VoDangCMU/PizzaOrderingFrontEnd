@@ -24,9 +24,9 @@ function App({Component, pageProps}: AppProps) {
     if (!isReady) {
         return null;
     }
-    const hiddenHeader = ["/dashboard", "/dashboard/analytics", "/dashboard/customers",
+    const hidden = ["/dashboard", "/dashboard/analytics", "/dashboard/customers",
         "/dashboard/menu", "/dashboard/orders", "/dashboard/settings",
-        "/dashboard/ingredients",
+        "/dashboard/ingredients","/dashboard/tracking", "/dashboard/salesdata"
     ];
     return (
 
@@ -35,9 +35,9 @@ function App({Component, pageProps}: AppProps) {
                 <AuthProvider>
                     {/*<CartProvider>*/}
                     <BlogProvider>
-                        {!hiddenHeader.includes(router.pathname) && <Header/>}
+                        {!hidden.includes(router.pathname) && <Header/>}
                         <Component {...pageProps} />
-                        <Footer/>
+                        {!hidden.includes(router.pathname) && <Footer/>}
                     </BlogProvider>
                 </AuthProvider>
             </Provider>

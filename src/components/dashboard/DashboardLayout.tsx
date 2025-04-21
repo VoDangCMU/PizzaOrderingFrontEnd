@@ -7,7 +7,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import {LayoutDashboard, ShoppingBag, Pizza, Users, Settings, LogOut, Bell, Search, Leaf} from "lucide-react"
+import {
+    LayoutDashboard,
+    ShoppingBag,
+    Pizza,
+    Users,
+    Settings,
+    LogOut,
+    Bell,
+    Search,
+    Leaf,
+    Radar, DollarSign
+} from "lucide-react"
 import NavItem from "@/components/dashboard/NavItem";
 
 type DashboardLayoutProps = {
@@ -37,13 +48,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
                             <NavItem
                                 href="/dashboard"
-                                icon={<LayoutDashboard className="mr-3 h-5 w-5" />}
+                                icon={<LayoutDashboard className="mr-3 h-5 w-5"/>}
                                 text="Dashboard"
                                 active={currentPath === "/dashboard"}
                             />
                             <NavItem
                                 href="/dashboard/orders"
-                                icon={<ShoppingBag className="mr-3 h-5 w-5" />}
+                                icon={<ShoppingBag className="mr-3 h-5 w-5"/>}
                                 text="Orders"
                                 active={currentPath === "/dashboard/orders"}
                             />
@@ -60,7 +71,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                                 active={currentPath === "/dashboard/menu"}
                             />
                             <NavItem href={"/dashboard/ingredients"}
-                                     icon={<Leaf className="mr-3 h-5 w-5"/> }
+                                     icon={<Leaf className="mr-3 h-5 w-5"/>}
                                      text={"Ingredients"}
                                      active={currentPath === "/dashboard/ingredients"}
                             />
@@ -79,6 +90,23 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         </div>
                         <div>
                             <div className="pl-2.5">
+                                <span className="text-sm ">Tracking</span>
+                            </div>
+                            <NavItem
+                                href="/dashboard/tracking"
+                                icon={<Radar className="mr-3 h-5 w-5"/>}
+                                text="Video Intelligence"
+                                active={currentPath === "/dashboard/tracking"}
+                            />
+                            <NavItem
+                                href="/dashboard/salesdata"
+                                icon={<DollarSign className="mr-3 h-5 w-5"/>}
+                                text="Sales data"
+                                active={currentPath === "/dashboard/salesdata"}
+                            />
+                        </div>
+                        <div>
+                            <div className="pl-2.5">
                                 <span className="text-sm ">Settings</span>
                             </div>
                             <NavItem
@@ -93,7 +121,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     <div className="border-t border-gray-200 dark:border-gray-800 p-4">
                         <div className="flex items-center gap-3">
                             <Avatar>
-                                <AvatarImage src="/placeholder-user.jpg" alt="Admin User" />
+                                <AvatarImage src="/placeholder-user.jpg" alt="Admin User"/>
                                 <AvatarFallback>AD</AvatarFallback>
                             </Avatar>
                             <div className="flex-1 overflow-hidden">
@@ -115,10 +143,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                         <h1 className="text-lg font-semibold">
                             {currentPath === "/dashboard" && "Dashboard"}
                             {currentPath === "/dashboard/orders" && "Orders"}
-                            {currentPath === "/dashboard/menu" && "Menu Items"}
-                            {currentPath === "/dashboard/customers" && "Customers"}
-                            {currentPath === "/dashboard/analytics" && "Analytics"}
+                            {currentPath === "/dashboard/menu" && "Menu management"}
+                            {currentPath === "/dashboard/ingredients" && "Menu management"}
+                            {currentPath === "/dashboard/customers" && "Users"}
                             {currentPath === "/dashboard/settings" && "Settings"}
+                            {currentPath === "/dashboard/tracking" && "Tracking"}
+                            {currentPath === "/dashboard/salesdata" && "Tracking"}
                         </h1>
                     </div>
 

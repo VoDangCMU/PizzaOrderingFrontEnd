@@ -3,6 +3,7 @@ import { VideoFeed } from "@/components/dashboard/tracking/video-feed"
 import { StatsCard } from "@/components/dashboard/tracking/stats-card"
 import { AlertBanner } from "@/components/dashboard/tracking/alert-banner"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 export default function DashboardPage() {
     const [stats, setStats] = useState({
@@ -23,7 +24,6 @@ export default function DashboardPage() {
     useEffect(() => {
         const interval = setInterval(() => {
             const randomChange = Math.random()
-
             setStats((prev) => {
                 const newStats = { ...prev }
 
@@ -66,64 +66,68 @@ export default function DashboardPage() {
     }, [])
 
     return (
-        <div className="container mx-auto p-4 mt-20">
-            <h1 className="text-2xl font-bold mb-6">Dashboard Giám Sát Cửa Hàng</h1>
+        <DashboardLayout>
+            <div className="container mx-auto p-4">
+                <h1 className="text-2xl font-bold mb-6">Dashboard Giám Sát Cửa Hàng</h1>
 
-            {showAlert && (
-                <AlertBanner
-                    message="CẢNH BÁO: Tỷ lệ thanh toán thấp! Có thể có khách hàng rời đi mà không thanh toán."
-                    rate={stats.rate}
-                />
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <VideoFeed />
-
-                <div className="grid grid-cols-2 gap-4">
-                    <StatsCard title="Checked In" value={stats.checkedIn} />
-                    <StatsCard title="Checked Out" value={stats.checkedOut} />
-                    <StatsCard title="Current Customers" value={stats.currentCustomers} />
-                    <StatsCard title="Amount Bill" value={stats.amountBill} />
-                    <StatsCard
-                        title="Rate"
-                        value={`${(stats.rate * 100).toFixed(1)}%`}
-                        description="Bill/Customer"
-                        status={stats.rate < 0.5 ? "danger" : stats.rate < 0.7 ? "warning" : "success"}
+                {showAlert && (
+                    <AlertBanner
+                        message="CẢNH BÁO: Tỷ lệ thanh toán thấp! Có thể có khách hàng rời đi mà không thanh toán."
+                        rate={stats.rate}
                     />
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <VideoFeed/>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <StatsCard title="Checked In" value={stats.checkedIn}/>
+                        <StatsCard title="Checked Out" value={stats.checkedOut}/>
+                        <StatsCard title="Current Customers" value={stats.currentCustomers}/>
+                        <StatsCard title="Amount Bill" value={stats.amountBill}/>
+                        <StatsCard
+                            title="Rate"
+                            value={`${(stats.rate * 100).toFixed(1)}%`}
+                            description="Bill/Customer"
+                            status={stats.rate < 0.5 ? "danger" : stats.rate < 0.7 ? "warning" : "success"}
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="col-span-2">
+                        <CardHeader>
+                            <CardTitle>Thống kê theo thời gian</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-[200px] flex items-center justify-center bg-gray-100 rounded-md">
+                                <p className="text-gray-500">Biểu đồ thống kê sẽ hiển thị ở đây</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Giao dịch gần đây</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {recentTransactions.map((transaction) => (
+                                    <div key={transaction.id}
+                                         className="flex justify-between items-center border-b pb-2">
+                                        <div>
+                                            <p className="font-medium">{transaction.customer}</p>
+                                            <p className="text-sm text-gray-500">{transaction.time}</p>
+                                        </div>
+                                        <div className="font-medium text-green-600">{transaction.amount}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
+        </DashboardLayout>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="col-span-2">
-                    <CardHeader>
-                        <CardTitle>Thống kê theo thời gian</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="h-[200px] flex items-center justify-center bg-gray-100 rounded-md">
-                            <p className="text-gray-500">Biểu đồ thống kê sẽ hiển thị ở đây</p>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Giao dịch gần đây</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {recentTransactions.map((transaction) => (
-                                <div key={transaction.id} className="flex justify-between items-center border-b pb-2">
-                                    <div>
-                                        <p className="font-medium">{transaction.customer}</p>
-                                        <p className="text-sm text-gray-500">{transaction.time}</p>
-                                    </div>
-                                    <div className="font-medium text-green-600">{transaction.amount}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
     )
 }
