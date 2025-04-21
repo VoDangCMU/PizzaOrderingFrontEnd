@@ -1,7 +1,7 @@
 "use client"
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Calendar, MoreHorizontal, MessageSquare, Smile, BookOpen } from "lucide-react"
+import { MoreHorizontal, MessageSquare, Smile, BookOpen } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
