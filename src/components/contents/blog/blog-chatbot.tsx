@@ -17,9 +17,10 @@ interface Message {
 
 interface BlogChatbotProps {
     postTitle: string
+    postId?: string
 }
 
-export function BlogChatbot({ postTitle }: BlogChatbotProps) {
+export function BlogChatbot({ postTitle, postId }: BlogChatbotProps) {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: "1",
@@ -41,9 +42,9 @@ export function BlogChatbot({ postTitle }: BlogChatbotProps) {
         }
     }, [messages])
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (!input.trim()) return
-
+        const ai_api = localStorage.getItem("ai_api")
         // Add user message
         const userMessage: Message = {
             id: Date.now().toString(),
@@ -55,25 +56,48 @@ export function BlogChatbot({ postTitle }: BlogChatbotProps) {
         setInput("")
         setIsTyping(true)
 
-        // Simulate bot response
-        setTimeout(() => {
-            const responses = [
-                `That's an interesting question about "${postTitle}". The article explores the balance of flavors and techniques in traditional pizza making.`,
-                `Great question! "${postTitle}" discusses how martial arts principles can be applied to culinary arts.`,
-                `I'd be happy to explain more about "${postTitle}". It's one of our most popular articles about the philosophy behind our pizza.`,
-                `The author of "${postTitle}" spent years studying both martial arts and pizza making to develop these unique insights.`,
-                `"${postTitle}" combines ancient wisdom with modern culinary techniques, creating a unique approach to pizza.`,
-            ]
+        try {
+            // Call the API with the required payload
+            const response = await fetch(`${ai_api}/chatbot2`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    idPost: postId,
+                    question: userMessage.content,
+                    token: "10",
+                }),
+            })
 
+            if (!response.ok) {
+                throw new Error("Failed to get response from chatbot API")
+            }
+
+            const data = await response.json()
+
+            // Create bot message from API response
             const botMessage: Message = {
                 id: (Date.now() + 1).toString(),
-                content: responses[Math.floor(Math.random() * responses.length)],
+                content: data.answer || "I'm sorry, I couldn't find an answer to that question.",
                 sender: "bot",
             }
 
-            setIsTyping(false)
             setMessages((prev) => [...prev, botMessage])
-        }, 1500)
+        } catch (error) {
+            console.error("Error fetching chatbot response:", error)
+
+            // Fallback message in case of error
+            const errorMessage: Message = {
+                id: (Date.now() + 1).toString(),
+                content: "I'm sorry, I encountered an error while processing your question. Please try again later.",
+                sender: "bot",
+            }
+
+            setMessages((prev) => [...prev, errorMessage])
+        } finally {
+            setIsTyping(false)
+        }
     }
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -138,7 +162,11 @@ export function BlogChatbot({ postTitle }: BlogChatbotProps) {
                     placeholder="Type your question..."
                     className="flex-1"
                 />
-                <Button onClick={handleSend} disabled={!input.trim() || isTyping}>
+                <Button
+                    onClick={handleSend}
+                    disabled={!input.trim() || isTyping}
+                    className="bg-kungfu-red hover:bg-kungfu-darkRed"
+                >
                     <Send className="h-4 w-4" />
                 </Button>
             </div>

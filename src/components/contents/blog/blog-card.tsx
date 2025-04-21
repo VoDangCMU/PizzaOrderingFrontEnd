@@ -60,7 +60,7 @@ export function BlogCard({ post }: BlogCardProps) {
                                     <DialogHeader>
                                         <DialogTitle className="text-kungfu-red">Chat about</DialogTitle>
                                     </DialogHeader>
-                                    <BlogChatbot postTitle={post.title} />
+                                    <BlogChatbot postTitle={post.title} postId={post.id.toString()} />
                                 </DialogContent>
                             </Dialog>
 
