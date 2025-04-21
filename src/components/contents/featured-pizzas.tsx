@@ -72,7 +72,7 @@ export default function FeaturedPizzas({ pizza_name_id }: FeaturedPizzasProps) {
                         },
                         body: JSON.stringify({
                             pizza_id : pizza_id,
-                            order_time: "21:20:36",
+                            order_time: "09:30:00",
                             time_window: 360,
                             limit: 6,
                             month: 2,
