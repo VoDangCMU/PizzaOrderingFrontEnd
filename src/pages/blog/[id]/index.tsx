@@ -15,7 +15,6 @@ import { detectEmotion } from "@/lib/emotion-detector"
 import { BlogChatbot } from "@/components/contents/blog/blog-chatbot"
 import Link from "next/link";
 import axios from "axios";
-import FeaturedPizzas from "@/components/contents/featured-pizzas";
 
 interface Blog {
     id: number
