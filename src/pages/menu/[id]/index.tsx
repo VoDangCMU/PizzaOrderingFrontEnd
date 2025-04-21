@@ -69,28 +69,44 @@ export default function PizzaDetailPage() {
     useEffect(() => {
         const fetchPizza = async () => {
             setLoading(true)
+
             try {
-                const response = await axios.get(`/api/pizza/by-id/${params.id}`)
+                if (!params.id || typeof params.id !== "string") {
+                    router.push("/menu")
+                    return
+                }
+
+                let url = "/api/pizza"
+                url += params.id.includes("_")
+                    ? `/by-name-id/${params.id}`
+                    : `/by-id/${params.id}`
+
+                const response = await axios.get(url)
+
                 if (response.status === 200) {
                     const data = response.data.data
                     setPizza(data)
                     setSizes(data.sizes)
+
                     if (Array.isArray(data.sizes) && data.sizes.length > 0) {
-                        setSelectedSize(data.sizes[0])
-                        setTotalPrice(data.sizes[0].unitPrice)
+                        const firstSize = data.sizes[0]
+                        setSelectedSize(firstSize)
+                        setTotalPrice(parseFloat(firstSize.price))
                     }
                 } else {
-                    router.push("../menu")
+                    router.push("/menu")
                 }
             } catch (error) {
                 console.error("Error fetching pizza:", error)
+                router.push("/menu")
             } finally {
                 setLoading(false)
             }
         }
 
         fetchPizza()
-    }, [params, router])
+    }, [params.id, router])
+
 
     useEffect(() => {
         if (pizza && selectedSize) {
