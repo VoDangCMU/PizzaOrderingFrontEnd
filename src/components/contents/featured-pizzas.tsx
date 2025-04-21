@@ -53,7 +53,7 @@ export default function FeaturedPizzas({ pizza_name_id }: FeaturedPizzasProps) {
     >([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const pizza_id = useState(pizza_name_id || "hawaiian_m")
+    const pizza_id = pizza_name_id || "hawaiian_m"
     const ref = useRef(null)
     const isInView = useInView(ref, { once: true, amount: 0.2 })
     const ai_api = localStorage.getItem("ai_api")
@@ -71,7 +71,7 @@ export default function FeaturedPizzas({ pizza_name_id }: FeaturedPizzasProps) {
                             "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
-                            pizza_id: pizza_id,
+                            pizza_id : pizza_id,
                             order_time: "21:20:36",
                             time_window: 360,
                             limit: 6,
