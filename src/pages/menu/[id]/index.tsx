@@ -366,8 +366,9 @@ export default function PizzaDetailPage() {
                             </div>
                         </div>
                     </motion.div>
-                    <FeaturedPizzas pizza_name_id={pizza.sizes[0].pizzaNameID }/>
                 </div>
+                <FeaturedPizzas pizza_name_id={pizza.sizes[0].pizzaNameID }/>
+
             </div>
         </div>
     )
