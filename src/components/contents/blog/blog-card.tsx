@@ -14,7 +14,6 @@ interface BlogPost {
     id: number
     title: string
     body: string
-    createAt: Date
 }
 
 interface BlogCardProps {
@@ -97,16 +96,16 @@ export function BlogCard({ post }: BlogCardProps) {
                 </div>
 
                 <CardHeader className="flex-1 pt-12">
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
-                        <div className="flex items-center bg-amber-50 px-2 py-1 rounded-full">
-                            <Calendar className="w-3 h-3 mr-1 text-amber-500" />
-                            {new Date(post.createAt).toLocaleDateString("en-US", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                            })}
-                        </div>
-                    </div>
+                    {/*<div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">*/}
+                    {/*    /!*<div className="flex items-center bg-amber-50 px-2 py-1 rounded-full">*!/*/}
+                    {/*    /!*    /!*<Calendar className="w-3 h-3 mr-1 text-amber-500" />*!/*!/*/}
+                    {/*    /!*    /!*{new Date(post.createAt).toLocaleDateString("en-US", {*!/*!/*/}
+                    {/*    /!*    /!*    year: "numeric",*!/*!/*/}
+                    {/*    /!*    /!*    month: "long",*!/*!/*/}
+                    {/*    /!*    /!*    day: "numeric",*!/*!/*/}
+                    {/*    /!*    /!*})}*!/*!/*/}
+                    {/*    /!*</div>*!/*/}
+                    {/*</div>*/}
                     <CardTitle className="text-xl hover:text-kungfu-red transition-colors flex items-center">
                         <BookOpen
                             className={`h-4 w-4 mr-2 text-amber-500 transition-transform duration-300 ${isHovered ? "rotate-12" : ""}`}
