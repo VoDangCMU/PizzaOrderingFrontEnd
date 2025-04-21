@@ -1,16 +1,22 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useRouter } from "next/navigation"
-import { blogPosts } from "@/data/blog-posts"
+import { MoreHorizontal, FileText } from "lucide-react"
+
+interface SearchResult {
+    id: string
+    title: string
+    similarity: number
+    content: string
+}
 
 interface MindmapNode {
-    id: number
+    id: string
     title: string
-    category: string
-    excerpt: string
-    relevance: number
+    content: string
+    similarity: number
     x: number
     y: number
     children: MindmapNode[]
@@ -21,9 +27,10 @@ interface MindmapNode {
 
 interface SearchTreeMindmapProps {
     searchTerm: string
+    searchResults: SearchResult[]
 }
 
-export function SearchTreeMindmap({ searchTerm }: SearchTreeMindmapProps) {
+export function SearchTreeMindmap({ searchTerm, searchResults }: SearchTreeMindmapProps) {
     const router = useRouter()
     const svgRef = useRef<SVGSVGElement>(null)
     const [nodes, setNodes] = useState<MindmapNode[]>([])
@@ -33,255 +40,218 @@ export function SearchTreeMindmap({ searchTerm }: SearchTreeMindmapProps) {
     const [isSearching, setIsSearching] = useState(false)
     const [rootNode, setRootNode] = useState<MindmapNode | null>(null)
     const [selectedNode, setSelectedNode] = useState<MindmapNode | null>(null)
-
-    // Calculate relevance score between search term and blog post
-    const calculateRelevance = (post: (typeof blogPosts)[0], term: string) => {
-        const searchLower = term.toLowerCase()
-        let score = 0
-
-        // Check title
-        if (post.title.toLowerCase().includes(searchLower)) {
-            score += 0.5
-        }
-
-        // Check excerpt
-        if (post.excerpt.toLowerCase().includes(searchLower)) {
-            score += 0.3
-        }
-
-        // Check category
-        if (post.category.toLowerCase().includes(searchLower)) {
-            score += 0.2
-        }
-
-        // Check tags
-        const matchingTags = post.tags.filter((tag) => tag.toLowerCase().includes(searchLower))
-        score += matchingTags.length * 0.15
-
-        // If no direct matches, give a small base score
-        if (score === 0) {
-            score = 0.05
-        }
-
-        return Math.min(score, 1)
-    }
-
+    console.log("root node", rootNode)
     // Build binary tree structure
-    const buildBinaryTree = (posts: (typeof blogPosts & { relevance: number })[], maxDepth = 4) => {
-        if (posts.length === 0) return null
+    const buildBinaryTree = useCallback(
+        (results: SearchResult[], maxDepth = 4) => {
+            if (results.length === 0) return null
 
-        // Create root node
-        const root: MindmapNode = {
-            id: -1,
-            title: searchTerm,
-            category: "Search",
-            excerpt: `Search results for "${searchTerm}"`,
-            relevance: 1,
-            x: 120, // Left position for horizontal layout
-            y: dimensions.height / 2, // Center vertically
-            children: [],
-            depth: 0,
-            position: "root",
-        }
-
-        // Sort posts by relevance
-        const sortedPosts = [...posts].sort((a, b) => b.relevance - a.relevance)
-
-        // Function to recursively build the tree
-        const buildSubtree = (
-            parentNode: MindmapNode,
-            availablePosts: (typeof blogPosts & { relevance: number })[],
-            depth: number,
-            position: "top" | "bottom",
-        ) => {
-            if (depth >= maxDepth || availablePosts.length === 0) return
-
-            // Take the post with highest relevance
-            const post = availablePosts[0]
-            const remainingPosts = availablePosts.slice(1)
-
-            // Create node for this post
-            const node: MindmapNode = {
-                id: post.id,
-                title: post.title,
-                category: post.category,
-                excerpt: post.excerpt,
-                relevance: post.relevance,
-                x: 0, // Will be calculated later
-                y: 0, // Will be calculated later
+            // Create root node
+            const root: MindmapNode = {
+                id: "-1",
+                title: searchTerm,
+                content: `Search results for "${searchTerm}"`,
+                similarity: 1,
+                x: 120, // Left position for horizontal layout
+                y: dimensions.height / 2, // Center vertically
                 children: [],
-                parent: parentNode,
-                depth: depth,
-                position: position,
+                depth: 0,
+                position: "root",
             }
 
-            // Add this node as a child to parent
-            parentNode.children.push(node)
+            // Sort results by similarity (already sorted from API)
+            const sortedResults = [...results]
 
-            // Recursively build top and bottom subtrees
-            if (remainingPosts.length > 0) {
-                buildSubtree(node, remainingPosts.slice(0, Math.ceil(remainingPosts.length / 2)), depth + 1, "top")
+            // Function to recursively build the tree
+            const buildSubtree = (
+                parentNode: MindmapNode,
+                availableResults: SearchResult[],
+                depth: number,
+                position: "top" | "bottom",
+            ) => {
+                if (depth >= maxDepth || availableResults.length === 0) return
+
+                // Take the result with highest similarity
+                const result = availableResults[0]
+                const remainingResults = availableResults.slice(1)
+
+                // Create node for this result
+                const node: MindmapNode = {
+                    id: result.id,
+                    title: result.title,
+                    content: result.content,
+                    similarity: result.similarity,
+                    x: 0, // Will be calculated later
+                    y: 0, // Will be calculated later
+                    children: [],
+                    parent: parentNode,
+                    depth: depth,
+                    position: position,
+                }
+
+                // Add this node as a child to parent
+                parentNode.children.push(node)
+
+                // Recursively build top and bottom subtrees
+                if (remainingResults.length > 0) {
+                    buildSubtree(node, remainingResults.slice(0, Math.ceil(remainingResults.length / 2)), depth + 1, "top")
+                }
+
+                if (remainingResults.length > 1) {
+                    buildSubtree(node, remainingResults.slice(Math.ceil(remainingResults.length / 2)), depth + 1, "bottom")
+                }
             }
 
-            if (remainingPosts.length > 1) {
-                buildSubtree(node, remainingPosts.slice(Math.ceil(remainingPosts.length / 2)), depth + 1, "bottom")
+            // Build top and bottom subtrees from root
+            if (sortedResults.length > 0) {
+                buildSubtree(root, sortedResults.slice(0, Math.ceil(sortedResults.length / 2)), 1, "top")
             }
-        }
 
-        // Build top and bottom subtrees from root
-        if (sortedPosts.length > 0) {
-            buildSubtree(root, sortedPosts.slice(0, Math.ceil(sortedPosts.length / 2)), 1, "top")
-        }
+            if (sortedResults.length > 1) {
+                buildSubtree(root, sortedResults.slice(Math.ceil(sortedResults.length / 2)), 1, "bottom")
+            }
 
-        if (sortedPosts.length > 1) {
-            buildSubtree(root, sortedPosts.slice(Math.ceil(sortedPosts.length / 2)), 1, "bottom")
-        }
-
-        return root
-    }
+            return root
+        },
+        [searchTerm, dimensions.height],
+    )
 
     // Calculate positions for all nodes in the tree - HORIZONTAL LAYOUT with EVEN SPACING
-    const calculatePositions = (root: MindmapNode | null) => {
-        if (!root) return []
+    const calculatePositions = useCallback(
+        (root: MindmapNode | null) => {
+            if (!root) return { nodes: [], connections: [] }
 
-        // Improved spacing for better visualization
-        const horizontalSpacing = 220 // Space between depth levels (horizontal)
-        const verticalSpacingBase = 150 // Base vertical spacing
-        const allNodes: MindmapNode[] = []
-        const allConnections: { from: MindmapNode; to: MindmapNode }[] = []
+            // Improved spacing for better visualization
+            const horizontalSpacing = 220 // Space between depth levels (horizontal)
+            const verticalSpacingBase = 150 // Base vertical spacing
+            const allNodes: MindmapNode[] = []
+            const allConnections: { from: MindmapNode; to: MindmapNode }[] = []
 
-        // Set root position
-        root.x = 120 // Left position
-        root.y = dimensions.height / 2 // Center vertically
-        allNodes.push(root)
+            // Set root position
+            root.x = 120 // Left position
+            root.y = dimensions.height / 2 // Center vertically
+            allNodes.push(root)
 
-        // Function to count total nodes in a subtree
-        const countSubtreeNodes = (node: MindmapNode): number => {
-            if (node.children.length === 0) return 1
-            return 1 + node.children.reduce((sum, child) => sum + countSubtreeNodes(child), 0)
-        }
-
-        // Function to recursively calculate positions with even spacing
-        const calculateSubtreePositions = (node: MindmapNode, availableHeight: number, startY: number) => {
-            const topChildren = node.children.filter((child) => child.position === "top")
-            const bottomChildren = node.children.filter((child) => child.position === "bottom")
-
-            // Calculate total nodes in each subtree to determine space allocation
-            const topNodesCount = topChildren.reduce((sum, child) => sum + countSubtreeNodes(child), 0)
-            const bottomNodesCount = bottomChildren.reduce((sum, child) => sum + countSubtreeNodes(child), 0)
-            const totalNodesCount = topNodesCount + bottomNodesCount
-
-            // Adjust vertical spacing based on depth to create a more balanced tree
-            const verticalSpacing = Math.max(verticalSpacingBase - node.depth * 20, 80)
-
-            // Calculate positions for top children
-            if (topChildren.length > 0) {
-                const topHeight = (availableHeight * topNodesCount) / totalNodesCount
-                let topStartY = startY
-
-                topChildren.forEach((child, index) => {
-                    // Calculate subtree node count for this child
-                    const childNodesCount = countSubtreeNodes(child)
-                    const childHeight = (topHeight * childNodesCount) / topNodesCount
-
-                    // Position this child
-                    child.x = node.x + horizontalSpacing
-                    child.y = topStartY + childHeight / 2 + (index * verticalSpacing) / 2
-
-                    // Ensure minimum spacing between nodes
-                    if (index > 0) {
-                        const prevChild = topChildren[index - 1]
-                        const minY = prevChild.y + verticalSpacing
-                        if (child.y < minY) child.y = minY
-                    }
-
-                    allNodes.push(child)
-                    allConnections.push({ from: node, to: child })
-
-                    // Recursively position this child's subtree
-                    calculateSubtreePositions(child, childHeight, topStartY)
-
-                    // Update start Y for next child
-                    topStartY += childHeight
-                })
+            // Function to count total nodes in a subtree
+            const countSubtreeNodes = (node: MindmapNode): number => {
+                if (node.children.length === 0) return 1
+                return 1 + node.children.reduce((sum, child) => sum + countSubtreeNodes(child), 0)
             }
 
-            // Calculate positions for bottom children
-            if (bottomChildren.length > 0) {
-                const bottomHeight = (availableHeight * bottomNodesCount) / totalNodesCount
-                let bottomStartY = startY + (availableHeight * topNodesCount) / totalNodesCount
+            // Function to recursively calculate positions with even spacing
+            const calculateSubtreePositions = (node: MindmapNode, availableHeight: number, startY: number) => {
+                const topChildren = node.children.filter((child) => child.position === "top")
+                const bottomChildren = node.children.filter((child) => child.position === "bottom")
 
-                bottomChildren.forEach((child, index) => {
-                    // Calculate subtree node count for this child
-                    const childNodesCount = countSubtreeNodes(child)
-                    const childHeight = (bottomHeight * childNodesCount) / bottomNodesCount
+                // Calculate total nodes in each subtree to determine space allocation
+                const topNodesCount = topChildren.reduce((sum, child) => sum + countSubtreeNodes(child), 0)
+                const bottomNodesCount = bottomChildren.reduce((sum, child) => sum + countSubtreeNodes(child), 0)
+                const totalNodesCount = topNodesCount + bottomNodesCount
 
-                    // Position this child
-                    child.x = node.x + horizontalSpacing
-                    child.y = bottomStartY + childHeight / 2 + (index * verticalSpacing) / 2
+                // Adjust vertical spacing based on depth to create a more balanced tree
+                const verticalSpacing = Math.max(verticalSpacingBase - node.depth * 20, 80)
 
-                    // Ensure minimum spacing between nodes
-                    if (index > 0) {
-                        const prevChild = bottomChildren[index - 1]
-                        const minY = prevChild.y + verticalSpacing
-                        if (child.y < minY) child.y = minY
-                    }
+                // Calculate positions for top children
+                if (topChildren.length > 0) {
+                    const topHeight = (availableHeight * topNodesCount) / totalNodesCount
+                    let topStartY = startY
 
-                    allNodes.push(child)
-                    allConnections.push({ from: node, to: child })
+                    topChildren.forEach((child, index) => {
+                        // Calculate subtree node count for this child
+                        const childNodesCount = countSubtreeNodes(child)
+                        const childHeight = (topHeight * childNodesCount) / topNodesCount
 
-                    // Recursively position this child's subtree
-                    calculateSubtreePositions(child, childHeight, bottomStartY)
+                        // Position this child
+                        child.x = node.x + horizontalSpacing
+                        child.y = topStartY + childHeight / 2 + (index * verticalSpacing) / 2
 
-                    // Update start Y for next child
-                    bottomStartY += childHeight
-                })
-            }
-        }
+                        // Ensure minimum spacing between nodes
+                        if (index > 0) {
+                            const prevChild = topChildren[index - 1]
+                            const minY = prevChild.y + verticalSpacing
+                            if (child.y < minY) child.y = minY
+                        }
 
-        calculateSubtreePositions(root, dimensions.height, 0)
+                        allNodes.push(child)
+                        allConnections.push({ from: node, to: child })
 
-        // Final adjustment to ensure all nodes are within the visible area
-        const minY = Math.min(...allNodes.map((node) => node.y))
-        const maxY = Math.max(...allNodes.map((node) => node.y))
-        const verticalPadding = 50
+                        // Recursively position this child's subtree
+                        calculateSubtreePositions(child, childHeight, topStartY)
 
-        if (minY < verticalPadding || maxY > dimensions.height - verticalPadding) {
-            const currentRange = maxY - minY
-            const targetRange = dimensions.height - 2 * verticalPadding
-            const scale = targetRange / currentRange
-
-            allNodes.forEach((node) => {
-                if (node !== root) {
-                    // Adjust Y position to fit within visible area
-                    node.y = verticalPadding + (node.y - minY) * scale
+                        // Update start Y for next child
+                        topStartY += childHeight
+                    })
                 }
-            })
-        }
 
-        return { nodes: allNodes, connections: allConnections }
-    }
+                // Calculate positions for bottom children
+                if (bottomChildren.length > 0) {
+                    const bottomHeight = (availableHeight * bottomNodesCount) / totalNodesCount
+                    let bottomStartY = startY + (availableHeight * topNodesCount) / totalNodesCount
 
-    // Build the tree structure based on search term
+                    bottomChildren.forEach((child, index) => {
+                        // Calculate subtree node count for this child
+                        const childNodesCount = countSubtreeNodes(child)
+                        const childHeight = (bottomHeight * childNodesCount) / bottomNodesCount
+
+                        // Position this child
+                        child.x = node.x + horizontalSpacing
+                        child.y = bottomStartY + childHeight / 2 + (index * verticalSpacing) / 2
+
+                        // Ensure minimum spacing between nodes
+                        if (index > 0) {
+                            const prevChild = bottomChildren[index - 1]
+                            const minY = prevChild.y + verticalSpacing
+                            if (child.y < minY) child.y = minY
+                        }
+
+                        allNodes.push(child)
+                        allConnections.push({ from: node, to: child })
+
+                        // Recursively position this child's subtree
+                        calculateSubtreePositions(child, childHeight, bottomStartY)
+
+                        // Update start Y for next child
+                        bottomStartY += childHeight
+                    })
+                }
+            }
+
+            calculateSubtreePositions(root, dimensions.height, 0)
+
+            // Final adjustment to ensure all nodes are within the visible area
+            const minY = Math.min(...allNodes.map((node) => node.y))
+            const maxY = Math.max(...allNodes.map((node) => node.y))
+            const verticalPadding = 50
+
+            if (minY < verticalPadding || maxY > dimensions.height - verticalPadding) {
+                const currentRange = maxY - minY
+                const targetRange = dimensions.height - 2 * verticalPadding
+                const scale = targetRange / currentRange
+
+                allNodes.forEach((node) => {
+                    if (node !== root) {
+                        // Adjust Y position to fit within visible area
+                        node.y = verticalPadding + (node.y - minY) * scale
+                    }
+                })
+            }
+
+            return { nodes: allNodes, connections: allConnections }
+        },
+        [dimensions.height],
+    )
+
+    // Build the tree structure based on search results
     useEffect(() => {
-        if (!searchTerm.trim()) return
+        if (!searchTerm.trim() || searchResults.length === 0) return
 
         setIsSearching(true)
 
-        // Small delay to allow for animation
         setTimeout(() => {
-            // Calculate relevance for each post
-            const postsWithRelevance = blogPosts.map((post) => ({
-                ...post,
-                relevance: calculateRelevance(post, searchTerm),
-            }))
-
-            // Build binary tree
-            const root = buildBinaryTree(postsWithRelevance)
+            const root = buildBinaryTree(searchResults)
             setRootNode(root)
 
             if (root) {
-                // Calculate positions
                 const { nodes, connections } = calculatePositions(root)
                 setNodes(nodes)
                 setConnections(connections)
@@ -291,8 +261,8 @@ export function SearchTreeMindmap({ searchTerm }: SearchTreeMindmapProps) {
             }
 
             setIsSearching(false)
-        }, 500)
-    }, [searchTerm, dimensions])
+        }, 300)
+    }, [searchTerm, searchResults, dimensions, buildBinaryTree, calculatePositions])
 
     // Update dimensions on resize
     useEffect(() => {
@@ -313,57 +283,28 @@ export function SearchTreeMindmap({ searchTerm }: SearchTreeMindmapProps) {
         setSelectedNode(node)
 
         // Add a small delay before navigation for animation effect
-        if (node.id > 0) {
+        if (node.id !== "-1") {
             setTimeout(() => {
                 router.push(`/blog/${node.id}`)
             }, 300)
         }
     }
 
-    // Get color based on category
-    const getCategoryColor = (category: string) => {
-        switch (category) {
-            case "Specialty":
-                return "#b71c1c"
-            case "Vegetarian":
-                return "#2e7d32"
-            case "Classic":
-                return "#e65100"
-            case "Tutorial":
-                return "#1565c0"
-            case "Search":
-                return "#6a1b9a"
-            default:
-                return "#616161"
-        }
-    }
-
-    // Get node dimensions based on relevance and depth
+    // Get node dimensions based on similarity and depth
     const getNodeDimensions = (node: MindmapNode) => {
         if (node.position === "root") {
             return { width: 160, height: 70 }
         }
 
-        // Decrease size as we go deeper
-        const baseWidth = 160 - node.depth * 5
-        const width = Math.max(130, baseWidth)
-        const height = 60
-
-        return { width, height }
-    }
-
-    // Get relevance label
-    const getRelevanceLabel = (relevance: number) => {
-        if (relevance >= 0.7) return "High"
-        if (relevance >= 0.4) return "Medium"
-        return "Low"
+        // Standard size for blog cards
+        return { width: 200, height: 120 }
     }
 
     if (isSearching) {
         return (
             <div className="w-full h-full flex items-center justify-center">
-                <div className="w-8 h-8 border-4 border-kungfu-red border-t-transparent rounded-full animate-spin mr-3"></div>
-                <p className="text-lg font-medium text-kungfu-red">Tìm kiếm bài viết...</p>
+                <div className="w-8 h-8 border-4 border-gray-400 border-t-transparent rounded-full animate-spin mr-3"></div>
+                <p className="text-lg font-medium text-gray-600">Đang tìm kiếm...</p>
             </div>
         )
     }
@@ -371,7 +312,9 @@ export function SearchTreeMindmap({ searchTerm }: SearchTreeMindmapProps) {
     if (nodes.length === 0) {
         return (
             <div className="w-full h-full flex items-center justify-center">
-                <p className="text-muted-foreground">Nhập từ khóa tìm kiếm để xem các bài viết liên quan</p>
+                <p className="text-muted-foreground">
+                    {searchTerm ? "Không tìm thấy kết quả phù hợp" : "Nhập từ khóa tìm kiếm để xem các bài viết liên quan"}
+                </p>
             </div>
         )
     }
@@ -432,7 +375,6 @@ export function SearchTreeMindmap({ searchTerm }: SearchTreeMindmapProps) {
                         const isHovered = hoveredNode?.id === node.id
                         const isRoot = node.position === "root"
                         const isSelected = selectedNode?.id === node.id
-                        const categoryColor = getCategoryColor(node.category)
 
                         return (
                             <motion.g
@@ -440,7 +382,7 @@ export function SearchTreeMindmap({ searchTerm }: SearchTreeMindmapProps) {
                                 onClick={() => handleNodeClick(node)}
                                 onMouseEnter={() => setHoveredNode(node)}
                                 onMouseLeave={() => setHoveredNode(null)}
-                                style={{ cursor: node.id > 0 ? "pointer" : "default" }}
+                                style={{ cursor: node.id !== "-1" ? "pointer" : "default" }}
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.8 }}
@@ -451,96 +393,114 @@ export function SearchTreeMindmap({ searchTerm }: SearchTreeMindmapProps) {
                                     delay: isRoot ? 0 : 0.1 + index * 0.05,
                                 }}
                             >
-                                {/* Node background */}
-                                <motion.rect
-                                    x={node.x - width / 2}
-                                    y={node.y - height / 2}
-                                    width={width}
-                                    height={height}
-                                    rx={6}
-                                    ry={6}
-                                    fill={isRoot ? "#f0f4ff" : "white"}
-                                    stroke={isRoot ? "#818cf8" : categoryColor}
-                                    strokeWidth={isHovered || isSelected ? 2 : 1}
-                                    filter={isHovered || isSelected ? "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))" : "none"}
-                                    whileHover={{ scale: 1.05 }}
-                                />
+                                {isRoot ? (
+                                    // Root node content
+                                    <>
+                                        <rect
+                                            x={node.x - width / 2}
+                                            y={node.y - height / 2}
+                                            width={width}
+                                            height={height}
+                                            rx={8}
+                                            ry={8}
+                                            fill="white"
+                                            stroke="#f59e0b"
+                                            strokeWidth={isHovered || isSelected ? 2 : 1}
+                                        />
+                                        <text
+                                            x={node.x}
+                                            y={node.y}
+                                            textAnchor="middle"
+                                            fill="#1f2937"
+                                            fontSize={14}
+                                            fontWeight="bold"
+                                            className="select-none"
+                                        >
+                                            {`"${node.title}"`}
+                                        </text>
+                                    </>
+                                ) : (
+                                    // Blog card node - simplified to match the image
+                                    <>
+                                        {/* Card background */}
+                                        <rect
+                                            x={node.x - width / 2}
+                                            y={node.y - height / 2}
+                                            width={width}
+                                            height={height}
+                                            rx={8}
+                                            ry={8}
+                                            fill="white"
+                                            stroke="#f59e0b"
+                                            strokeWidth={isHovered || isSelected ? 2 : 1}
+                                        />
 
-                                {/* Category indicator */}
-                                <rect
-                                    x={node.x - width / 2}
-                                    y={node.y - height / 2}
-                                    width={6}
-                                    height={height}
-                                    fill={categoryColor}
-                                    rx={3}
-                                    ry={3}
-                                />
+                                        {/* More options icon */}
+                                        <foreignObject x={node.x + width / 2 - 30} y={node.y - height / 2 + 5} width={20} height={20}>
+                                            <div className="flex items-center justify-end">
+                                                <MoreHorizontal className="w-4 h-4 text-gray-400" />
+                                            </div>
+                                        </foreignObject>
 
-                                {/* Node title */}
-                                <text
-                                    x={node.x}
-                                    y={node.y - 5}
-                                    textAnchor="middle"
-                                    fill="#1f2937"
-                                    fontSize={isRoot ? 12 : 10}
-                                    fontWeight="500"
-                                    className="select-none"
-                                >
-                                    {node.title.length > 20 ? node.title.substring(0, 20) + "..." : node.title}
-                                </text>
+                                        {/* Icon for title */}
+                                        <foreignObject x={node.x - width / 2 + 10} y={node.y - height / 2 + 5} width={20} height={20}>
+                                            <div className="flex items-center">
+                                                <FileText className="w-4 h-4 text-amber-500" />
+                                            </div>
+                                        </foreignObject>
 
-                                {/* Category and relevance info */}
-                                <text
-                                    x={node.x}
-                                    y={node.y + 15}
-                                    textAnchor="middle"
-                                    fill="#6b7280"
-                                    fontSize={10}
-                                    className="select-none"
-                                >
-                                    {isRoot ? "Search Term" : `${node.category} • ${Math.round(node.relevance * 100)}%`}
-                                </text>
+                                        {/* Blog title */}
+                                        <foreignObject
+                                            x={node.x - width / 2 + 35}
+                                            y={node.y - height / 2 + 5}
+                                            width={width - 70}
+                                            height={20}
+                                        >
+                                            <div
+                                                className="text-sm font-medium text-gray-800 line-clamp-1 overflow-hidden"
+                                                style={{ fontFamily: "system-ui, sans-serif" }}
+                                            >
+                                                {node.title}
+                                            </div>
+                                        </foreignObject>
 
-                                {/* Click indicator for blog posts */}
+                                        {/* Blog content */}
+                                        <foreignObject
+                                            x={node.x - width / 2 + 10}
+                                            y={node.y - height / 2 + 30}
+                                            width={width - 20}
+                                            height={50}
+                                        >
+                                            <div
+                                                className="text-xs text-gray-600 line-clamp-3 overflow-hidden"
+                                                style={{ fontFamily: "system-ui, sans-serif" }}
+                                            >
+                                                {node.content}
+                                            </div>
+                                        </foreignObject>
+
+                                        {/* Read Full Post button */}
+                                        <foreignObject
+                                            x={node.x - width / 2 + 10}
+                                            y={node.y + height / 2 - 35}
+                                            width={width - 20}
+                                            height={30}
+                                        >
+                                            <button
+                                                className="w-full bg-red-600 hover:bg-red-700 text-white text-xs font-medium py-2 px-4 rounded"
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    router.push(`/blog/${node.id}`)
+                                                }}
+                                            >
+                                                Read Full Post
+                                            </button>
+                                        </foreignObject>
+                                    </>
+                                )}
                             </motion.g>
                         )
                     })}
-                </AnimatePresence>
-
-                {/* Tooltip for hovered node */}
-                <AnimatePresence>
-                    {hoveredNode && hoveredNode.id > 0 && (
-                        <motion.foreignObject
-                            x={hoveredNode.x + getNodeDimensions(hoveredNode).width / 2 + 10}
-                            y={hoveredNode.y - 70}
-                            width={280}
-                            height={140}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -10 }}
-                            transition={{ duration: 0.2 }}
-                        >
-                            <div className="bg-white p-3 rounded-lg shadow-lg text-sm border border-gray-200">
-                                <p className="font-bold text-gray-900">{hoveredNode.title}</p>
-                                <div className="flex items-center mt-1">
-                  <span
-                      className="inline-block w-3 h-3 rounded-full mr-2"
-                      style={{ backgroundColor: getCategoryColor(hoveredNode.category) }}
-                  ></span>
-                                    <p className="text-gray-600 text-xs">{hoveredNode.category}</p>
-                                    <span className="mx-2 text-gray-400">•</span>
-                                    <p className="text-gray-600 text-xs">
-                                        {getRelevanceLabel(hoveredNode.relevance)} ({Math.round(hoveredNode.relevance * 100)}%)
-                                    </p>
-                                </div>
-                                <p className="text-gray-600 text-xs line-clamp-2 mt-2">{hoveredNode.excerpt}</p>
-                                <div className="mt-2 bg-gray-100 text-gray-800 py-1 px-2 rounded text-center text-xs font-medium">
-                                    Click vào node để xem bài viết
-                                </div>
-                            </div>
-                        </motion.foreignObject>
-                    )}
                 </AnimatePresence>
             </svg>
         </div>

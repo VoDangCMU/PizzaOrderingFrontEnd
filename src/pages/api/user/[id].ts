@@ -14,7 +14,7 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(200).json(response.data);
 
     } catch (e) {
-        res.status(500).json({message: "Error fetching pizza data", error});
+        res.status(500).json({message: "Error fetching pizza data", e});
     }
 };
 

@@ -41,9 +41,9 @@ interface OrderItem {
     note: string
     pizza: Pizza
     size: Size
-    crust: any
-    outerCrust: any
-    extra: any
+    crust: []
+    outerCrust: []
+    extra: []
 }
 
 interface Cart {
@@ -81,9 +81,9 @@ const mockCartData: Cart[] = [
                         "Fresh lime leaves with a pinch of cinnamon, topped by a caramelized elderberry with whipped cream",
                     unitPrice: "10",
                 },
-                crust: null,
-                outerCrust: null,
-                extra: null,
+                crust: [],
+                outerCrust: [],
+                extra: [],
                 size: {
                     id: "753",
                     size: "M",
@@ -118,9 +118,9 @@ const mockCartData: Cart[] = [
                         "An exquisite pigeon roast, infused with the essence of corella pear, slow-roasted to bring out its natural flavors and served with a side of creamy spinach",
                     unitPrice: "10",
                 },
-                crust: null,
-                outerCrust: null,
-                extra: null,
+                crust: [],
+                outerCrust: [],
+                extra: [],
                 size: {
                     id: "756",
                     size: "M",
@@ -139,9 +139,9 @@ const mockCartData: Cart[] = [
                         "A special orchid milk chocolate from Zambia. To support the strong flavor it is sided with a tablespoon of sesame seed.",
                     unitPrice: "10",
                 },
-                crust: null,
-                outerCrust: null,
-                extra: null,
+                crust: [],
+                outerCrust: [],
+                extra: [],
                 size: {
                     id: "759",
                     size: "L",
@@ -159,9 +159,9 @@ const mockCartData: Cart[] = [
                     description: "A simple apple pie. No fancy stuff. Just pie.",
                     unitPrice: "10",
                 },
-                crust: null,
-                outerCrust: null,
-                extra: null,
+                crust: [],
+                outerCrust: [],
+                extra: [],
                 size: {
                     id: "760",
                     size: "L",
@@ -488,7 +488,7 @@ export default function CartPage() {
                                 <ShoppingBag className="h-12 w-12 text-kungfu-red/70" />
                             </div>
                             <h2 className="text-2xl font-bold mb-2 kungfu-text">Your cart is empty</h2>
-                            <p className="text-muted-foreground mb-6">Looks like you haven't added any pizzas to your cart yet.</p>
+                            <p className="text-muted-foreground mb-6">Looks like you have not added any pizzas to your cart yet.</p>
                             <Button asChild size="lg" className="kungfu-button">
                                 <Link href="/menu">Browse Menu</Link>
                             </Button>

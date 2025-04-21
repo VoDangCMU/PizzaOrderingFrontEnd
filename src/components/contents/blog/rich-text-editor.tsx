@@ -54,8 +54,11 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
     })
 
     useEffect(() => {
+        if (editor && value && editor.getHTML() !== value) {
+            editor.commands.setContent(value)
+        }
         setIsMounted(true)
-    }, [])
+    }, [value, editor])
 
     if (!isMounted) {
         return null

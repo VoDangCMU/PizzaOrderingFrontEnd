@@ -16,9 +16,9 @@ export default function Home() {
     const valuesInView = useInView(valuesRef, { once: true, amount: 0.2 })
     const ctaInView = useInView(ctaRef, { once: true, amount: 0.2 })
 
+
     useEffect(() => {
         const animateElements = document.querySelectorAll(".animate-on-scroll")
-
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -50,7 +50,7 @@ export default function Home() {
                         transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.2s",
                     }}
                 >
-                    <FeaturedPizzas />
+                    <FeaturedPizzas pizza_name_id="hawaiian_m"/>
                 </motion.div>
 
                 <motion.div
