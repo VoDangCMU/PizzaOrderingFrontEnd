@@ -12,32 +12,23 @@ interface FeaturedPizzasProps {
     pizza_name_id: string
 }
 // Định nghĩa interface cho dữ liệu pizza
-interface PizzaSize {
-    id: string
-    size: string
-    price: string
-    image: string
-    pizzaNameID: string
-}
+// interface PizzaSize {
+//     id: string
+//     size: string
+//     price: string
+//     image: string
+//     pizzaNameID: string
+//     name : string
+// }
 
-interface PizzaCategory {
-    id: string
-    name: string
-}
-
-interface PizzaImage {
-    id: string
-    src: string
-    alt: string
-}
 
 interface Pizza {
     id: string
     name: string
     description: string
-    sizes: PizzaSize[]
-    category: PizzaCategory
-    images: PizzaImage[]
+    price: string
+    image: string
+    category: string
 }
 
 export default function FeaturedPizzas({ pizza_name_id }: FeaturedPizzasProps) {
@@ -97,11 +88,10 @@ export default function FeaturedPizzas({ pizza_name_id }: FeaturedPizzasProps) {
                         console.warn(`No local data found for ${pizzaNameID}`)
                         return null
                     }
-
+                    console.log(similarity)
                     return {
                         id: pizzaNameID,
                         name: pizzaInfo.name,
-                        description: `One of our popular picks with similarity score ${similarity}`,
                         price: `$${pizzaInfo.price}`,
                         image: `https://pizzas.khoav4.com/${encodeURIComponent(pizzaInfo.name)}.png`,
                         category: "Recommended"
@@ -110,14 +100,13 @@ export default function FeaturedPizzas({ pizza_name_id }: FeaturedPizzasProps) {
 
 
                 const formattedPizzas = pizzaDetails
-                    .filter((pizza: Pizza): pizza is NonNullable<typeof pizza> => pizza !== null)
+                    .filter((pizza : Pizza): pizza is NonNullable<typeof pizza> => pizza !== null)
                     .map((pizza : Pizza) => ({
                         id: pizza.id,
                         name: pizza.name,
-                        description: pizza.description,
-                        price: `$${pizza.sizes?.[0]?.price || "0.00"}`,
-                        image: pizza.images?.[0]?.src || `https://pizzas.khoav4.com/${encodeURIComponent(pizza.name)}.png`,
-                        category: pizza.category?.name || "Pizza",
+                        price: `${pizza.price || "0.00"}`,
+                        image: `https://pizzas.khoav4.com/${encodeURIComponent(pizza.name)}.png`,
+                        category: "Pizza",
                     }))
 
                 setPizzas(formattedPizzas)
@@ -214,7 +203,7 @@ export default function FeaturedPizzas({ pizza_name_id }: FeaturedPizzasProps) {
                         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                         transition={{ duration: 0.6 }}
                     >
-                        {error ? "Our Popular Pizzas" : "Recommended For You"}
+                        { "Recommended For You"}
                     </motion.h2>
                     <motion.p
                         className="text-lg max-w-2xl mx-auto text-foreground/80"
