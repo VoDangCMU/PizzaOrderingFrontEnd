@@ -126,7 +126,7 @@ export default function SalesdataPage() {
     // Available cities based on selected country
     const [availableCities, setAvailableCities] =
         useState<{ label: string; value: string; country: string | undefined }[]>(cities)
-
+    console.log(availableCities)
     // Available shops based on selected city
     const [availableShops, setAvailableShops] =
         useState<{ label: string; value: string; city: string | undefined }[]>(shops)
