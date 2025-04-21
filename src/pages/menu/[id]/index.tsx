@@ -15,12 +15,14 @@ import Link from "next/link"
 import Image from "next/image"
 
 import axios from "axios";
+import FeaturedPizzas from "@/components/contents/featured-pizzas";
 
 interface Size {
     id: string
     size: string
     price: string
     image: string
+    pizzaNameID : string
 }
 
 interface Category {
@@ -364,6 +366,7 @@ export default function PizzaDetailPage() {
                             </div>
                         </div>
                     </motion.div>
+                    <FeaturedPizzas pizza_name_id={pizza.sizes[0].pizzaNameID }/>
                 </div>
             </div>
         </div>
