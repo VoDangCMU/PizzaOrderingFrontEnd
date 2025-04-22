@@ -77,24 +77,27 @@ export default function BlogUploadPage() {
             return
         }
 
+        const userId = localStorage.getItem("userId")
+
+
         setIsSubmitting(true)
 
         try {
             // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1500))
-
-            // Create new blog post
-            const newPost = {
-                id: Date.now(),
+            const response = await axios.post("/api/blog", {
                 title,
                 body,
-                date: new Date().toISOString(),
-                author: "Master Wong", // In a real app, this would be the logged-in user
+                userId,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `${localStorage.getItem("token")}`,
+                },
+            })
+            if (response.status !== 200) {
+                throw new Error("Failed to publish post")
             }
-
             // Add to context
-            addBlogPost(newPost)
-
             toast({
                 title: "Blog post published!",
                 description: "Your blog post has been successfully published.",
