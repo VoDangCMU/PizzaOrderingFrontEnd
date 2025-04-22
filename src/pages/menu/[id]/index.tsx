@@ -16,6 +16,7 @@ import Image from "next/image"
 
 import axios from "axios";
 import FeaturedPizzas from "@/components/contents/featured-pizzas";
+import {pizzaMap} from "@/lib/pizzaMap";
 
 interface Size {
     id: string
@@ -24,6 +25,7 @@ interface Size {
     image: string
     pizzaNameID : string
 }
+
 
 interface Category {
     id: string
@@ -57,7 +59,11 @@ export default function PizzaDetailPage() {
     const params = useParams()
     const router = useRouter()
     // const {addToCart} = useCart()
-
+    const getPizzaKeyByName = (name : string) => {
+        return Object.keys(pizzaMap).find(
+            key => pizzaMap[key].name === name
+        );
+    };
     const [pizza, setPizza] = useState<Pizza | null>(null)
     const [loading, setLoading] = useState(true)
     const [sizes, setSizes] = useState<Size[]>([])
@@ -69,7 +75,6 @@ export default function PizzaDetailPage() {
     useEffect(() => {
         const fetchPizza = async () => {
             setLoading(true)
-
             try {
                 if (!params.id || typeof params.id !== "string") {
                     router.push("/menu")
@@ -383,8 +388,7 @@ export default function PizzaDetailPage() {
                         </div>
                     </motion.div>
                 </div>
-                <FeaturedPizzas pizza_name_id={pizza.sizes[0].pizzaNameID } />
-
+                <FeaturedPizzas pizza_name_id={getPizzaKeyByName(pizza.name) || ""} />
             </div>
         </div>
     )
