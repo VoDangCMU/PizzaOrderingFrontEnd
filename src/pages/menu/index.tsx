@@ -17,7 +17,6 @@ export const pizzaMap: Record<string, { name: string; price: string }> = {
     hawaiian_m: { name: "The Hawaiian Pizza", price: "13.25" },
     hawaiian_l: { name: "The Hawaiian Pizza", price: "16.5" },
     hawaiian_s: { name: "The Hawaiian Pizza", price: "10.5" },
-    classic_dlx_s: { name: "The Classic Deluxe Pizza", price: "12" },
     classic_dlx_l: { name: "The Classic Deluxe Pizza", price: "20.5" },
     classic_dlx_m: { name: "The Classic Deluxe Pizza", price: "16" },
     five_cheese_l: { name: "The Five Cheese Pizza", price: "18.5" },
