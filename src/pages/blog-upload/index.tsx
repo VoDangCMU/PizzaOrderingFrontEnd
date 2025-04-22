@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/use-toast"
 import { RichTextEditor } from "@/components/contents/blog/rich-text-editor"
 import { FileText, Save, Sparkles, BookOpen, Lightbulb } from "lucide-react"
-import { useBlogContext } from "@/context/blog-context"
 import axios from "axios";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 
