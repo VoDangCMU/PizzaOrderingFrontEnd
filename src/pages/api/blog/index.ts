@@ -8,7 +8,7 @@ const handlerGetAll = async (req: NextApiRequest, res: NextApiResponse) => {
     const token = req.headers.authorization;
     const { title, body, userId} = req.body;
     try {
-        const response = await axiosAPIInstance.post(`/post`, {
+        const response = await axiosAPIInstance.post(`/post/create`, {
             title,
             body,
             userId

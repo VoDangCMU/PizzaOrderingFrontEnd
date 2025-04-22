@@ -2,13 +2,14 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Info, Search } from "lucide-react"
 import { SearchTreeMindmap } from "@/components/contents/blog/search-tree-mindmap"
 import { motion, AnimatePresence } from "framer-motion"
 import axios from "axios";
+import { useParams, useSearchParams } from "next/navigation";
 
 interface SearchResult {
     id: string
@@ -23,11 +24,47 @@ interface SearchResponse {
 
 export default function BlogMapPage() {
     const [showInfo, setShowInfo] = useState(false)
-    const [searchTerm, setSearchTerm] = useState("")
+    const params = useParams();
+    const searchParams = useSearchParams();
+    const keywordParam = searchParams.get('keyword');
+
+    const [searchTerm, setSearchTerm] = useState<string>(Array.isArray(params.keyword)
+        ? params.keyword[0] || ""
+        : params.keyword || "")
     const [inputValue, setInputValue] = useState("")
     const [isSearching, setIsSearching] = useState(false)
     const [searchResults, setSearchResults] = useState<SearchResult[]>([])
     const ai_api = localStorage.getItem("ai_api")
+
+    // Initialize input value and trigger search when page loads with keyword parameter
+    useEffect(() => {
+        if (keywordParam) {
+            setInputValue(keywordParam)
+            // Trigger search with the keyword from URL
+            const fetchSearchResults = async () => {
+                setIsSearching(true)
+                setSearchTerm(keywordParam)
+
+                try {
+                    const response = await axios.post(`${ai_api}/search`, {
+                        content: keywordParam,
+                        limit: 10,
+                    })
+
+                    if (response.status === 200) {
+                        setSearchResults(response.data.results)
+                    }
+                } catch (error) {
+                    console.error("Search error:", error)
+                } finally {
+                    setIsSearching(false)
+                }
+            }
+
+            fetchSearchResults()
+        }
+    }, [keywordParam, ai_api])
+
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!inputValue.trim()) return
@@ -37,15 +74,15 @@ export default function BlogMapPage() {
 
         try {
             const response = await axios.post(`${ai_api}/search`, {
-                content : inputValue,
+                content: inputValue,
                 limit: 10,
             })
 
-            if (response.status != 200) {
+            if (response.status !== 200) {
                 throw new Error("Search request failed")
             }
 
-            const data: SearchResponse =  response.data
+            const data: SearchResponse = response.data
             setSearchResults(data.results)
         } catch (error) {
             console.error("Search error:", error)
