@@ -89,7 +89,7 @@ export function LoginForm() {
             }
 
             const data: { username: string; userId: string; token: string } = await response.json();
-
+            localStorage.setItem("userId", data.userId)
             dispatch(loginSuccess({
                 userId: data.userId,
                 username: data.username,
