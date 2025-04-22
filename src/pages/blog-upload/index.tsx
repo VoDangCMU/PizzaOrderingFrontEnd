@@ -18,7 +18,6 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 
 export default function BlogUploadPage() {
     const router = useRouter()
-    const { addBlogPost } = useBlogContext()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [title, setTitle] = useState("")
     const [body, setBody] = useState("")
