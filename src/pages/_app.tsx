@@ -26,7 +26,7 @@ function App({Component, pageProps}: AppProps) {
     }
     const hidden = ["/dashboard", "/dashboard/analytics", "/dashboard/customers",
         "/dashboard/menu", "/dashboard/orders", "/dashboard/settings",
-        "/dashboard/ingredients","/dashboard/tracking", "/dashboard/salesdata"
+        "/dashboard/ingredients","/dashboard/tracking", "/dashboard/salesdata" , "/dashboard/pizza-upload"
     ];
     return (
 

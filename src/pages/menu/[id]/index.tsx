@@ -59,10 +59,16 @@ export default function PizzaDetailPage() {
     const params = useParams()
     const router = useRouter()
     // const {addToCart} = useCart()
-    const getPizzaKeyByName = (name : string) => {
-        return Object.keys(pizzaMap).find(
+    const getPizzaKeyByName = (name: string) => {
+        const key = Object.keys(pizzaMap).find(
             key => pizzaMap[key].name === name
         );
+
+        if (key) return key;
+
+        const index = name.length;
+        const keys = Object.keys(pizzaMap);
+        return keys[index] || null; 
     };
     const [pizza, setPizza] = useState<Pizza | null>(null)
     const [loading, setLoading] = useState(true)
