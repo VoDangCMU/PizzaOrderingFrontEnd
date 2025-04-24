@@ -11,161 +11,127 @@ import { Input } from "@/components/ui/input"
 import { ShoppingCart, Search, Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
+import axios from "axios"
 
-// Pizza mapping data
-export const pizzaMap: Record<string, { name: string; price: string }> = {
-    hawaiian_m: { name: "The Hawaiian Pizza", price: "13.25" },
-    hawaiian_l: { name: "The Hawaiian Pizza", price: "16.5" },
-    hawaiian_s: { name: "The Hawaiian Pizza", price: "10.5" },
-    classic_dlx_m: { name: "The Classic Deluxe Pizza", price: "16" },
-    five_cheese_l: { name: "The Five Cheese Pizza", price: "18.5" },
-    ital_supr_s: { name: "The Italian Supreme Pizza", price: "12.5" },
-    ital_supr_m: { name: "The Italian Supreme Pizza", price: "16.5" },
-    ital_supr_l: { name: "The Italian Supreme Pizza", price: "20.75" },
-    mexicana_s: { name: "The Mexicana Pizza", price: "12" },
-    mexicana_l: { name: "The Mexicana Pizza", price: "20.25" },
-    mexicana_m: { name: "The Mexicana Pizza", price: "16" },
-    thai_ckn_s: { name: "The Thai Chicken Pizza", price: "12.75" },
-    thai_ckn_m: { name: "The Thai Chicken Pizza", price: "16.75" },
-    thai_ckn_l: { name: "The Thai Chicken Pizza", price: "20.75" },
-    prsc_argla_s: { name: "The Prosciutto and Arugula Pizza", price: "12.5" },
-    prsc_argla_m: { name: "The Prosciutto and Arugula Pizza", price: "16.5" },
-    prsc_argla_l: { name: "The Prosciutto and Arugula Pizza", price: "20.75" },
-    bbq_ckn_m: { name: "The Barbecue Chicken Pizza", price: "16.75" },
-    bbq_ckn_l: { name: "The Barbecue Chicken Pizza", price: "20.75" },
-    bbq_ckn_s: { name: "The Barbecue Chicken Pizza", price: "12.75" },
-    the_greek_xl: { name: "The Greek Pizza", price: "25.5" },
-    the_greek_xxl: { name: "The Greek Pizza", price: "35.95" },
-    the_greek_l: { name: "The Greek Pizza", price: "20.5" },
-    the_greek_m: { name: "The Greek Pizza", price: "16" },
-    the_greek_s: { name: "The Greek Pizza", price: "12" },
-    spinach_supr_l: { name: "The Spinach Supreme Pizza", price: "20.75" },
-    spinach_supr_m: { name: "The Spinach Supreme Pizza", price: "16.5" },
-    spinach_supr_s: { name: "The Spinach Supreme Pizza", price: "12.5" },
-    green_garden_m: { name: "The Green Garden Pizza", price: "16" },
-    green_garden_l: { name: "The Green Garden Pizza", price: "20.25" },
-    green_garden_s: { name: "The Green Garden Pizza", price: "12" },
-    ital_cpcllo_s: { name: "The Italian Capocollo Pizza", price: "12" },
-    ital_cpcllo_m: { name: "The Italian Capocollo Pizza", price: "16" },
-    ital_cpcllo_l: { name: "The Italian Capocollo Pizza", price: "20.5" },
-    spicy_ital_m: { name: "The Spicy Italian Pizza", price: "16.5" },
-    spicy_ital_s: { name: "The Spicy Italian Pizza", price: "12.5" },
-    spicy_ital_l: { name: "The Spicy Italian Pizza", price: "20.75" },
-    spin_pesto_m: { name: "The Spinach Pesto Pizza", price: "16.5" },
-    spin_pesto_s: { name: "The Spinach Pesto Pizza", price: "12.5" },
-    spin_pesto_l: { name: "The Spinach Pesto Pizza", price: "20.75" },
-    veggie_veg_s: { name: "The Vegetables + Vegetables Pizza", price: "12" },
-    veggie_veg_m: { name: "The Vegetables + Vegetables Pizza", price: "16" },
-    veggie_veg_l: { name: "The Vegetables + Vegetables Pizza", price: "20.25" },
-    southw_ckn_m: { name: "The Southwest Chicken Pizza", price: "16.75" },
-    southw_ckn_s: { name: "The Southwest Chicken Pizza", price: "12.75" },
-    southw_ckn_l: { name: "The Southwest Chicken Pizza", price: "20.75" },
-    cali_ckn_l: { name: "The California Chicken Pizza", price: "20.75" },
-    cali_ckn_s: { name: "The California Chicken Pizza", price: "12.75" },
-    cali_ckn_m: { name: "The California Chicken Pizza", price: "16.75" },
-    pepperoni_s: { name: "The Pepperoni Pizza", price: "9.75" },
-    pepperoni_m: { name: "The Pepperoni Pizza", price: "12.5" },
-    pepperoni_l: { name: "The Pepperoni Pizza", price: "15.25" },
-    ckn_pesto_l: { name: "The Chicken Pesto Pizza", price: "20.75" },
-    ckn_pesto_s: { name: "The Chicken Pesto Pizza", price: "12.75" },
-    ckn_pesto_m: { name: "The Chicken Pesto Pizza", price: "16.75" },
-    big_meat_s: { name: "The Big Meat Pizza", price: "12" },
-    soppressata_s: { name: "The Soppressata Pizza", price: "12.5" },
-    soppressata_m: { name: "The Soppressata Pizza", price: "16.5" },
-    soppressata_l: { name: "The Soppressata Pizza", price: "20.75" },
-    four_cheese_l: { name: "The Four Cheese Pizza", price: "17.95" },
-    four_cheese_m: { name: "The Four Cheese Pizza", price: "14.75" },
-    napolitana_m: { name: "The Napolitana Pizza", price: "16" },
-    napolitana_l: { name: "The Napolitana Pizza", price: "20.5" },
-    napolitana_s: { name: "The Napolitana Pizza", price: "12" },
-    calabrese_s: { name: "The Calabrese Pizza", price: "12.25" },
-    calabrese_l: { name: "The Calabrese Pizza", price: "20.25" },
-    calabrese_m: { name: "The Calabrese Pizza", price: "16.25" },
-    ital_veggie_m: { name: "The Italian Vegetables Pizza", price: "16.75" },
-    ital_veggie_l: { name: "The Italian Vegetables Pizza", price: "21" },
-    ital_veggie_s: { name: "The Italian Vegetables Pizza", price: "12.75" },
-    mediterraneo_l: { name: "The Mediterranean Pizza", price: "20.25" },
-    mediterraneo_s: { name: "The Mediterranean Pizza", price: "12" },
-    mediterraneo_m: { name: "The Mediterranean Pizza", price: "16" },
-    peppr_salami_s: { name: "The Pepper Salami Pizza", price: "12.5" },
-    peppr_salami_l: { name: "The Pepper Salami Pizza", price: "20.75" },
-    peppr_salami_m: { name: "The Pepper Salami Pizza", price: "16.5" },
-    spinach_fet_s: { name: "The Spinach and Feta Pizza", price: "12" },
-    spinach_fet_m: { name: "The Spinach and Feta Pizza", price: "16" },
-    spinach_fet_l: { name: "The Spinach and Feta Pizza", price: "20.25" },
-    sicilian_s: { name: "The Sicilian Pizza", price: "12.25" },
-    sicilian_m: { name: "The Sicilian Pizza", price: "16.25" },
-    sicilian_l: { name: "The Sicilian Pizza", price: "20.25" },
-    ckn_alfredo_m: { name: "The Chicken Alfredo Pizza", price: "16.75" },
-    ckn_alfredo_l: { name: "The Chicken Alfredo Pizza", price: "20.75" },
-    ckn_alfredo_s: { name: "The Chicken Alfredo Pizza", price: "12.75" },
-    pep_msh_pep_m: { name: "The Pepperoni, Mushroom, and Peppers Pizza", price: "14.5" },
-    pep_msh_pep_s: { name: "The Pepperoni, Mushroom, and Peppers Pizza", price: "11" },
-    pep_msh_pep_l: { name: "The Pepperoni, Mushroom, and Peppers Pizza", price: "17.5" },
-    brie_carre_s: { name: "The Brie Carre Pizza", price: "23.65" },
+// Define interfaces for API response
+interface PizzaSize {
+    id: string
+    size: string
+    price: string
+    image: string
+    pizzaNameID: string
 }
 
-// Create a unique list of pizza names from the map
-const uniquePizzaNames = Array.from(new Set(Object.values(pizzaMap).map((pizza) => pizza.name)))
-
-// Create pizza data with descriptions and proper IDs
-const pizzaData = uniquePizzaNames.map((name) => {
-    const pizzaEntryKey = Object.keys(pizzaMap).find((key) => pizzaMap[key].name === name)
-
-    const price = pizzaEntryKey ? pizzaMap[pizzaEntryKey].price : "N/A"
-    const id = pizzaEntryKey ?? name.toLowerCase().replace(/\s+/g, "_")
-
-    return {
-        id,
-        name,
-        price,
-        image: `https://pizzas.khoav4.com/${encodeURIComponent(name)}.png?height=300&width=300`,
-        category: getCategoryFromName(name),
-        tags: getTagsFromName(name),
-    }
-})
-
-// Helper function to determine category from name
-function getCategoryFromName(name: string): string {
-    if (name.includes("Chicken")) return "Chicken"
-    if (name.includes("Vegetable") || name.includes("Veggie") || name.includes("Garden")) return "Vegetarian"
-    if (name.includes("Cheese")) return "Cheese"
-    if (name.includes("Italian") || name.includes("Mediterranean") || name.includes("Greek")) return "Mediterranean"
-    if (name.includes("Meat") || name.includes("Pepperoni") || name.includes("Salami")) return "Meat"
-    return "Specialty"
+interface PizzaCategory {
+    id: string
+    name: string
+    description: string
 }
 
-// Helper function to generate tags from name
-function getTagsFromName(name: string): string[] {
+interface PizzaImage {
+    id: string
+    src: string
+    alt: string
+}
+
+interface PizzaData {
+    id: string
+    name: string
+    description: string
+    unitPrice: string
+    sizes: PizzaSize[]
+    category: PizzaCategory
+    images: PizzaImage[]
+    extras?: string[]
+    crusts?: string[]
+}
+
+interface ApiResponse {
+    data: PizzaData[]
+}
+
+// Interface for our processed pizza data
+interface Pizza {
+    id: string
+    name: string
+    description: string
+    price: string
+    image: string
+    category: string
+    tags: string[]
+}
+
+// Categories
+const categories = ["All", "Chicken", "Vegetarian", "Classic", "Supreme", "Veggie"]
+
+// Helper function to determine tags from name and description
+function getTagsFromPizza(pizza: PizzaData): string[] {
     const tags: string[] = []
-    const nameLower = name.toLowerCase()
+    const nameLower = pizza.name.toLowerCase()
+    const descLower = pizza.description?.toLowerCase() || ""
 
-    if (nameLower.includes("chicken")) tags.push("chicken")
-    if (nameLower.includes("cheese")) tags.push("cheese")
-    if (nameLower.includes("vegetable") || nameLower.includes("veggie")) tags.push("vegetarian")
-    if (nameLower.includes("spicy")) tags.push("spicy")
-    if (nameLower.includes("supreme")) tags.push("supreme")
-    if (nameLower.includes("italian")) tags.push("italian")
-    if (nameLower.includes("pesto")) tags.push("pesto")
-    if (nameLower.includes("bbq") || nameLower.includes("barbecue")) tags.push("bbq")
+    if (nameLower.includes("chicken") || descLower.includes("chicken") || pizza.category.name === "Chicken") tags.push("chicken")
+    if (nameLower.includes("cheese") || descLower.includes("cheese")) tags.push("cheese")
+    if (nameLower.includes("vegetable") || nameLower.includes("veggie") || pizza.category.name === "Veggie") tags.push("vegetarian")
+    if (nameLower.includes("spicy") || descLower.includes("spicy")) tags.push("spicy")
+    if (nameLower.includes("supreme") || pizza.category.name === "Supreme") tags.push("supreme")
+    if (nameLower.includes("italian") || descLower.includes("italian")) tags.push("italian")
+    if (nameLower.includes("pesto") || descLower.includes("pesto")) tags.push("pesto")
+    if (nameLower.includes("bbq") || nameLower.includes("barbecue") || descLower.includes("bbq")) tags.push("bbq")
 
-    // Add a popular tag to some pizzas
-    if (["The Hawaiian Pizza", "The Pepperoni Pizza", "The BBQ Chicken Pizza", "The Five Cheese Pizza"].includes(name)) {
+    // Add a popular tag to some pizzas (could be based on other criteria)
+    if (pizza.name.includes("Classic") || pizza.category.name === "Classic") {
         tags.push("popular")
     }
 
     return tags
 }
 
-// Categories
-const categories = ["All", "Chicken", "Vegetarian", "Cheese", "Mediterranean", "Meat", "Specialty"]
-
 export default function MenuPage() {
+    const [pizzas, setPizzas] = useState<Pizza[]>([])
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedCategory, setSelectedCategory] = useState("All")
-    const [filteredPizzas, setFilteredPizzas] = useState(pizzaData)
+    const [filteredPizzas, setFilteredPizzas] = useState<Pizza[]>([])
     const [isSearching, setIsSearching] = useState(false)
     const [suggestedPizzas, setSuggestedPizzas] = useState<string[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+
+    // Fetch pizza data from API
+    useEffect(() => {
+        const fetchPizzas = async () => {
+            setIsLoading(true)
+            try {
+                const response = await axios.get<ApiResponse>('/api/pizza/get-all')
+
+                // Process the API response to format our pizza data
+                const processedPizzas = response.data.data.map(pizza => {
+                    return {
+                        id: pizza.id,
+                        name: pizza.name,
+                        description: pizza.description || "",
+                        // Use the price of the first size, or default to unitPrice
+                        price: pizza.sizes[0]?.price || pizza.unitPrice,
+                        // Use the first image if available, or a fallback
+                        image: pizza.images[0]?.src || `https://pizzas.khoav4.com/${encodeURIComponent(pizza.name)}.png`,
+                        category: pizza.category?.name || "Other",
+                        tags: getTagsFromPizza(pizza)
+                    }
+                })
+
+                setPizzas(processedPizzas)
+                setFilteredPizzas(processedPizzas)
+                setError(null)
+            } catch (err) {
+                console.error("Error fetching pizzas:", err)
+                setError("Failed to load pizzas. Please try again later.")
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchPizzas()
+    }, [])
 
     // Handle search term change
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -212,7 +178,9 @@ export default function MenuPage() {
 
     // Filter pizzas based on search term, suggested pizzas, and category
     useEffect(() => {
-        let filtered = pizzaData
+        if (isLoading) return
+
+        let filtered = pizzas
 
         // Filter by search term or suggested pizzas
         if (searchTerm && suggestedPizzas.length > 0) {
@@ -225,7 +193,8 @@ export default function MenuPage() {
             filtered = filtered.filter(
                 (pizza) =>
                     pizza.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    pizza.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase())),
+                    pizza.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                    pizza.description.toLowerCase().includes(searchTerm.toLowerCase()),
             )
         }
 
@@ -235,7 +204,7 @@ export default function MenuPage() {
         }
 
         setFilteredPizzas(filtered)
-    }, [searchTerm, selectedCategory, suggestedPizzas, isSearching])
+    }, [searchTerm, selectedCategory, suggestedPizzas, isSearching, pizzas, isLoading])
 
     return (
         <div className="min-h-screen pt-24 pb-16 bg-kungfu-pattern">
@@ -269,12 +238,13 @@ export default function MenuPage() {
                         <form onSubmit={handleSearch} className="flex gap-2">
                             <div className="relative flex-1">
                                 <Input
-                                    type="search"
-                                    placeholder="Search pizzas..."
+                                    type="text"
+                                    placeholder="Search by name, ingredients, or flavor..."
                                     value={searchTerm}
                                     onChange={handleSearchChange}
                                     className="pr-10 bg-white/80 backdrop-blur-sm border-kungfu-gold/30 focus-visible:ring-kungfu-red"
                                 />
+                                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                             </div>
                             <Button type="submit" className="bg-kungfu-red hover:bg-kungfu-darkRed text-white" disabled={isSearching}>
                                 {isSearching ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
@@ -299,7 +269,7 @@ export default function MenuPage() {
                                 className={`rounded-full ${
                                     selectedCategory === category
                                         ? "bg-kungfu-red hover:bg-kungfu-darkRed text-white"
-                                        : "border-kungfu-red text-kungfu-red hover:bg-kungfu-red/10"
+                                        : "text-kungfu-red border-kungfu-red hover:bg-kungfu-red/10"
                                 }`}
                             >
                                 {category}
@@ -308,58 +278,88 @@ export default function MenuPage() {
                     </motion.div>
                 </div>
 
-                {/* Pizza Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredPizzas.length > 0 ? (
-                        filteredPizzas.map((pizza, index) => (
-                            <motion.div
-                                key={pizza.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5, delay: 0.1 * (index % 4) }}
-                                whileHover={{ y: -10 }}
-                            >
-                                <Link href={`/menu/${pizza.id}`}>
-                                    <Card className="h-full flex flex-col overflow-hidden kungfu-card border-kungfu-gold/30 shadow-lg hover:shadow-xl transition-all duration-300">
-                                        <div className="aspect-square overflow-hidden relative group">
-                                            <Image
-                                                src={pizza.image || "/placeholder.svg"}
-                                                alt={pizza.name}
-                                                width={300}
-                                                height={300}
-                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                                                <Badge className="bg-kungfu-red/80 backdrop-blur-sm text-white">{pizza.category}</Badge>
-                                            </div>
-                                        </div>
-                                        <CardHeader className="p-4">
-                                            <CardTitle className="text-xl font-bold">{pizza.name}</CardTitle>
-                                            <CardDescription className="line-clamp-2 h-10">{""}</CardDescription>
-                                        </CardHeader>
-                                        <CardFooter className="p-4 pt-0 mt-auto flex justify-between items-center">
-                                            <div className="text-sm">
-                                                <span className="text-lg font-bold text-kungfu-red">${pizza.price}</span>
-                                            </div>
-                                            <Button size="sm" className="bg-kungfu-red hover:bg-kungfu-darkRed text-white kungfu-button">
-                                                <ShoppingCart className="h-4 w-4 mr-2" />
-                                                Order
-                                            </Button>
-                                        </CardFooter>
-                                    </Card>
-                                </Link>
-                            </motion.div>
-                        ))
-                    ) : (
-                        <div className="col-span-full text-center py-12">
-                            <div className="bg-amber-100/50 rounded-full p-6 w-24 h-24 mx-auto mb-6 flex items-center justify-center">
-                                <Search className="h-12 w-12 text-kungfu-red/70" />
-                            </div>
-                            <h3 className="text-xl font-bold mb-2 kungfu-text">No pizzas found</h3>
-                            <p className="text-lg text-muted-foreground">Try a different search term or category.</p>
+                {/* Loading state */}
+                {isLoading && (
+                    <div className="flex justify-center items-center py-20">
+                        <div className="flex flex-col items-center">
+                            <div className="w-16 h-16 border-4 border-kungfu-red/20 border-t-kungfu-red rounded-full animate-spin mb-4"></div>
+                            <p className="text-kungfu-red font-medium">Loading our delicious menu...</p>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
+
+                {/* Error state */}
+                {error && !isLoading && (
+                    <div className="text-center py-12">
+                        <div className="bg-red-100/50 rounded-full p-6 w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+                            <span className="text-4xl">⚠️</span>
+                        </div>
+                        <h3 className="text-xl font-bold mb-2 text-red-600">{error}</h3>
+                        <Button
+                            onClick={() => window.location.reload()}
+                            variant="outline"
+                            className="mt-4 border-kungfu-red text-kungfu-red hover:bg-kungfu-red/10"
+                        >
+                            Try again
+                        </Button>
+                    </div>
+                )}
+
+                {/* Pizza Grid */}
+                {!isLoading && !error && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {filteredPizzas.length > 0 ? (
+                            filteredPizzas.map((pizza, index) => (
+                                <motion.div
+                                    key={pizza.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5, delay: 0.1 * (index % 4) }}
+                                    whileHover={{ y: -10 }}
+                                >
+                                    <Link href={`/menu/${pizza.id}`}>
+                                        <Card className="h-full flex flex-col overflow-hidden kungfu-card border-kungfu-gold/30 shadow-lg hover:shadow-xl transition-all duration-300">
+                                            <div className="relative h-72 overflow-hidden bg-gray-100"> {/* Increased height from h-64 to h-72 */}
+                                                <Image
+                                                    src={pizza.image}
+                                                    alt={pizza.name}
+                                                    fill
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                                                    className="object-cover transition-all duration-500 hover:scale-110"
+                                                    priority={index < 4}
+                                                />
+                                                <div className="absolute top-2 right-2">
+                                                    <Badge className="bg-kungfu-red/80 backdrop-blur-sm text-white">{pizza.category}</Badge>
+                                                </div>
+                                            </div>
+                                            <CardHeader className="py-4">
+                                                <CardTitle className="text-lg font-bold kungfu-text">{pizza.name}</CardTitle>
+                                                <CardDescription className="line-clamp-2 h-10 text-sm text-muted-foreground">
+                                                    {pizza.description}
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardFooter className="py-4 pt-0 mt-auto flex justify-between items-center">
+                                                <p className="text-lg font-bold text-kungfu-red">${pizza.price}</p>
+                                                <Button size="sm" className="bg-kungfu-gold hover:bg-kungfu-gold/90 text-white">
+                                                    <ShoppingCart className="h-4 w-4 mr-2" />
+                                                    Add to cart
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    </Link>
+                                </motion.div>
+                            ))
+                        ) : (
+                            <div className="col-span-full text-center py-12">
+                                <div className="bg-amber-100/50 rounded-full p-6 w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+                                    <Search className="h-12 w-12 text-kungfu-red/70" />
+                                </div>
+                                <h3 className="text-xl font-bold mb-2 kungfu-text">No pizzas found</h3>
+                                <p className="text-lg text-muted-foreground">Try a different search term or category.</p>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     )
