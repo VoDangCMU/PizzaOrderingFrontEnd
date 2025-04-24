@@ -25,7 +25,6 @@ interface PizzaResponse {
         id: string
         name: string
         description: string
-        unitPrice: string
         createdAt: string
         updatedAt: string
     }
@@ -68,7 +67,6 @@ export default function PizzaUpload() {
     const [pizzaForm, setPizzaForm] = useState({
         name: "",
         categoryID: "",
-        unitPrice: "",
         description: "",
     })
 
@@ -82,7 +80,7 @@ export default function PizzaUpload() {
     // Pizza image form state
     const [imageForm, setImageForm] = useState({
         pizzaId: "",
-        src: "",
+        src: "https://i.imgur.com/EzDAxME.png",
         alt: "",
     })
 
@@ -209,7 +207,6 @@ export default function PizzaUpload() {
                 setPizzaForm({
                     name: "",
                     categoryID: "",
-                    unitPrice: "",
                     description: "",
                 })
 
@@ -221,7 +218,7 @@ export default function PizzaUpload() {
 
                 setImageForm({
                     pizzaId: "",
-                    src: "",
+                    src: "https://i.imgur.com/EzDAxME.png",
                     alt: "",
                 })
 
@@ -327,19 +324,6 @@ export default function PizzaUpload() {
                                         ))}
                                     </SelectContent>
                                 </Select>
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="unitPrice">Unit Price</Label>
-                                <Input
-                                    id="unitPrice"
-                                    name="unitPrice"
-                                    type="text"
-                                    placeholder="10"
-                                    value={pizzaForm.unitPrice}
-                                    onChange={handlePizzaInputChange}
-                                    required
-                                />
                             </div>
 
                             <div className="grid gap-2">

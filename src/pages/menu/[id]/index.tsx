@@ -68,7 +68,7 @@ export default function PizzaDetailPage() {
 
         const index = name.length;
         const keys = Object.keys(pizzaMap);
-        return keys[index] || null; 
+        return keys[index] || null;
     };
     const [pizza, setPizza] = useState<Pizza | null>(null)
     const [loading, setLoading] = useState(true)
