@@ -2,10 +2,11 @@ import {NextApiRequest, NextApiResponse} from "next";
 import {axiosAPIInstance} from "@/lib/axios.config";
 
 const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
-    const { name, categoryID, unitPrice, description } = req.body;
+    const { name, categoryID, description } = req.body;
+    const unitPrice = "10";
     const token = req.headers.authorization ;
     try {
-        const response = await axiosAPIInstance.post(`/pizza/create`, {name, categoryID, unitPrice, description} , {
+        const response = await axiosAPIInstance.post(`/pizza/create`, {name, categoryID, description, unitPrice} , {
         headers : {
             Authorization: token,
         }
