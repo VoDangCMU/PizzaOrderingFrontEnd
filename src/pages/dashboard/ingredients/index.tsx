@@ -59,12 +59,7 @@ export default function IngredientsPage() {
     const formatted = (date :string) => {
         return format(new Date(date), "dd/MM/yyyy");
     }
-    // Filter ingredients based on search query
-    // const filteredIngredients = ingredients.filter(ingredient =>
-    //     ingredient.name.toLowerCase().includes(searchQuery.toLowerCase())
-    // )
 
-    // Add new ingredient
     const handleAddIngredient = () => {
 
         setIsAddDialogOpen(false)
@@ -121,10 +116,6 @@ export default function IngredientsPage() {
                         <p className="text-muted-foreground">Manage your ingredient inventory</p>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm">
-                            <Filter className="mr-2 h-4 w-4"/>
-                            Filter
-                        </Button>
                         <Button size="sm" className="bg-primary hover:bg-primary/90"
                                 onClick={() => setIsAddDialogOpen(true)}>
                             <Plus className="mr-2 h-4 w-4"/>
@@ -172,7 +163,9 @@ export default function IngredientsPage() {
                                                         <Image
                                                             src={ingredient.image || "/placeholder.svg"}
                                                             alt={ingredient.name}
-                                                            className="h-full w-full object-cover rounded-md"
+                                                            className="object-cover rounded-md"
+                                                            width={600}
+                                                            height={800}
                                                         />
                                                     ) : (
                                                         <ImageIcon className="h-5 w-5 text-muted-foreground"/>
@@ -224,7 +217,7 @@ export default function IngredientsPage() {
             </div>
 
             {/* Add Ingredient Dialog */}
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <Dialog open={false} onOpenChange={setIsAddDialogOpen}>
                 <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
                         <DialogTitle>Add New Ingredient</DialogTitle>

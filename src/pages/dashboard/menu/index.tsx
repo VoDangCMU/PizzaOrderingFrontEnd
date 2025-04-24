@@ -13,6 +13,8 @@ import { format } from "date-fns"
 import axios from "axios"
 import Image from "next/image"
 import Link from "next/link"
+import {Dialog, DialogContent, DialogFooter} from "@/components/ui/dialog";
+import PizzaUpload from "@/components/dashboard/pizza-upload";
 
 interface Size {
     id: string
@@ -43,10 +45,10 @@ export default function MenuPage() {
     const [categoryFilter, setCategoryFilter] = useState("all")
     const [menuItems, setMenuItems] = useState<MenuItem[]>([])
 
+    const [isOpenAddItem, setOpenAddItem] = useState(false);
     const formattedDate = (date: string) => {
         return format(new Date(date), "dd/MM/yyyy")
     }
-
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -99,11 +101,15 @@ export default function MenuPage() {
                         <p className="text-muted-foreground">Manage your restaurant&#39;s menu items</p>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Button size="sm" className="bg-primary hover:bg-primary/90" asChild>
-                            <Link href="/dashboard/pizza-upload">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add New Item
-                            </Link>
+                        <Button
+                            size="sm"
+                            className="bg-primary hover:bg-primary/90"
+                            onClick={() => {
+                                setOpenAddItem(true);
+                            }}
+                        >
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add New Item
                         </Button>
                     </div>
                 </div>
@@ -218,6 +224,24 @@ export default function MenuPage() {
                     </CardContent>
                 </Card>
             </div>
+            <Dialog open={isOpenAddItem} onOpenChange={() => setOpenAddItem(false)}>
+                <DialogContent className="sm:max-w-[500px]">
+                    <PizzaUpload/>
+                    <DialogFooter className="flex justify-start">
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                                setOpenAddItem(false);
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+
+            </Dialog>
         </DashboardLayout>
+
     )
 }
