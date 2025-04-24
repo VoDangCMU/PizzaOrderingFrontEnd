@@ -2,22 +2,20 @@ import {NextApiRequest, NextApiResponse} from "next";
 import {axiosAPIInstance} from "@/lib/axios.config";
 
 const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
-    const { name, categoryID, unitPrice, description } = req.body;
-    const token = req.headers.authorization ;
+    const { price , pizzaId, size } = req.body;
+    const token = req.headers.authorization;
     try {
-        const response = await axiosAPIInstance.post(`/pizza/create`, {name, categoryID, unitPrice, description} , {
-        headers : {
-            Authorization: token,
-        }
+        const response = await axiosAPIInstance.post(`/pizza-size/create`, {price, pizzaId, size}, {
+            headers : {
+                Authorization: token
+            }
         });
         if (response.status != 200) {
             res.status(response.data.statusCode).json({"message": response.data.message});
         }
-
         res.status(200).json(response.data);
-    } catch (e){
-        console.log(e)
-        res.status(500).json({message: ("Failed to create pizza")});
+    } catch {
+        res.status(500).json({message: ("Failed to create pizza size")});
     }
 };
 

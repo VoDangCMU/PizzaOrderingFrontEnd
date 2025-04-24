@@ -112,6 +112,8 @@ export default function SalesdataPage() {
         product: "",
     })
 
+
+
     // Toggle selection state for a field and set filter value
     const toggleField = (field: string) => {
         const newValue = !selectedFields[field]
@@ -173,6 +175,8 @@ export default function SalesdataPage() {
         // Reset data
         setItems([])
     }
+
+    console.log(filterValues)
 
     return (
         <DashboardLayout>
