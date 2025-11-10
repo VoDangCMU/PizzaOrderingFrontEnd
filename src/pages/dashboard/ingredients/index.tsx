@@ -1,12 +1,12 @@
 "use client"
 
-import {useEffect, useState} from "react"
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
-import {Button} from "@/components/ui/button"
-import {Input} from "@/components/ui/input"
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
-import {Edit, Filter, ImageIcon, MoreHorizontal, Plus, Search, Trash2} from 'lucide-react'
+import { useEffect, useState } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Edit, Filter, ImageIcon, MoreHorizontal, Plus, Search, Trash2 } from 'lucide-react'
 import DashboardLayout from "@/components/dashboard/DashboardLayout"
 import Image from "next/image"
 import {
@@ -17,9 +17,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import {Label} from "@/components/ui/label"
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
-import {format} from "date-fns";
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { format } from "date-fns";
 import {
     AlertDialog, AlertDialogAction, AlertDialogCancel,
     AlertDialogContent,
@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import axios from "axios";
 
-// Types
 interface Ingredient {
     id: number
     name: string
@@ -54,33 +53,20 @@ export default function IngredientsPage() {
 
     console.log(isEditDialogOpen)
     const [ingredients, setIngredients] = useState<Ingredient[]>([])
-    // Sample data
 
-    const formatted = (date :string) => {
+    const formatted = (date: string) => {
         return format(new Date(date), "dd/MM/yyyy");
     }
-    // Filter ingredients based on search query
-    // const filteredIngredients = ingredients.filter(ingredient =>
-    //     ingredient.name.toLowerCase().includes(searchQuery.toLowerCase())
-    // )
 
-    // Add new ingredient
     const handleAddIngredient = () => {
 
         setIsAddDialogOpen(false)
     }
 
-    // Edit ingredient
-    // const handleEditIngredient = () => {
-    //     if (!currentIngredient) return
-    //
-    //     setIsEditDialogOpen(false)
-    // }
-
     const fetchIngredients = async () => {
         try {
             const res = await axios.get("/api/ingredient/get-all");
-            if(res.status === 200) {
+            if (res.status === 200) {
                 setIngredients(res.data.data)
             }
         } catch (err) {
@@ -88,7 +74,6 @@ export default function IngredientsPage() {
         }
     }
 
-    // Delete ingredient
     const handleDeleteIngredient = async () => {
         const token = localStorage.getItem("token");
 
@@ -122,12 +107,12 @@ export default function IngredientsPage() {
                     </div>
                     <div className="flex items-center gap-2">
                         <Button variant="outline" size="sm">
-                            <Filter className="mr-2 h-4 w-4"/>
+                            <Filter className="mr-2 h-4 w-4" />
                             Filter
                         </Button>
                         <Button size="sm" className="bg-primary hover:bg-primary/90"
-                                onClick={() => setIsAddDialogOpen(true)}>
-                            <Plus className="mr-2 h-4 w-4"/>
+                            onClick={() => setIsAddDialogOpen(true)}>
+                            <Plus className="mr-2 h-4 w-4" />
                             Add Ingredient
                         </Button>
                     </div>
@@ -141,7 +126,7 @@ export default function IngredientsPage() {
                                 total</CardDescription>
                         </div>
                         <div className="relative">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                                 type="search"
                                 placeholder="Search ingredients..."
@@ -163,7 +148,7 @@ export default function IngredientsPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                { ingredients.length > 0 ? (
+                                {ingredients.length > 0 ? (
                                     ingredients.map((ingredient) => (
                                         <TableRow key={ingredient.id}>
                                             <TableCell>
@@ -173,9 +158,11 @@ export default function IngredientsPage() {
                                                             src={ingredient.image || "/placeholder.svg"}
                                                             alt={ingredient.name}
                                                             className="h-full w-full object-cover rounded-md"
+                                                            width={100}
+                                                            height={100}
                                                         />
                                                     ) : (
-                                                        <ImageIcon className="h-5 w-5 text-muted-foreground"/>
+                                                        <ImageIcon className="h-5 w-5 text-muted-foreground" />
                                                     )}
                                                 </div>
                                             </TableCell>
@@ -186,7 +173,7 @@ export default function IngredientsPage() {
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
                                                         <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                            <MoreHorizontal className="h-4 w-4"/>
+                                                            <MoreHorizontal className="h-4 w-4" />
                                                             <span className="sr-only">Open menu</span>
                                                         </Button>
                                                     </DropdownMenuTrigger>
@@ -195,14 +182,14 @@ export default function IngredientsPage() {
                                                             setCurrentIngredient(ingredient)
                                                             setIsEditDialogOpen(true)
                                                         }}>
-                                                            <Edit className="mr-2 h-4 w-4"/>
+                                                            <Edit className="mr-2 h-4 w-4" />
                                                             Edit ingredient
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem onClick={() => {
                                                             setCurrentIngredient(ingredient)
                                                             setIsDeleteDialogOpen(true)
                                                         }}>
-                                                            <Trash2 className="mr-2 h-4 w-4"/>
+                                                            <Trash2 className="mr-2 h-4 w-4" />
                                                             Delete ingredient
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
@@ -223,7 +210,6 @@ export default function IngredientsPage() {
                 </Card>
             </div>
 
-            {/* Add Ingredient Dialog */}
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                 <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
@@ -240,7 +226,7 @@ export default function IngredientsPage() {
                             <Input
                                 id="name"
                                 value={newIngredient.name}
-                                onChange={(e) => setNewIngredient({...newIngredient, name: e.target.value})}
+                                onChange={(e) => setNewIngredient({ ...newIngredient, name: e.target.value })}
                                 className="col-span-3"
                             />
                         </div>
@@ -250,10 +236,10 @@ export default function IngredientsPage() {
                             </Label>
                             <Select
                                 value={newIngredient.category}
-                                onValueChange={(value) => setNewIngredient({...newIngredient, category: value})}
+                                onValueChange={(value) => setNewIngredient({ ...newIngredient, category: value })}
                             >
                                 <SelectTrigger className="col-span-3">
-                                    <SelectValue placeholder="Select category"/>
+                                    <SelectValue placeholder="Select category" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="dairy">Dairy</SelectItem>
@@ -275,7 +261,7 @@ export default function IngredientsPage() {
                                 id="stock"
                                 type="number"
                                 value={newIngredient.stock}
-                                onChange={(e) => setNewIngredient({...newIngredient, stock: Number(e.target.value)})}
+                                onChange={(e) => setNewIngredient({ ...newIngredient, stock: Number(e.target.value) })}
                                 className="col-span-3"
                             />
                         </div>
@@ -285,10 +271,10 @@ export default function IngredientsPage() {
                             </Label>
                             <Select
                                 value={newIngredient.unit}
-                                onValueChange={(value) => setNewIngredient({...newIngredient, unit: value})}
+                                onValueChange={(value) => setNewIngredient({ ...newIngredient, unit: value })}
                             >
                                 <SelectTrigger className="col-span-3">
-                                    <SelectValue placeholder="Select unit"/>
+                                    <SelectValue placeholder="Select unit" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="kg">Kilogram (kg)</SelectItem>
@@ -325,102 +311,6 @@ export default function IngredientsPage() {
                 </DialogContent>
             </Dialog>
 
-            {/*/!* Edit Ingredient Dialog *!/*/}
-            {/*<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>*/}
-            {/*    <DialogContent className="sm:max-w-[500px]">*/}
-            {/*        <DialogHeader>*/}
-            {/*            <DialogTitle>Edit Ingredient</DialogTitle>*/}
-            {/*            <DialogDescription>*/}
-            {/*                Update the details of this ingredient.*/}
-            {/*            </DialogDescription>*/}
-            {/*        </DialogHeader>*/}
-            {/*        {currentIngredient && (*/}
-            {/*            <div className="grid gap-4 py-4">*/}
-            {/*                <div className="grid grid-cols-4 items-center gap-4">*/}
-            {/*                    <Label htmlFor="edit-name" className="text-right">*/}
-            {/*                        Name*/}
-            {/*                    </Label>*/}
-            {/*                    <Input*/}
-            {/*                        id="edit-name"*/}
-            {/*                        value={currentIngredient.name}*/}
-            {/*                        onChange={(e) => setCurrentIngredient({ ...currentIngredient, name: e.target.value })}*/}
-            {/*                        className="col-span-3"*/}
-            {/*                    />*/}
-            {/*                </div>*/}
-            {/*                <div className="grid grid-cols-4 items-center gap-4">*/}
-            {/*                    <Label htmlFor="edit-category" className="text-right">*/}
-            {/*                        Category*/}
-            {/*                    </Label>*/}
-            {/*                    <Select*/}
-            {/*                        value={currentIngredient.category.toLowerCase()}*/}
-            {/*                        onValueChange={(value) => setCurrentIngredient({*/}
-            {/*                            ...currentIngredient,*/}
-            {/*                            category: value.charAt(0).toUpperCase() + value.slice(1)*/}
-            {/*                        })}*/}
-            {/*                    >*/}
-            {/*                        <SelectTrigger className="col-span-3">*/}
-            {/*                            <SelectValue placeholder="Select category" />*/}
-            {/*                        </SelectTrigger>*/}
-            {/*                        <SelectContent>*/}
-            {/*                            <SelectItem value="dairy">Dairy</SelectItem>*/}
-            {/*                            <SelectItem value="meat">Meat</SelectItem>*/}
-            {/*                            <SelectItem value="vegetable">Vegetable</SelectItem>*/}
-            {/*                            <SelectItem value="sauce">Sauce</SelectItem>*/}
-            {/*                            <SelectItem value="herb">Herb</SelectItem>*/}
-            {/*                            <SelectItem value="baking">Baking</SelectItem>*/}
-            {/*                            <SelectItem value="oil">Oil</SelectItem>*/}
-            {/*                            <SelectItem value="other">Other</SelectItem>*/}
-            {/*                        </SelectContent>*/}
-            {/*                    </Select>*/}
-            {/*                </div>*/}
-            {/*                <div className="grid grid-cols-4 items-center gap-4">*/}
-
-            {/*                </div>*/}
-            {/*                <div className="grid grid-cols-4 items-center gap-4">*/}
-            {/*                    <Label htmlFor="edit-unit" className="text-right">*/}
-            {/*                        Unit*/}
-            {/*                    </Label>*/}
-            {/*                    <Select*/}
-            {/*                        value={currentIngredient.unit}*/}
-            {/*                        onValueChange={(value) => setCurrentIngredient({ ...currentIngredient, unit: value })}*/}
-            {/*                    >*/}
-            {/*                        <SelectTrigger className="col-span-3">*/}
-            {/*                            <SelectValue placeholder="Select unit" />*/}
-            {/*                        </SelectTrigger>*/}
-            {/*                        <SelectContent>*/}
-            {/*                            <SelectItem value="kg">Kilogram (kg)</SelectItem>*/}
-            {/*                            <SelectItem value="g">Gram (g)</SelectItem>*/}
-            {/*                            <SelectItem value="liter">Liter (L)</SelectItem>*/}
-            {/*                            <SelectItem value="ml">Milliliter (ml)</SelectItem>*/}
-            {/*                            <SelectItem value="unit">Unit (pcs)</SelectItem>*/}
-            {/*                        </SelectContent>*/}
-            {/*                    </Select>*/}
-            {/*                </div>*/}
-            {/*                <div className="grid grid-cols-4 items-center gap-4">*/}
-            {/*                    <Label htmlFor="edit-cost" className="text-right">*/}
-            {/*                        Cost Per Unit*/}
-            {/*                    </Label>*/}
-            {/*                    <Input*/}
-            {/*                        id="edit-cost"*/}
-            {/*                        type="number"*/}
-            {/*                        step="0.01"*/}
-            {/*                        value={currentIngredient.costPerUnit}*/}
-            {/*                        onChange={(e) => setCurrentIngredient({ ...currentIngredient, costPerUnit: Number(e.target.value) })}*/}
-            {/*                        className="col-span-3"*/}
-            {/*                    />*/}
-            {/*                </div>*/}
-            {/*            </div>*/}
-            {/*        )}*/}
-            {/*        <DialogFooter>*/}
-            {/*            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>*/}
-            {/*                Cancel*/}
-            {/*            </Button>*/}
-            {/*            <Button onClick={handleEditIngredient}>Save Changes</Button>*/}
-            {/*        </DialogFooter>*/}
-            {/*    </DialogContent>*/}
-            {/*</Dialog>*/}
-
-            {/* Delete Confirmation Dialog */}
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
@@ -432,7 +322,7 @@ export default function IngredientsPage() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick= {handleDeleteIngredient} className="bg-red-500 hover:bg-red-600">
+                        <AlertDialogAction onClick={handleDeleteIngredient} className="bg-red-500 hover:bg-red-600">
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>

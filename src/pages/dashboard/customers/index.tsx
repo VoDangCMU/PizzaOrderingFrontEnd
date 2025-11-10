@@ -1,6 +1,6 @@
 "use client"
 
-import {useEffect, useState} from "react"
+import { useEffect, useState } from "react"
 import {
     Card,
     CardContent,
@@ -8,8 +8,8 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import {Button} from "@/components/ui/button"
-import {Input} from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
     Table,
     TableBody,
@@ -65,10 +65,16 @@ export default function CustomersPage() {
 
     const fetchData = async () => {
         const token = localStorage.getItem('token');
+
+        if (!token) {
+            console.error('No token found');
+            return;
+        }
+
         try {
             const res = await axios.get(`/api/user/get-all?page=1&pageSize=1`, {
                 headers: {
-                    Authorization: `${token}`
+                    Authorization: `Bearer ${token}`
                 }
             });
             if (res.data.statusCode != 200) {
@@ -97,11 +103,11 @@ export default function CustomersPage() {
                     </div>
                     <div className="flex items-center gap-2">
                         <Button variant="outline" size="sm">
-                            <Filter className="mr-2 h-4 w-4"/>
+                            <Filter className="mr-2 h-4 w-4" />
                             Filter
                         </Button>
                         <Button size="sm" className="bg-primary hover:bg-primary/90">
-                            <Download className="mr-2 h-4 w-4"/>
+                            <Download className="mr-2 h-4 w-4" />
                             Export
                         </Button>
                     </div>
@@ -114,7 +120,7 @@ export default function CustomersPage() {
                             <CardDescription></CardDescription>
                         </div>
                         <div className="relative">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                                 type="search"
                                 placeholder="Search customers..."
@@ -169,11 +175,11 @@ export default function CustomersPage() {
                                                 <TableCell className="w-[220px] whitespace-nowrap">
                                                     <div className="flex flex-col gap-1">
                                                         <div className="flex items-center text-sm">
-                                                            <Mail className="mr-2 h-3 w-3 text-muted-foreground"/>
+                                                            <Mail className="mr-2 h-3 w-3 text-muted-foreground" />
                                                             {customer.email}
                                                         </div>
                                                         <div className="flex items-center text-sm">
-                                                            <Phone className="mr-2 h-3 w-3 text-muted-foreground"/>
+                                                            <Phone className="mr-2 h-3 w-3 text-muted-foreground" />
                                                             {customer.phone}
                                                         </div>
                                                     </div>
@@ -188,17 +194,17 @@ export default function CustomersPage() {
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
                                                             <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                                <MoreHorizontal className="h-4 w-4"/>
+                                                                <MoreHorizontal className="h-4 w-4" />
                                                                 <span className="sr-only">Open menu</span>
                                                             </Button>
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end">
                                                             <DropdownMenuItem>
-                                                                <Mail className="mr-2 h-4 w-4"/>
+                                                                <Mail className="mr-2 h-4 w-4" />
                                                                 Send email
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem>
-                                                                <ShoppingBag className="mr-2 h-4 w-4"/>
+                                                                <ShoppingBag className="mr-2 h-4 w-4" />
                                                                 View orders
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>

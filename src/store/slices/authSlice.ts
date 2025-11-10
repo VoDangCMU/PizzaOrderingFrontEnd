@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/store";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 interface UserState {
     userId: string | null;
@@ -25,16 +25,6 @@ export const checkAuth = createAsyncThunk<UserState, void>(
             const token = state.auth.token || localStorage.getItem("token");
             if (!token) {
                 return rejectWithValue("No token found");
-            }
-
-            const response = await axios.get('/api/auth/proxy', {
-                headers: {
-                    Authorization: `${token}`,
-                },
-            });
-
-            if (response.status !== 200) {
-                return rejectWithValue("Invalid status");
             }
 
             const decoded: { username: string; userID: string } = jwtDecode(token);
